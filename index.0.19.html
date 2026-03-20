@@ -239,6 +239,21 @@ body.dark .forge-btn{color:#0c0a06;}
 .del-btn{width:30px;height:30px;border-radius:7px;border:1px solid var(--bloodbor);background:var(--bloodb);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--blood);font-size:11px;transition:all .15s;opacity:.7;}
 .del-btn:hover{opacity:1;}
 .del-btn:active{transform:scale(.84);}
+.timer-card{margin:0 18px;padding:22px 18px;text-align:center;}
+.timer-title{font-family:'Josefin Sans',sans-serif;font-weight:300;font-size:8px;letter-spacing:4px;color:var(--ctd);text-transform:uppercase;margin-bottom:15px;text-shadow:var(--ts);}
+.timer-disp{font-family:'Cormorant Garamond',serif;font-size:62px;font-weight:700;color:var(--gold);line-height:1;letter-spacing:6px;text-shadow:var(--ts);}
+.timer-disp.run{animation:pulse .4s ease-in-out infinite;}
+.timer-sub{font-size:8px;color:var(--ctd);letter-spacing:3px;text-transform:uppercase;margin-top:5px;font-family:'Josefin Sans',sans-serif;font-weight:300;text-shadow:var(--ts);}
+.timer-track{width:100%;height:2px;background:var(--cs2);border-radius:1px;margin:14px 0;overflow:hidden;}
+.timer-fill{height:100%;background:var(--gold);border-radius:1px;transition:width .8s linear;}
+.timer-opts{display:flex;gap:5px;justify-content:center;margin-bottom:12px;}
+.topt{padding:5px 12px;border:1px solid var(--cbor);border-radius:18px;background:var(--cs2);color:var(--ctd);font-family:'Josefin Sans',sans-serif;font-weight:400;font-size:7.5px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .15s;text-shadow:var(--ts);}
+.topt:active{transform:scale(.88);}
+.topt.sel{border-color:var(--goldbor);color:var(--gold);background:var(--goldb);font-weight:600;}
+.timer-go{width:100%;background:var(--gold);border:none;border-radius:9px;color:#fff;padding:13px;font-family:'Josefin Sans',sans-serif;font-weight:600;font-size:9.5px;letter-spacing:3px;cursor:pointer;text-transform:uppercase;transition:all .2s;}
+body.dark .timer-go{color:#0c0a06;}
+.timer-go:active{transform:scale(.97);}
+.timer-go.abort{background:var(--bloodb);color:var(--blood);border:1px solid var(--bloodbor);}
 .export-btn{display:block;margin:9px 18px 0;padding:12px;background:var(--cs2);border:1px solid var(--cbor);border-radius:10px;color:var(--ctd);font-family:'Josefin Sans',sans-serif;font-weight:400;font-size:8.5px;letter-spacing:3px;cursor:pointer;text-transform:uppercase;width:calc(100% - 36px);text-align:center;transition:all .2s;text-shadow:var(--ts);}
 .export-btn:hover{border-color:var(--goldbor);color:var(--gold);}
 .export-btn:active{transform:scale(.98);}
@@ -258,6 +273,7 @@ body.dark .forge-btn{color:#0c0a06;}
 body.premium .sbadge{border-color:var(--gold-glow);box-shadow:0 0 14px rgba(201,168,76,.2),var(--card-shadow);}
 body.premium .cbar-fill{background:linear-gradient(90deg,#c9a84c,#f0d080);}
 body.premium .bni.on .bni-dot{background:var(--gold-true);box-shadow:0 0 6px var(--gold-glow);width:4px;height:4px;}
+body.premium .timer-disp{text-shadow:0 0 20px rgba(201,168,76,.3),var(--ts);}
 body.premium .qcard::before{opacity:1;}
 body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
 
@@ -460,6 +476,7 @@ const PHL={};
 (()=>{for(let i=0;i<21;i++){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().split('T')[0];PHL[ds]={ph1:Math.random()>.2?'done':'failed',ph2:Math.random()>.3?'done':'failed',ph3:Math.random()>.35?'done':'failed',ph4:Math.random()>.25?'done':'failed'};}})();
 
 let habits=[],logs={},view='today',qi=0,selCat='Body';
+let bpmTimer=null,bpmTotal=0,bpmLeft=0,bpmMins=25,bpmRunning=false;
 let isPlaceholder=false,toastTimer=null;
 
 function getDate(){const sim=localStorage.getItem('gc:sim_date');return sim||new Date().toISOString().split('T')[0];}
@@ -569,6 +586,7 @@ function patchHabitCard(id,status){
 function addH(){const v=document.getElementById('fi')?.value?.trim();if(!v)return;habits.push({id:Date.now().toString(),name:v,cat:selCat,created:getDate()});isPlaceholder=false;saveH();showToast('Discipline forged');render();setTimeout(()=>{const e=document.getElementById('fi');if(e){e.value='';e.focus();}},60);}
 function delH(id){habits=habits.filter(h=>h.id!==id);isPlaceholder=habits.length===0;saveH();showToast('Removed');render();}
 function selCatFn(c){selCat=c;document.querySelectorAll('.catpill').forEach(p=>p.classList.toggle('sel',p.dataset.c===c));}
+function startBpm(){if(bpmRunning){clearInterval(bpmTimer);bpmRunning=false;showToast('Aborted');render();return;}bpmTotal=bpmMins*60;bpmLeft=bpmTotal;bpmRunning=true;showToast('Session started');bpmTimer=setInterval(()=>{bpmLeft--;const pct=Math.round(((bpmTotal-bpmLeft)/bpmTotal)*100);const b=document.getElementById('tm-bar'),d=document.getElementById('tm-disp');const mm=Math.floor(bpmLeft/60).toString().padStart(2,'0'),ss=(bpmLeft%60).toString().padStart(2,'0');if(d)d.textContent=mm+':'+ss;if(b)b.style.width=pct+'%';if(bpmLeft<=0){clearInterval(bpmTimer);bpmRunning=false;showToast('Session complete');render();}},1000);render();}
 function exportData(){let txt=`GRITCORE — DISCIPLINE RECORD\nExported: ${getDate()}\n${'═'.repeat(40)}\n\nHABITS:\n`;habits.forEach(h=>{txt+=`  • ${h.name} [${h.cat}]\n`;});txt+=`\n30-DAY LOG:\n\n`;last30().forEach(d=>{const l=logs[d]||{};const done=habits.filter(h=>l[h.id]==='done').length;const tot=habits.filter(h=>l[h.id]).length;txt+=`${d}: ${tot?`${done}/${habits.length}`:'-'}\n`;});const blob=new Blob([txt],{type:'text/plain'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='gritcore-log.txt';a.click();showToast('Exported');}
 function bestHabit(hh,ll){if(!hh.length)return null;let best=null,bs=-1;hh.forEach(h=>{let d=0,t=0;last30().forEach(day=>{const l=ll[day]||{};if(l[h.id]==='done'){d++;t++;}else if(l[h.id]==='failed')t++;});if(t>0){const s=d/t;if(s>bs){bs=s;best={name:h.name,pct:Math.round(s*100)};}}});return best;}
 function worstHabit(hh,ll){if(!hh.length)return null;let worst=null,ws=2;hh.forEach(h=>{let d=0,t=0;last30().forEach(day=>{const l=ll[day]||{};if(l[h.id]==='done'){d++;t++;}else if(l[h.id]==='failed')t++;});if(t>2){const s=d/t;if(s<ws){ws=s;worst={name:h.name,pct:Math.round(s*100)};}}});return worst;}
@@ -668,120 +686,21 @@ function hmTap(cell){
   clearTimeout(tip._t);
   tip._t=setTimeout(()=>tip.classList.remove('show'),2000);
 }
-function catStats(){return catScores(effH(),effL());}
-function renderReport() {
-  const hh = effH(), ll = effL();
-  const streak = calcStreak();
-  const tier = getTier(streak);
-  const nextTier = TIERS.find(t => t.min > streak);
-  const daysToNext = nextTier ? nextTier.min - streak : 0;
-  const tierPct = nextTier
-    ? Math.round(((streak - tier.min) / (nextTier.min - tier.min)) * 100)
-    : 100;
-
-  // Lifetime stats
-  let totalDone = 0, perfectDays = 0;
-  const bestCount = {};
-  Object.entries(ll).forEach(([date, dayLog]) => {
-    let dayDone = 0;
-    hh.forEach(h => {
-      if (dayLog[h.id] === 'done') { totalDone++; dayDone++; bestCount[h.id] = (bestCount[h.id] || 0) + 1; }
-    });
-    if (hh.length && dayDone === hh.length) perfectDays++;
-  });
-  const bestId = Object.entries(bestCount).sort((a, b) => b[1] - a[1])[0]?.[0];
-  const bestName = hh.find(h => h.id === bestId)?.name || '—';
-
-  // Category bars
-  const catData = catStats();
-  const catBars = catData.length
-    ? catData.map(c => `
-        <div class="rpt-cat-row">
-          <span class="rpt-cat-name">${c.cat}</span>
-          <div class="rpt-cat-bar-wrap"><div class="rpt-cat-bar" style="width:${c.pct}%"></div></div>
-          <span class="rpt-cat-pct">${c.pct}%</span>
-        </div>`).join('')
-    : '<div class="rpt-empty">Log disciplines to see category stats</div>';
-
-  document.getElementById('content').innerHTML = `
-    <div class="shdr af s1"><span class="shdr-l">Report</span></div>
-
-    <div class="rpt-stats-row af s2">
-      <div class="card rpt-stat-card">
-        <div class="rpt-stat-label">Next Tier</div>
-        <div class="rpt-stat-num" style="color:${tier.color}">${streak}</div>
-        <div class="rpt-stat-sub">${tier.name}</div>
-        <div class="rpt-pbar-wrap"><div class="rpt-pbar-fill" style="width:${tierPct}%;background:${tier.color}"></div></div>
-        <div class="rpt-stat-hint">${nextTier ? `${daysToNext} day${daysToNext !== 1 ? 's' : ''} to ${nextTier.name}` : 'Max tier reached'}</div>
-      </div>
-      <div class="card rpt-stat-card">
-        <div class="rpt-stat-label">All Time</div>
-        <div class="rpt-stat-num">${totalDone}</div>
-        <div class="rpt-stat-sub">${perfectDays} perfect day${perfectDays !== 1 ? 's' : ''}</div>
-        <div class="rpt-stat-hint" style="margin-top:auto">Best: ${bestName}</div>
-      </div>
-    </div>
-
-    <div class="card af s3" style="padding:14px;">
-      <div style="font-size:7px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ctdd);margin-bottom:12px;">By Category</div>
-      ${catBars}
-    </div>
-
-    <div class="rpt-icon-row af s4">
-      <button class="rpt-icon-btn" onclick="rptSheet('profile')">
-        <span class="rpt-icon">👤</span><span class="rpt-icon-lbl">Profile</span>
-      </button>
-      <button class="rpt-icon-btn" onclick="rptSheet('settings')">
-        <span class="rpt-icon">⚙️</span><span class="rpt-icon-lbl">Settings</span>
-      </button>
-      <button class="rpt-icon-btn" onclick="exportData()">
-        <span class="rpt-icon">📤</span><span class="rpt-icon-lbl">Export</span>
-      </button>
-      <button class="rpt-icon-btn" onclick="rptSheet('about')">
-        <span class="rpt-icon">◆</span><span class="rpt-icon-lbl">About</span>
-      </button>
-    </div>
-
-    <div id="rpt-sheet-backdrop" class="sheet-backdrop" onclick="closeRptSheet()" style="display:none"></div>
-    <div class="fab-sheet" id="rpt-sheet">
-      <div class="sheet-handle"></div>
-      <div id="rpt-sheet-content"></div>
-    </div>
-  `;
-}
-
-function rptSheet(type) {
-  const el = document.getElementById('rpt-sheet');
-  const content = document.getElementById('rpt-sheet-content');
-  const backdrop = document.getElementById('rpt-sheet-backdrop');
-  const sheets = {
-    profile: `<div class="sheet-header"><span class="sheet-title">Profile</span></div><div style="padding:20px;text-align:center;color:var(--ctd);font-size:11px;letter-spacing:1px;">Coming soon</div>`,
-    settings: `<div class="sheet-header"><span class="sheet-title">Settings</span></div>
-      <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:8px;">
-        <button class="dev-btn" onclick="if(confirm('Reset today\\'s log?')){const t=getDate();delete logs[t];saveL();closeRptSheet();render();}">Reset Today's Log</button>
-        <button class="dev-btn dev-btn-danger" onclick="if(confirm('Clear all data?')){localStorage.clear();location.reload();}">Clear All Data</button>
-        <div style="font-size:8px;letter-spacing:1.5px;color:var(--ctdd);text-align:center;padding-top:8px;">GritCore v0.20</div>
-      </div>`,
-    about: `<div class="sheet-header"><span class="sheet-title">About</span></div>
-      <div style="padding:20px;text-align:center;">
-        <div style="font-size:18px;letter-spacing:2px;color:var(--cthi);font-family:'Cormorant Garamond',serif;font-style:italic;margin-bottom:8px;">GritCore</div>
-        <div style="font-size:9px;letter-spacing:2px;color:var(--ctd);">Forge your discipline.</div>
-        <div style="font-size:8px;color:var(--ctdd);margin-top:16px;">Version 0.20</div>
-      </div>`,
-  };
-  content.innerHTML = sheets[type] || '';
-  backdrop.style.display = 'block';
-  requestAnimationFrame(() => el.classList.add('open'));
-}
-
-function closeRptSheet() {
-  const el = document.getElementById('rpt-sheet');
-  const backdrop = document.getElementById('rpt-sheet-backdrop');
-  el.classList.remove('open');
-  backdrop.style.display = 'none';
+function renderReport(){
+  const hh=effH(),ll=effL(),wp=weekPct(),streak=calcStreak(),best=bestHabit(hh,ll),worst=worstHabit(hh,ll),bd=bestDayStr(hh,ll),cs=catScores(hh,ll);
+  const l7=last7();let td=0,tt=0;l7.forEach(d=>{const l=ll[d]||{};hh.forEach(h=>{if(l[h.id]==='done'){td++;tt++;}else if(l[h.id]==='failed')tt++;});});
+  const tier=getTier(streak);
+  return `<div class="shdr af"><span class="shdr-l">Weekly Analysis</span></div>
+  <div class="rpcards">
+    <div class="rpcard card af s1"><div class="rpc-hdr">Forge Analysis</div><div class="rpc-stat"><span class="rpc-k">Discipline score</span><span class="rpc-v ${wp!==null&&wp>=70?'g':wp!==null&&wp<40?'b':''}">${wp!==null?wp+'%':'No data'}</span></div><div class="rpc-stat"><span class="rpc-k">Habits logged</span><span class="rpc-v">${tt} / ${hh.length*7}</span></div><div class="rpc-stat"><span class="rpc-k">Streak rank</span><span class="rpc-v" style="color:${streak>0?tier.color:'var(--ctd)'}">${streak>0?`${streak} · ${tier.name}`:'None'}</span></div><div class="rpc-stat"><span class="rpc-k">Strongest day</span><span class="rpc-v">${bd}</span></div></div>
+    <div class="rpcard card af s2"><div class="rpc-hdr">Habit Verdict — 30 Days</div>${best?`<div class="rpc-stat"><span class="rpc-k">Iron discipline</span><span class="rpc-v g">${best.name} (${best.pct}%)</span></div>`:''} ${worst?`<div class="rpc-stat"><span class="rpc-k">Weak link</span><span class="rpc-v b">${worst.name} (${worst.pct}%)</span></div>`:''}<div class="rpc-stat"><span class="rpc-k">Active habits</span><span class="rpc-v">${hh.length}</span></div></div>
+    ${cs.length?`<div class="rpcard card af s3"><div class="rpc-hdr">By Category</div><div class="cat-bar">${cs.map(c=>`<div class="cbar-row"><div class="cbar-meta"><span class="cbar-name">${c.cat}</span><span class="cbar-pct">${c.pct}%</span></div><div class="cbar-track"><div class="cbar-fill" style="width:0%" data-pct="${c.pct}"></div></div></div>`).join('')}</div></div>`:''}
+    <div class="rpcard card af s4"><div class="rpc-hdr">Stoic Verdict</div><div class="verdict-block">${wp===null?'"Begin. The rest follows."':wp>=80?'"You are becoming who you intended to be. Do not relent."':wp>=60?'"Progress is real. Complacency is the enemy."':wp>=40?'"You see the gap. Now close it."':'"You have looked away. Look back. The way is still there."'}</div></div>
+  </div>
+  <div class="ftr"><div class="ftr-logo">Gritcore</div><div class="ftr-sub">Truth before comfort</div></div>`;
 }
 function renderForge(){
-  const hh=habits;
+  const hh=habits,mm=Math.floor(bpmLeft/60).toString().padStart(2,'0'),ss=(bpmLeft%60).toString().padStart(2,'0'),pct=bpmTotal>0?Math.round(((bpmTotal-bpmLeft)/bpmTotal)*100):0;
   let mlist='';
   if(!hh.length)mlist=`<div style="padding:22px;text-align:center;font-family:'Josefin Sans',sans-serif;font-size:8px;letter-spacing:3px;color:var(--ctd);text-transform:uppercase;line-height:2.5;text-shadow:var(--ts)">No disciplines yet.</div>`;
   else hh.forEach((h,i)=>{mlist+=`<div class="manage-item card" style="animation-delay:${i*.04}s"><div class="mi-meta"><div class="mi-name">${h.name}</div><div class="mi-cat">${h.cat}</div></div><button class="del-btn" onclick="delH('${h.id}')">✕</button></div>`;});
@@ -789,14 +708,16 @@ function renderForge(){
   <div class="forge-form card af s1"><input id="fi" class="forge-input" placeholder="Name your discipline…" onkeydown="if(event.key==='Enter')addH()"><div class="cats">${CATS.map(c=>`<button class="catpill ${selCat===c?'sel':''}" data-c="${c}" onclick="selCatFn('${c}')">${c}</button>`).join('')}</div><button class="forge-btn" onclick="addH()">Forge Discipline</button></div>
   <div class="shdr af s2 mt6"><span class="shdr-l">Active (${hh.length})</span></div>
   <div class="manage-list">${mlist}</div>
-  <button class="export-btn af s3" onclick="exportData()">↓ Export Record</button>
+  <div class="shdr af s3 mt6"><span class="shdr-l">Focus Session — 174 BPM</span></div>
+  <div class="timer-card card af s4"><div class="timer-title">Hardstyle Discipline Timer</div><div class="timer-disp ${bpmRunning?'run':''}" id="tm-disp">${bpmRunning||bpmLeft>0?mm+':'+ss:bpmMins.toString().padStart(2,'0')+':00'}</div><div class="timer-sub">${bpmRunning?'Execute. No surrender.':'Set your sentence'}</div><div class="timer-track"><div class="timer-fill" id="tm-bar" style="width:${pct}%"></div></div><div class="timer-opts">${[10,20,25,45,60].map(m=>`<button class="topt ${bpmMins===m&&!bpmRunning?'sel':''}" onclick="if(!bpmRunning){bpmMins=${m};bpmLeft=0;render()}">${m}m</button>`).join('')}</div><button class="timer-go ${bpmRunning?'abort':''}" onclick="startBpm()">${bpmRunning?'⬛ Abort Mission':'▶ Begin Session'}</button></div>
+  <button class="export-btn af s5" onclick="exportData()">↓ Export Record</button>
   <div class="ftr"><div class="ftr-logo">Gritcore</div><div class="ftr-sub">Build the person you intend to be</div></div>`;
 }
 function render(){
   const c=document.getElementById('content');
   if(view==='today')c.innerHTML=renderToday();
   else if(view==='record'){c.innerHTML=renderRecord();requestAnimationFrame(()=>{const wrap=document.getElementById('hm-wrap');if(wrap)wrap.scrollLeft=wrap.scrollWidth;});}
-  else if(view==='report')renderReport();
+  else if(view==='report')c.innerHTML=renderReport();
   else if(view==='forge')c.innerHTML=renderForge();
   updateHeader();
   setTimeout(()=>document.querySelectorAll('.cbar-fill[data-pct]').forEach(el=>{el.style.width=el.dataset.pct+'%';}),80);
