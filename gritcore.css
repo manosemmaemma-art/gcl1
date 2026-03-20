@@ -1,0 +1,431 @@
+/* ── GritCore Design System v0.14 ── */
+
+:root {
+  /* Surface */
+  --color-surface:      rgba(10, 8, 6, 1);
+  --color-veil:         rgba(0, 0, 0, 0.30);
+  --color-card:         rgba(255, 255, 255, 0.07);
+  --color-card-border:  rgba(255, 255, 255, 0.06);
+  --color-nav:          rgba(10, 8, 6, 0.65);
+
+  /* Text */
+  --color-text-hi:      rgba(255, 255, 255, 1.00);
+  --color-text-mid:     rgba(255, 255, 255, 0.55);
+  --color-text-lo:      rgba(255, 255, 255, 0.30);
+
+  /* Accents */
+  --color-gold:         rgb(212, 160, 23);
+  --color-silver:       rgb(232, 232, 232);
+  --color-blood:        rgb(160, 20, 20);
+  --color-blood-dim:    rgba(160, 20, 20, 0.18);
+
+  /* Heat — JS-controlled */
+  --heat:               rgb(232, 232, 232); /* silver → gold via updateHeat() */
+  --heat-overlay-alpha: 0;                  /* 0 → 0.16 via updateHeat() */
+}
+
+/* ── FIX 1: Marble background with blur + dark ── */
+/* Marble as a blurred fixed layer behind everything */
+html, body {
+  height: 100%;
+  overflow: hidden; /* prevents page scroll — only .content scrolls */
+}
+
+/* App shell fills full viewport */
+#app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Scrollable content area — nav always stays fixed above */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 16px));
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  transform: scale(1.08); /* scale beyond edges to hide blur artifacts */
+  background: url('img/marble.jpg') center center / cover no-repeat;
+  filter: blur(5px) brightness(0.35);
+  z-index: -1;
+}
+
+/* Remove old direct background */
+body, #app {
+  background: none !important;
+}
+
+/* Additional dark veil for readability */
+#app::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: var(--color-veil);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* All content sits above overlays */
+.content, .bnav, .toast, #onboarding, .hdr, .fab {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Content glass — 14px blur ── */
+.card {
+  background: var(--color-card) !important;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--color-card-border) !important;
+  border-radius: 16px !important;
+}
+
+.sc-num {
+  color: var(--color-text-hi) !important;
+  font-weight: 600;
+}
+
+.sc-lbl {
+  color: var(--color-text-mid) !important;
+}
+
+.sc-word {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-mid, var(--ctdd));
+  margin-top: 1px;
+}
+
+#streak-panel {
+  display: none;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--cbor);
+  margin: 8px 0 4px;
+  position: relative;
+  background: rgba(10,8,6,.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--card-shadow);
+  transition: border-color .5s;
+}
+#streak-panel.open {
+  display: block;
+  animation: spIn .28s ease;
+}
+@keyframes spIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+.sp-inner { position: relative; z-index: 1; padding: 14px 14px 16px; }
+.sp-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.sp-flame-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sp-flame { line-height: 1; display: block; animation: bigFlicker 2s ease-in-out infinite; transform-origin: bottom center; }
+@keyframes bigFlicker {
+  0%, 100% { transform: scaleY(1) rotate(-1deg); }
+  33%      { transform: scaleY(1.06) rotate(1.5deg); }
+  66%      { transform: scaleY(.96) rotate(-1.5deg); }
+}
+.sp-blood {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(185,28,28,.55) 0%, rgba(185,28,28,.2) 40%, transparent 70%);
+  animation: bloodPulse 2.2s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes bloodPulse {
+  0%, 100% { opacity: var(--blood-op, 0); transform: scale(1); }
+  50%      { opacity: calc(var(--blood-op, 0) * 1.3); transform: scale(1.08); }
+}
+.sp-info { flex: 1; }
+.sp-num  { font-family: 'Cormorant Garamond', serif; font-weight: 700; line-height: 1; transition: color .6s, font-size .4s; }
+.sp-tier { font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 600; margin-top: 2px; transition: color .6s; }
+.sp-sub  { font-size: 8.5px; letter-spacing: .8px; color: var(--ctd); margin-top: 4px; font-style: italic; opacity: .75; }
+.sp-next { font-size: 6.5px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ctdd); margin-bottom: 4px; }
+.sp-pbar-wrap { height: 2px; background: rgba(255,255,255,.06); border-radius: 2px; margin-bottom: 12px; }
+.sp-pbar-fill { height: 100%; border-radius: 2px; transition: width .6s ease, background .6s ease; }
+.sp-tiers { display: flex; flex-direction: column; gap: 2px; }
+.sp-trow  { display: flex; align-items: center; gap: 8px; padding: 5px 6px; border-radius: 6px; transition: opacity .3s; }
+.sp-trow.sp-current { background: rgba(255,255,255,.055); }
+.sp-trow.sp-past    { opacity: .4; }
+.sp-trow.sp-locked  { filter: blur(2px) grayscale(.75); opacity: .16; }
+.sp-ticon { width: 24px; text-align: center; line-height: 1; flex-shrink: 0; transition: font-size .4s, filter .4s; }
+.sp-tname { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; flex: 1; }
+.sp-trange { font-size: 7.5px; color: var(--ctd); letter-spacing: .5px; opacity: .6; }
+.sp-check { font-size: 9px; color: var(--ctdd); }
+.sc-fire { display: block; line-height: 1; margin-bottom: 1px; transition: font-size .4s, filter .4s; }
+#dev-streak-btn {
+  display: inline-block;
+  margin-top: 3px;
+  background: rgba(201,168,76,.12);
+  border: 1px solid rgba(201,168,76,.3);
+  color: #c9a84c;
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 6px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* ── Text ── */
+body { color: var(--color-text-hi); }
+.muted { color: var(--color-text-mid); }
+
+/* ── Heat accents (fix 3 — visible on dark bg) ── */
+.fab,
+.bni.on .bni-dot,
+#sbadge {
+  background: var(--heat) !important;
+  color: #111 !important;
+}
+
+/* ── Chrome glass — 28px blur ── */
+.bnav {
+  background: var(--color-nav) !important;
+  -webkit-backdrop-filter: blur(28px);
+  backdrop-filter: blur(28px);
+  border-top: 1px solid var(--color-card-border) !important;
+}
+
+/* Header chrome glass — matches nav */
+.hdr {
+  background: var(--color-nav) !important;
+  -webkit-backdrop-filter: blur(28px) !important;
+  backdrop-filter: blur(28px) !important;
+}
+
+/* ── FAB ── */
+.fab {
+  position: fixed;
+  bottom: calc(60px + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 16px var(--heat);
+  z-index: 10;
+  transition: box-shadow 0.4s ease, background 0.4s ease;
+}
+
+/* ── FAB Bottom Sheet ── */
+
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  z-index: 20;
+  pointer-events: none;
+  transition: background 0.3s ease;
+}
+.sheet-backdrop.open {
+  background: rgba(0, 0, 0, 0.65);
+  pointer-events: all;
+}
+
+.fab-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  width: 100%;
+  max-width: 430px;
+  z-index: 21;
+  background: var(--color-nav);
+  -webkit-backdrop-filter: blur(28px);
+  backdrop-filter: blur(28px);
+  border-top: 1px solid var(--color-card-border);
+  border-radius: 22px 22px 0 0;
+  max-height: 72vh;
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+  transition: transform 0.36s cubic-bezier(0.32, 0.72, 0, 1);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+}
+.fab-sheet.open { transform: translateX(-50%) translateY(0); }
+
+.sheet-handle {
+  width: 32px;
+  height: 2px;
+  background: var(--heat);
+  opacity: 0.5;
+  border-radius: 1px;
+  margin: 14px auto 0;
+  flex-shrink: 0;
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+.sheet-title {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 9px;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+.sheet-done-btn {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--heat);
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  padding: 4px 0;
+}
+.sheet-done-btn.visible { opacity: 1; pointer-events: all; }
+
+.sheet-list {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+}
+
+.sheet-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 22px;
+  gap: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: opacity 0.3s ease;
+}
+.sheet-item:last-child { border-bottom: none; }
+.sheet-item.ticked { opacity: 0.38; }
+.sheet-item-meta { flex: 1; }
+.sheet-item-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--color-text-hi);
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+.sheet-item.ticked .sheet-item-name {
+  text-decoration: line-through;
+  color: rgba(255, 255, 255, 0.45);
+}
+.sheet-item-cat {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 8.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.28);
+  margin-top: 2px;
+}
+.sheet-tick {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+.sheet-item.ticked .sheet-tick {
+  border-color: var(--heat);
+  background: rgba(212, 160, 23, 0.12);
+}
+.sheet-fail {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+.sheet-item.failed .sheet-fail {
+  border-color: rgba(160, 20, 20, 0.7);
+  background: var(--color-blood-dim);
+}
+/* Sheet button animations — both use same timing for consistency */
+.sheet-tick.stamp-done { animation: stampFail .28s cubic-bezier(.34,1.56,.64,1); }
+.sheet-fail.stamp-fail { animation: stampFail .28s cubic-bezier(.34,1.56,.64,1); }
+.sheet-empty {
+  padding: 32px 22px;
+  text-align: center;
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.25);
+}
+.sheet-add {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.sheet-add:active { opacity: 0.6; }
+.sheet-add-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 28px;
+  padding-bottom: 1px;
+}
+.sheet-add-label {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 9.5px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+/* ── Heat veil — marble warmth overlay ── */
+#heat-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: rgba(212, 160, 23, var(--heat-overlay-alpha));
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  transition: background 1.2s ease;
+}
