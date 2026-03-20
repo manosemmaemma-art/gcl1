@@ -96,10 +96,14 @@ body.dark{
 .bni.on .bni-dot{opacity:1;}
 .content{flex:1;padding:0 0 calc(68px + env(safe-area-inset-bottom, 10px));}
 .card{background:var(--cs);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--cbor);border-radius:16px;box-shadow:var(--card-shadow);transition:background .6s,border-color .6s;}
-.qcard{margin:20px 18px 0;padding:20px 18px;border-left:2px solid var(--heat-color,rgba(201,168,76,0.5));cursor:pointer;transition:opacity .3s;}
+.qcard{margin:20px 18px 0;padding:20px 22px;position:relative;overflow:hidden;cursor:pointer;}
 .qcard:active{transform:scale(.99);}
-.qtext{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;line-height:1.5;color:var(--cthi);margin-bottom:10px;}
-.qauth{font-family:'Josefin Sans',sans-serif;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--ctd);}
+.qcard::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.6;}
+.qmark{font-family:'Cormorant Garamond',serif;font-size:40px;color:var(--cbor);line-height:1;position:absolute;top:6px;left:12px;}
+.qtext{font-size:14px;font-style:italic;color:var(--cts);line-height:1.85;position:relative;z-index:1;padding-left:4px;font-family:'Cormorant Garamond',serif;text-shadow:var(--ts);}
+.qauth{font-size:9px;color:var(--gold);letter-spacing:2.5px;text-transform:uppercase;margin-top:8px;font-family:'Josefin Sans',sans-serif;font-weight:400;text-shadow:var(--ts);}
+.qtap{font-size:8px;color:var(--ctdd);letter-spacing:1.5px;margin-top:4px;font-family:'Josefin Sans',sans-serif;font-weight:300;text-shadow:var(--ts);}
+.qcard.flash{animation:flash .2s ease;}
 .scrow{display:flex;gap:10px;padding:16px 18px 0;}
 .sc{flex:1;padding:16px 10px 14px;text-align:center;position:relative;overflow:hidden;}
 .sc.lit{border-color:var(--goldbor);}
@@ -254,7 +258,7 @@ body.dark .forge-btn{color:#0c0a06;}
 body.premium .sbadge{border-color:var(--gold-glow);box-shadow:0 0 14px rgba(201,168,76,.2),var(--card-shadow);}
 body.premium .cbar-fill{background:linear-gradient(90deg,#c9a84c,#f0d080);}
 body.premium .bni.on .bni-dot{background:var(--gold-true);box-shadow:0 0 6px var(--gold-glow);width:4px;height:4px;}
-body.premium .qcard{border-left-color:rgba(201,168,76,0.9);}
+body.premium .qcard::before{opacity:1;}
 body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
 
 /* ── ONBOARDING ── */
@@ -345,7 +349,6 @@ function updateHeat(completed,total){
   const root=document.documentElement;
   root.style.setProperty('--heat',`rgb(${r},${g},${b})`);
   root.style.setProperty('--heat-overlay-alpha',(pct*0.16).toFixed(3));
-  root.style.setProperty('--heat-color',`rgba(201,168,76,${(0.3+pct*0.7).toFixed(3)})`);
 }
 
 /* STREAK TIERS */
@@ -449,64 +452,14 @@ const QUOTES=[
   {t:"You could leave life right now. Let that determine what you do and say and think.",a:"Marcus Aurelius"},
   {t:"The impediment to action advances action. What stands in the way becomes the way.",a:"Marcus Aurelius"},
   {t:"Confine yourself to the present.",a:"Marcus Aurelius"},
-  {t:"It is not death that a man should fear, but he should fear never beginning to live.",a:"Marcus Aurelius"},
-  {t:"Accept the things to which fate binds you, and love the people with whom fate brings you together.",a:"Marcus Aurelius"},
-  {t:"Very little is needed to make a happy life; it is all within yourself, in your way of thinking.",a:"Marcus Aurelius"},
-  {t:"The object of life is not to be on the side of the majority, but to escape finding oneself in the ranks of the insane.",a:"Marcus Aurelius"},
   {t:"Difficulties strengthen the mind, as labor does the body.",a:"Seneca"},
   {t:"He who is brave is free.",a:"Seneca"},
   {t:"The greatest remedy for anger is delay.",a:"Seneca"},
   {t:"Luck is what happens when preparation meets opportunity.",a:"Seneca"},
-  {t:"Begin at once to live, and count each separate day as a separate life.",a:"Seneca"},
-  {t:"We suffer more in imagination than in reality.",a:"Seneca"},
-  {t:"Retire into yourself as much as you can.",a:"Seneca"},
-  {t:"It is not the man who has too little, but the man who craves more, that is poor.",a:"Seneca"},
   {t:"No man is free who is not master of himself.",a:"Epictetus"},
   {t:"It is not what happens to you, but how you react that matters.",a:"Epictetus"},
   {t:"Make the best use of what is in your power.",a:"Epictetus"},
   {t:"First say to yourself what you would be; then do what you have to do.",a:"Epictetus"},
-  {t:"Freedom is the only worthy goal in life.",a:"Epictetus"},
-  {t:"Seek not that the things which happen should happen as you wish; but wish the things which happen to be as they are.",a:"Epictetus"},
-  {t:"We cannot choose our external circumstances, but we can always choose how we respond to them.",a:"Epictetus"},
-  {t:"The key is to keep company only with people who uplift you, whose presence calls forth your best.",a:"Epictetus"},
-  {t:"We are what we repeatedly do. Excellence, then, is not an act, but a habit.",a:"Aristotle"},
-  {t:"Through discipline comes freedom.",a:"Aristotle"},
-  {t:"The secret of getting ahead is getting started.",a:"Mark Twain"},
-  {t:"Do not wait to strike till the iron is hot; but make it hot by striking.",a:"W.B. Yeats"},
-  {t:"Energy and persistence conquer all things.",a:"Benjamin Franklin"},
-  {t:"If you are going through hell, keep going.",a:"Winston Churchill"},
-  {t:"It does not matter how slowly you go as long as you do not stop.",a:"Confucius"},
-  {t:"The man who moves a mountain begins by carrying away small stones.",a:"Confucius"},
-  {t:"Our greatest glory is not in never falling, but in rising every time we fall.",a:"Confucius"},
-  {t:"Strength does not come from physical capacity. It comes from an indomitable will.",a:"Mahatma Gandhi"},
-  {t:"Discipline is the bridge between goals and accomplishment.",a:"Jim Rohn"},
-  {t:"The successful warrior is the average man, with laser-like focus.",a:"Bruce Lee"},
-  {t:"Absorb what is useful, discard what is not, add what is uniquely your own.",a:"Bruce Lee"},
-  {t:"Be like water. Water is fluid, soft, and yielding. But water will wear away rock.",a:"Bruce Lee"},
-  {t:"Whether you think you can, or you think you can't — you're right.",a:"Henry Ford"},
-  {t:"A man who dares to waste one hour of time has not discovered the value of life.",a:"Charles Darwin"},
-  {t:"The only person you are destined to become is the person you decide to be.",a:"Ralph Waldo Emerson"},
-  {t:"Do not go where the path may lead; go instead where there is no path and leave a trail.",a:"Ralph Waldo Emerson"},
-  {t:"Do one thing every day that scares you.",a:"Eleanor Roosevelt"},
-  {t:"Courage is not the absence of fear, but the triumph over it.",a:"Nelson Mandela"},
-  {t:"It always seems impossible until it's done.",a:"Nelson Mandela"},
-  {t:"The cave you fear to enter holds the treasure you seek.",a:"Joseph Campbell"},
-  {t:"In the middle of difficulty lies opportunity.",a:"Albert Einstein"},
-  {t:"A smooth sea never made a skillful sailor.",a:"Franklin D. Roosevelt"},
-  {t:"He who has a why to live can bear almost any how.",a:"Friedrich Nietzsche"},
-  {t:"That which does not kill us makes us stronger.",a:"Friedrich Nietzsche"},
-  {t:"Become who you are.",a:"Friedrich Nietzsche"},
-  {t:"The secret of success is constancy to purpose.",a:"Benjamin Disraeli"},
-  {t:"Fall seven times, stand up eight.",a:"Japanese Proverb"},
-  {t:"Hard work beats talent when talent doesn't work hard.",a:"Tim Notke"},
-  {t:"The more you sweat in training, the less you bleed in combat.",a:"Richard Marcinko"},
-  {t:"I am not afraid of storms, for I am learning how to sail my ship.",a:"Louisa May Alcott"},
-  {t:"Man is not the creature of circumstances. Circumstances are the creatures of men.",a:"Benjamin Disraeli"},
-  {t:"You don't have to be great to start, but you have to start to be great.",a:"Zig Ziglar"},
-  {t:"The reading of all good books is like a conversation with the finest minds of past centuries.",a:"René Descartes"},
-  {t:"Iron rusts from disuse; water loses its purity from stagnation. Even so does inaction sap the vigor of the mind.",a:"Leonardo da Vinci"},
-  {t:"Knowing is not enough; we must apply. Willing is not enough; we must do.",a:"Johann Wolfgang von Goethe"},
-  {t:"With self-discipline, almost anything is possible.",a:"Theodore Roosevelt"},
 ];
 
 const PH=[{id:'ph1',name:'Cold Shower',cat:'Body'},{id:'ph2',name:'Meditation',cat:'Mind'},{id:'ph3',name:'Deep Work',cat:'Craft'},{id:'ph4',name:'Evening Reflection',cat:'Ritual'}];
@@ -583,9 +536,6 @@ function updateStreakBadge(){
 function sw(v,el){if(view===v)return;view=v;document.querySelectorAll('.bni').forEach(b=>b.classList.toggle('on',b.dataset.v===v));if(el){el.classList.add('tap');setTimeout(()=>el.classList.remove('tap'),300);}render();if(v==='today'||view==='today')setTimeout(updateStreakPanel,0);}
 function swTo(v){view=v;document.querySelectorAll('.bni').forEach(b=>b.classList.toggle('on',b.dataset.v===v));render();}
 function nextQ(){const qc=document.getElementById('qcard');if(qc){qc.classList.add('flash');setTimeout(()=>qc.classList.remove('flash'),250);}qi=(qi+1)%QUOTES.length;const q2=document.getElementById('qcard');if(q2){q2.querySelector('.qtext').textContent=QUOTES[qi].t;q2.querySelector('.qauth').textContent='— '+QUOTES[qi].a;}}
-function getTodayQuote(){const d=Math.floor(Date.now()/86400000);return QUOTES[d%QUOTES.length];}
-function getTomorrowQuote(){const d=Math.floor(Date.now()/86400000)+1;return QUOTES[d%QUOTES.length];}
-function qPreview(el){if(QUOTES.length<=1)return;const q2=getTomorrowQuote();const txt=el.querySelector('.qtext');const auth=el.querySelector('.qauth');const orig=getTodayQuote();txt.textContent=q2.t;auth.textContent='— '+q2.a;el.style.opacity='0.7';clearTimeout(el._qt);el._qt=setTimeout(()=>{txt.textContent=orig.t;auth.textContent='— '+orig.a;el.style.opacity='';},3000);}
 function markH(id,status,btnEl){
   if(isPlaceholder)return;
   const t=getDate();if(!logs[t])logs[t]={};
@@ -666,9 +616,8 @@ function renderToday(){
     hhtml+='</div></div>';
     if(isPlaceholder)hhtml+=`<div class="sample-banner" onclick="swTo('forge')"><span class="sample-banner-icon">⚒</span><div><div class="sample-banner-tag">Sample Data</div><div class="sample-banner-sub">Tap to forge your own →</div></div></div>`;
   }
-  const q=getTodayQuote();
   return `
-  <div id="qcard" class="qcard card af" onclick="qPreview(this)"><div class="qtext">${q.t}</div><div class="qauth">— ${q.a}</div></div>
+  <div id="qcard" class="qcard card af" onclick="nextQ()"><div class="qmark">"</div><div class="qtext">${QUOTES[qi].t}</div><div class="qauth">— ${QUOTES[qi].a}</div><div class="qtap">Tap for new wisdom</div></div>
   <div class="scrow af s1">
     <div class="sc card ${tp!==null&&tp>=70?'lit':tp!==null&&tp<40?'bad':tp!==null?'ok':''}" id="sc0"><div class="sc-num">${tp!==null?tp+'%':'—'}</div><div class="sc-word">${tp!==null?todayLabel(tp):''}</div><div class="sc-lbl">Today</div></div>
     <div class="sc card ${wp!==null&&wp>=70?'lit':wp!==null&&wp<40?'bad':wp!==null?'ok':''}" id="sc1"><div class="sc-num">${wp!==null?wp+'%':'—'}</div><div class="sc-word">${wp!==null?weekLabel(wp):''}</div><div class="sc-lbl">7 Day</div></div>
