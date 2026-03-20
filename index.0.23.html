@@ -331,14 +331,6 @@ body.dark #onboarding-card{background:rgba(7,6,4,.93);border-top-color:rgba(212,
   </nav>
 </div>
 <div class="toast" id="toast"></div>
-<div id="ach-banner">
-  <div class="ach-banner-icon" id="ach-icon"></div>
-  <div class="ach-banner-body">
-    <div class="ach-banner-tag">Achievement Unlocked</div>
-    <div class="ach-banner-name" id="ach-name"></div>
-    <div class="ach-banner-desc" id="ach-desc"></div>
-  </div>
-</div>
 
 <script>
 /* STORAGE — localStorage */
@@ -378,80 +370,6 @@ const TIERS=[
   {min:365,max:9999,name:'Legend',       sub:'365 days. One full year.',    color:'#FF7700',glow:'rgba(255,119,0,.78)',       anim:'f14', spd:.55,sz:18,bgA:.20},
 ];
 function getTier(n){return TIERS.find(t=>n>=t.min&&n<=t.max)||TIERS[0];}
-
-/* ── ACHIEVEMENTS ── */
-const ACHIEVEMENTS = [
-  { id:'first_log',    icon:'⚡', name:'First Spark',   desc:'Log your first discipline' },
-  { id:'first_forge',  icon:'🔨', name:'Forge Master',  desc:'Create your first discipline' },
-  { id:'streak_3',     icon:'🔥', name:'On A Roll',     desc:'Achieve a 3-day streak' },
-  { id:'streak_7',     icon:'⚔️', name:'Week Warrior',  desc:'Achieve a 7-day streak' },
-  { id:'streak_30',    icon:'👑', name:'Iron Will',     desc:'Achieve a 30-day streak' },
-  { id:'streak_100',   icon:'💎', name:'Legendary',     desc:'Achieve a 100-day streak' },
-  { id:'perfect_day',  icon:'✨', name:'Perfect Day',   desc:'Complete every discipline in one day' },
-  { id:'centurion',    icon:'💯', name:'Centurion',     desc:'Log 100 total disciplines' },
-  { id:'five_habits',  icon:'⚒️', name:'Disciplined',  desc:'Forge 5 disciplines' },
-  { id:'no_miss',      icon:'🛡️', name:'Unbroken',     desc:'Never fail a discipline today' },
-];
-
-function loadAch() { try { return JSON.parse(localStorage.getItem('gc1:ach')||'{}'); } catch(e){ return {}; } }
-function saveAch(a) { localStorage.setItem('gc1:ach', JSON.stringify(a)); }
-
-function checkAchievements() {
-  const earned = loadAch();
-  const hh = effH(), ll = effL();
-  let totalDone = 0, perfectDayFound = false, noMiss = true;
-  const today = getDate(), todayLog = ll[today] || {};
-  Object.entries(ll).forEach(([d, dayLog]) => {
-    let dd = 0;
-    hh.forEach(h => { if(dayLog[h.id]==='done'){ totalDone++; dd++; } });
-    if(hh.length && dd === hh.length) perfectDayFound = true;
-  });
-  hh.forEach(h => { if(todayLog[h.id]==='failed') noMiss = false; });
-  const streak = calcStreak();
-  const realHabits = habits.filter(h => !isPlaceholder);
-
-  const conditions = {
-    first_log:   totalDone >= 1,
-    first_forge: realHabits.length >= 1,
-    streak_3:    streak >= 3,
-    streak_7:    streak >= 7,
-    streak_30:   streak >= 30,
-    streak_100:  streak >= 100,
-    perfect_day: perfectDayFound,
-    centurion:   totalDone >= 100,
-    five_habits: realHabits.length >= 5,
-    no_miss:     hh.length > 0 && !Object.values(todayLog).includes('failed') && hh.some(h=>todayLog[h.id]==='done'),
-  };
-
-  let queue = [];
-  ACHIEVEMENTS.forEach(a => {
-    if(!earned[a.id] && conditions[a.id]) {
-      earned[a.id] = Date.now();
-      queue.push(a);
-    }
-  });
-  if(queue.length) {
-    saveAch(earned);
-    let i = 0;
-    function showNext() {
-      if(i >= queue.length) return;
-      showAchBanner(queue[i++]);
-      setTimeout(showNext, 4200);
-    }
-    showNext();
-  }
-}
-
-function showAchBanner(ach) {
-  const b = document.getElementById('ach-banner');
-  if(!b) return;
-  document.getElementById('ach-icon').textContent = ach.icon;
-  document.getElementById('ach-name').textContent = ach.name;
-  document.getElementById('ach-desc').textContent = ach.desc;
-  b.classList.add('show');
-  setTimeout(() => b.classList.remove('show'), 3500);
-}
-
 function flameData(days){
   const t=Math.min(days,365)/365;
   const e=1-(1-t)*(1-t);
@@ -674,7 +592,7 @@ function qPreview(el){if(QUOTES.length<=1)return;const q2=getTomorrowQuote();con
 function markH(id,status,btnEl){
   if(isPlaceholder)return;
   const t=getDate();if(!logs[t])logs[t]={};
-  const prev=logs[t][id];logs[t][id]=prev===status?null:status;saveL();checkAchievements();
+  const prev=logs[t][id];logs[t][id]=prev===status?null:status;saveL();
   if(btnEl){btnEl.classList.add(status==='done'?'stamp-done':'stamp-fail');setTimeout(()=>btnEl.classList.remove('stamp-done','stamp-fail'),320);addRipple(btnEl);}
   if(logs[t][id]==='done')showToast('Discipline marked');
   else if(logs[t][id]==='failed')showToast('Logged — face it');
@@ -715,7 +633,7 @@ function patchHabitCard(id,status){
   if(btns[1]){btns[1].className='hbtn'+(status==='failed'?' fai':'');btns[1].querySelector('svg').setAttribute('stroke',status==='failed'?'var(--blood)':'var(--ctd)');}
   if(status==='failed'){card.classList.add('crack-anim');card.addEventListener('animationend',()=>card.classList.remove('crack-anim'),{once:true});}
 }
-function addH(){const v=document.getElementById('fi')?.value?.trim();if(!v)return;habits.push({id:Date.now().toString(),name:v,cat:selCat,created:getDate()});isPlaceholder=false;saveH();checkAchievements();showToast('Discipline forged');render();setTimeout(()=>{const e=document.getElementById('fi');if(e){e.value='';e.focus();}},60);}
+function addH(){const v=document.getElementById('fi')?.value?.trim();if(!v)return;habits.push({id:Date.now().toString(),name:v,cat:selCat,created:getDate()});isPlaceholder=false;saveH();showToast('Discipline forged');render();setTimeout(()=>{const e=document.getElementById('fi');if(e){e.value='';e.focus();}},60);}
 function delH(id){habits=habits.filter(h=>h.id!==id);isPlaceholder=habits.length===0;saveH();showToast('Removed');render();}
 function selCatFn(id){selCat=id;document.querySelectorAll('.catpill').forEach(p=>p.classList.toggle('sel',p.dataset.c===id));}
 function getCatName(id){return cats.find(c=>c.id===id)?.name||id;}
@@ -889,8 +807,8 @@ function renderReport() {
       <button class="rpt-icon-btn" onclick="rptSheet('settings')">
         <span class="rpt-icon">⚙️</span><span class="rpt-icon-lbl">Settings</span>
       </button>
-      <button class="rpt-icon-btn" onclick="rptSheet('achievements')">
-        <span class="rpt-icon">🏆</span><span class="rpt-icon-lbl">Achievements</span>
+      <button class="rpt-icon-btn" onclick="exportData()">
+        <span class="rpt-icon">📤</span><span class="rpt-icon-lbl">Export</span>
       </button>
       <button class="rpt-icon-btn" onclick="rptSheet('about')">
         <span class="rpt-icon">◆</span><span class="rpt-icon-lbl">About</span>
@@ -910,80 +828,21 @@ function rptSheet(type) {
   const content = document.getElementById('rpt-sheet-content');
   const backdrop = document.getElementById('rpt-sheet-backdrop');
   const sheets = {
-    profile: () => {
-      const earned = loadAch();
-      const unlockedCount = Object.keys(earned).length;
-      const streak = calcStreak();
-      const tier = getTier(streak);
-      const name = localStorage.getItem('gc1:profile.name') || 'Warrior';
-      return `<div class="sheet-header"><span class="sheet-title">Profile</span></div>
-    <div style="padding:20px 18px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;">
-      <div style="width:64px;height:64px;border-radius:50%;background:var(--heat);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:28px;color:#111;font-weight:700;box-shadow:0 0 24px var(--heat);">${name[0].toUpperCase()}</div>
-      <input id="profile-name-input" value="${name}" maxlength="20"
-        style="background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);text-align:center;font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--cthi);letter-spacing:2px;width:180px;padding:4px 0;outline:none;"
-        onchange="localStorage.setItem('gc1:profile.name',this.value.trim()||'Warrior');render();">
-      <div style="font-size:7px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;font-family:'Josefin Sans',sans-serif;">${tier.name}</div>
-    </div>
-    <div style="padding:0 16px 20px;display:flex;flex-direction:column;gap:1px;">
-      <div style="font-size:7px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ctdd);padding:10px 4px 6px;font-family:'Josefin Sans',sans-serif;">Stats</div>
-      ${[['🔥','Current Streak',streak+' day'+(streak!==1?'s':'')],['🏆','Achievements',unlockedCount+' / '+ACHIEVEMENTS.length],['⚡','Disciplines',effH().length+' active']].map(([icon,label,val])=>`<div style="display:flex;align-items:center;gap:12px;padding:13px 12px;background:rgba(255,255,255,.03);border-radius:10px;margin-bottom:1px;"><span style="font-size:16px;">${icon}</span><span style="flex:1;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ctd);font-family:'Josefin Sans',sans-serif;">${label}</span><span style="font-size:10px;letter-spacing:1px;color:var(--cthi);font-family:'Josefin Sans',sans-serif;">${val}</span></div>`).join('')}
-    </div>`;
-    },
-    settings: () => `<div class="sheet-header"><span class="sheet-title">Settings</span></div>
-  <div style="padding:0 16px 20px;display:flex;flex-direction:column;gap:16px;">
-    <div>
-      <div style="font-size:7px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ctdd);padding:10px 4px 6px;font-family:'Josefin Sans',sans-serif;">Data</div>
-      <div style="background:rgba(255,255,255,.03);border-radius:12px;overflow:hidden;">
-        <button onclick="if(confirm('Reset today\\'s log?')){const t=getDate();delete logs[t];saveL();closeRptSheet();render();}" style="width:100%;display:flex;align-items:center;gap:12px;padding:14px 14px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;">
-          <span style="font-size:16px;">🔄</span>
-          <span style="flex:1;text-align:left;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cthi);font-family:'Josefin Sans',sans-serif;">Reset Today's Log</span>
-          <span style="color:var(--ctdd);font-size:12px;">›</span>
-        </button>
-        <button onclick="exportData()" style="width:100%;display:flex;align-items:center;gap:12px;padding:14px 14px;background:none;border:none;cursor:pointer;">
-          <span style="font-size:16px;">↓</span>
-          <span style="flex:1;text-align:left;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cthi);font-family:'Josefin Sans',sans-serif;">Export Record</span>
-          <span style="color:var(--ctdd);font-size:12px;">›</span>
-        </button>
-      </div>
-    </div>
-    <div>
-      <div style="font-size:7px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ctdd);padding:2px 4px 6px;font-family:'Josefin Sans',sans-serif;">Danger Zone</div>
-      <div style="background:rgba(239,68,68,.06);border-radius:12px;overflow:hidden;border:1px solid rgba(239,68,68,.15);">
-        <button onclick="if(confirm('Clear all data? This cannot be undone.')){localStorage.clear();location.reload();}" style="width:100%;display:flex;align-items:center;gap:12px;padding:14px 14px;background:none;border:none;cursor:pointer;">
-          <span style="font-size:16px;">🗑</span>
-          <span style="flex:1;text-align:left;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#f57a7a;font-family:'Josefin Sans',sans-serif;">Clear All Data</span>
-          <span style="color:rgba(239,68,68,.5);font-size:12px;">›</span>
-        </button>
-      </div>
-    </div>
-    <div style="font-size:8px;letter-spacing:1.5px;color:var(--ctdd);text-align:center;padding-top:4px;font-family:'Josefin Sans',sans-serif;">GritCore v0.24</div>
-  </div>`,
-    achievements: () => {
-      const earned = loadAch();
-      const rows = ACHIEVEMENTS.map(a => {
-        const isEarned = !!earned[a.id];
-        const date = isEarned ? new Date(earned[a.id]).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
-        return `<div style="display:flex;align-items:center;gap:12px;padding:13px 12px;background:rgba(255,255,255,.03);border-radius:10px;margin-bottom:1px;opacity:${isEarned?1:.35};">
-      <span style="font-size:20px;${isEarned?'':'filter:grayscale(1)'}">${a.icon}</span>
-      <div style="flex:1;"><div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:${isEarned?'var(--cthi)':'var(--ctd)'};font-family:'Josefin Sans',sans-serif;">${a.name}</div><div style="font-size:8px;color:var(--ctdd);margin-top:2px;">${a.desc}</div></div>
-      ${isEarned?`<span style="font-size:7px;color:var(--gold);letter-spacing:1px;font-family:'Josefin Sans',sans-serif;">${date}</span>`:'<span style="font-size:14px;color:var(--ctdd);">🔒</span>'}
-    </div>`;
-      }).join('');
-      const count = Object.keys(earned).length;
-      return `<div class="sheet-header"><span class="sheet-title">Achievements</span><span style="font-size:8px;letter-spacing:1.5px;color:var(--gold);font-family:'Josefin Sans',sans-serif;">${count}/${ACHIEVEMENTS.length}</span></div>
-    <div style="padding:0 16px 20px;">${rows}</div>`;
-    },
-    about: () => `<div class="sheet-header"><span class="sheet-title">About</span></div>
-  <div style="padding:24px 20px;text-align:center;">
-    <div style="font-size:22px;letter-spacing:3px;color:var(--cthi);font-family:'Cormorant Garamond',serif;font-style:italic;margin-bottom:6px;">GritCore</div>
-    <div style="font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-family:'Josefin Sans',sans-serif;margin-bottom:20px;">Forge your discipline.</div>
-    <div style="font-size:10px;line-height:1.8;color:var(--ctd);font-family:'Josefin Sans',sans-serif;letter-spacing:.5px;max-width:280px;margin:0 auto;">
-      GritCore is a daily discipline tracker built on one belief: small, consistent actions compound into extraordinary character. Show up every day. Mark your disciplines. Watch your streak grow.
-    </div>
-    <div style="margin-top:24px;font-size:8px;color:var(--ctdd);letter-spacing:1.5px;font-family:'Josefin Sans',sans-serif;">Version 0.24</div>
-  </div>`,
+    profile: `<div class="sheet-header"><span class="sheet-title">Profile</span></div><div style="padding:20px;text-align:center;color:var(--ctd);font-size:11px;letter-spacing:1px;">Coming soon</div>`,
+    settings: `<div class="sheet-header"><span class="sheet-title">Settings</span></div>
+      <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:8px;">
+        <button class="dev-btn" onclick="if(confirm('Reset today\\'s log?')){const t=getDate();delete logs[t];saveL();closeRptSheet();render();}">Reset Today's Log</button>
+        <button class="dev-btn dev-btn-danger" onclick="if(confirm('Clear all data?')){localStorage.clear();location.reload();}">Clear All Data</button>
+        <div style="font-size:8px;letter-spacing:1.5px;color:var(--ctdd);text-align:center;padding-top:8px;">GritCore v0.20</div>
+      </div>`,
+    about: `<div class="sheet-header"><span class="sheet-title">About</span></div>
+      <div style="padding:20px;text-align:center;">
+        <div style="font-size:18px;letter-spacing:2px;color:var(--cthi);font-family:'Cormorant Garamond',serif;font-style:italic;margin-bottom:8px;">GritCore</div>
+        <div style="font-size:9px;letter-spacing:2px;color:var(--ctd);">Forge your discipline.</div>
+        <div style="font-size:8px;color:var(--ctdd);margin-top:16px;">Version 0.21</div>
+      </div>`,
   };
-  content.innerHTML = sheets[type]?.() || '';
+  content.innerHTML = sheets[type] || '';
   backdrop.style.display = 'block';
   requestAnimationFrame(() => el.classList.add('open'));
 }
