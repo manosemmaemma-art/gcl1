@@ -270,13 +270,6 @@ body.dark #onboarding-card{background:rgba(7,6,4,.93);border-top-color:rgba(212,
 #onboarding-price{font-family:'Josefin Sans',sans-serif;font-size:8px;letter-spacing:2.5px;color:var(--ctdd);text-transform:uppercase;margin-bottom:24px;text-shadow:var(--ts);}
 #onboarding-btn{width:100%;padding:16px;border:1.5px solid var(--goldbor);border-radius:12px;background:transparent;color:var(--gold);font-family:'Josefin Sans',sans-serif;font-weight:600;font-size:9.5px;letter-spacing:4px;cursor:pointer;text-transform:uppercase;transition:all .25s;text-shadow:var(--ts);}
 #onboarding-btn:active{transform:scale(.97);background:var(--goldb);}
-/* ── Category Manager ── */
-.cat-mgr-list{display:flex;flex-direction:column;gap:4px;}
-.cat-pill-mgr{display:flex;align-items:center;gap:6px;padding:6px 8px;background:rgba(255,255,255,.04);border-radius:8px;}
-.cat-pill-name{flex:1;font-size:10px;letter-spacing:1.2px;color:var(--cthi);text-transform:uppercase;}
-.cat-pill-edit,.cat-pill-del{background:none;border:none;color:var(--ctd);cursor:pointer;font-size:14px;padding:2px 4px;transition:color .15s;}
-.cat-pill-edit:active{color:var(--cthi);}
-.cat-pill-del:active{color:#f57a7a;}
 </style>
 <link rel="stylesheet" href="gritcore.css">
 </head>
@@ -466,7 +459,7 @@ const PH=[{id:'ph1',name:'Cold Shower',cat:'Body'},{id:'ph2',name:'Meditation',c
 const PHL={};
 (()=>{for(let i=0;i<21;i++){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().split('T')[0];PHL[ds]={ph1:Math.random()>.2?'done':'failed',ph2:Math.random()>.3?'done':'failed',ph3:Math.random()>.35?'done':'failed',ph4:Math.random()>.25?'done':'failed'};}})();
 
-let habits=[],logs={},cats=[],view='today',qi=0,selCat='';
+let habits=[],logs={},view='today',qi=0,selCat='Body';
 let isPlaceholder=false,toastTimer=null;
 
 function getDate(){const sim=localStorage.getItem('gc:sim_date');return sim||new Date().toISOString().split('T')[0];}
@@ -487,18 +480,11 @@ function weekPct(){const hh=effH(),ll=effL(),days=last7();let td=0;days.forEach(
 async function load(){
   try{const h=await store.get('gc1:habits');if(h)habits=JSON.parse(h.value);}catch{}
   try{const l=await store.get('gc1:logs');if(l)logs=JSON.parse(l.value);}catch{}
-  try{
-    const catsRaw=await store.get('gc1:cats');
-    if(catsRaw){cats=JSON.parse(catsRaw.value);}
-    else{cats=[{id:'c1',name:'Body'},{id:'c2',name:'Mind'},{id:'c3',name:'Craft'},{id:'c4',name:'Ritual'}];await saveCats();}
-  }catch{cats=[{id:'c1',name:'Body'},{id:'c2',name:'Mind'},{id:'c3',name:'Craft'},{id:'c4',name:'Ritual'}];}
-  selCat=cats[0]?.id||'';
   qi=Math.floor(Math.random()*QUOTES.length);
   isPlaceholder=habits.length===0;
 }
 async function saveH(){try{await store.set('gc1:habits',JSON.stringify(habits));}catch{}}
 async function saveL(){try{await store.set('gc1:logs',JSON.stringify(logs));}catch{}}
-async function saveCats(){try{await store.set('gc1:cats',JSON.stringify(cats));}catch{}}
 function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1800);}
 function addRipple(btn){const r=document.createElement('span');r.className='ripple';const sz=Math.max(btn.offsetWidth,btn.offsetHeight);r.style.width=r.style.height=sz+'px';r.style.left=r.style.top='0';btn.appendChild(r);setTimeout(()=>r.remove(),500);}
 function getDarkPct(h){if(h>=8&&h<17)return 0;if(h>=17&&h<20)return((h-17)/3)*.65;if(h>=20&&h<22)return .65+((h-20)/2)*.35;if(h>=22||h<2)return 1;if(h>=2&&h<5)return .85;if(h>=5&&h<8)return .85*(1-(h-5)/3);return 0;}
@@ -568,7 +554,7 @@ function renderHabits(){
   const t=getDate(),hh=effH(),ll=effL(),tl=ll[t]||{};
   let h='<div class="hlist">';
   hh.forEach((hb,i)=>{const s=tl[hb.id],dis=isPlaceholder?'style="opacity:.55;pointer-events:none"':'';
-    h+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns"><button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
+    h+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${hb.cat}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns"><button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
   });
   h+='</div>';w.innerHTML=h;
 }
@@ -582,17 +568,12 @@ function patchHabitCard(id,status){
 }
 function addH(){const v=document.getElementById('fi')?.value?.trim();if(!v)return;habits.push({id:Date.now().toString(),name:v,cat:selCat,created:getDate()});isPlaceholder=false;saveH();showToast('Discipline forged');render();setTimeout(()=>{const e=document.getElementById('fi');if(e){e.value='';e.focus();}},60);}
 function delH(id){habits=habits.filter(h=>h.id!==id);isPlaceholder=habits.length===0;saveH();showToast('Removed');render();}
-function selCatFn(id){selCat=id;document.querySelectorAll('.catpill').forEach(p=>p.classList.toggle('sel',p.dataset.c===id));}
-function getCatName(id){return cats.find(c=>c.id===id)?.name||id;}
-function catHasHabits(id){return habits.some(h=>h.cat===id);}
-function addCat(){if(cats.length>=8)return;const name=prompt('New category name (max 20 chars):')?.trim().slice(0,20);if(!name)return;cats.push({id:'c'+Date.now(),name});saveCats();render();}
-function renameCat(id){const cat=cats.find(c=>c.id===id);if(!cat)return;const name=prompt('Rename category:',cat.name)?.trim().slice(0,20);if(!name)return;cat.name=name;saveCats();render();}
-function deleteCat(id){if(cats.length<=1)return;if(catHasHabits(id)){showToast('Remove disciplines first');return;}cats=cats.filter(c=>c.id!==id);if(selCat===id)selCat=cats[0]?.id||'';saveCats();render();}
+function selCatFn(c){selCat=c;document.querySelectorAll('.catpill').forEach(p=>p.classList.toggle('sel',p.dataset.c===c));}
 function exportData(){let txt=`GRITCORE — DISCIPLINE RECORD\nExported: ${getDate()}\n${'═'.repeat(40)}\n\nHABITS:\n`;habits.forEach(h=>{txt+=`  • ${h.name} [${h.cat}]\n`;});txt+=`\n30-DAY LOG:\n\n`;last30().forEach(d=>{const l=logs[d]||{};const done=habits.filter(h=>l[h.id]==='done').length;const tot=habits.filter(h=>l[h.id]).length;txt+=`${d}: ${tot?`${done}/${habits.length}`:'-'}\n`;});const blob=new Blob([txt],{type:'text/plain'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='gritcore-log.txt';a.click();showToast('Exported');}
 function bestHabit(hh,ll){if(!hh.length)return null;let best=null,bs=-1;hh.forEach(h=>{let d=0,t=0;last30().forEach(day=>{const l=ll[day]||{};if(l[h.id]==='done'){d++;t++;}else if(l[h.id]==='failed')t++;});if(t>0){const s=d/t;if(s>bs){bs=s;best={name:h.name,pct:Math.round(s*100)};}}});return best;}
 function worstHabit(hh,ll){if(!hh.length)return null;let worst=null,ws=2;hh.forEach(h=>{let d=0,t=0;last30().forEach(day=>{const l=ll[day]||{};if(l[h.id]==='done'){d++;t++;}else if(l[h.id]==='failed')t++;});if(t>2){const s=d/t;if(s<ws){ws=s;worst={name:h.name,pct:Math.round(s*100)};}}});return worst;}
 function bestDayStr(hh,ll){const days=[0,0,0,0,0,0,0],tots=[0,0,0,0,0,0,0];last30().forEach(d=>{const wd=new Date(d+'T12:00').getDay();const p=dayPct(d,hh,ll);if(p!==null){days[wd]+=p;tots[wd]++;}});const avgs=days.map((s,i)=>tots[i]?s/tots[i]:0);const mx=avgs.indexOf(Math.max(...avgs));return tots[mx]?`${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][mx]} (${Math.round(avgs[mx])}%)`:'—';}
-function catScores(hh,ll){const scores={};cats.forEach(c=>scores[c.id]={d:0,t:0});last30().forEach(d=>{const l=ll[d]||{};hh.forEach(h=>{if(!scores[h.cat])return;if(l[h.id]==='done'){scores[h.cat].d++;scores[h.cat].t++;}else if(l[h.id]==='failed')scores[h.cat].t++;});});return cats.filter(c=>scores[c.id]&&scores[c.id].t>0).map(c=>({cat:c.name,pct:Math.round((scores[c.id].d/scores[c.id].t)*100)}));}
+function catScores(hh,ll){const cats={};CATS.forEach(c=>cats[c]={d:0,t:0});last30().forEach(d=>{const l=ll[d]||{};hh.forEach(h=>{if(!cats[h.cat])return;if(l[h.id]==='done'){cats[h.cat].d++;cats[h.cat].t++;}else if(l[h.id]==='failed')cats[h.cat].t++;});});return CATS.filter(c=>cats[c].t>0).map(c=>({cat:c,pct:Math.round((cats[c].d/cats[c].t)*100)}));}
 
 function updateHeader(){
   const d=new Date();
@@ -611,7 +592,7 @@ function renderToday(){
   else{
     hhtml=`<div id="hlist-wrap"><div class="hlist">`;
     hh.forEach((hb,i)=>{const s=tl[hb.id],dis=isPlaceholder?'style="opacity:.55;pointer-events:none"':'';
-      hhtml+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns"><button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
+      hhtml+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${hb.cat}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns"><button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
     });
     hhtml+='</div></div>';
     if(isPlaceholder)hhtml+=`<div class="sample-banner" onclick="swTo('forge')"><span class="sample-banner-icon">⚒</span><div><div class="sample-banner-tag">Sample Data</div><div class="sample-banner-sub">Tap to forge your own →</div></div></div>`;
@@ -687,7 +668,7 @@ function hmTap(cell){
   clearTimeout(tip._t);
   tip._t=setTimeout(()=>tip.classList.remove('show'),2000);
 }
-function catStats(){const hh=effH(),ll=effL();return cats.filter(c=>hh.some(h=>h.cat===c.id)).map(c=>{let done=0,total=0;Object.values(ll).forEach(dayLog=>{hh.filter(h=>h.cat===c.id).forEach(h=>{if(dayLog[h.id]==='done'){done++;total++;}else if(dayLog[h.id]==='failed')total++;});});return{cat:c.name,pct:total>0?Math.round((done/total)*100):0};});}
+function catStats(){return catScores(effH(),effL());}
 function renderReport() {
   const hh = effH(), ll = effL();
   const streak = calcStreak();
@@ -785,7 +766,7 @@ function rptSheet(type) {
       <div style="padding:20px;text-align:center;">
         <div style="font-size:18px;letter-spacing:2px;color:var(--cthi);font-family:'Cormorant Garamond',serif;font-style:italic;margin-bottom:8px;">GritCore</div>
         <div style="font-size:9px;letter-spacing:2px;color:var(--ctd);">Forge your discipline.</div>
-        <div style="font-size:8px;color:var(--ctdd);margin-top:16px;">Version 0.21</div>
+        <div style="font-size:8px;color:var(--ctdd);margin-top:16px;">Version 0.20</div>
       </div>`,
   };
   content.innerHTML = sheets[type] || '';
@@ -803,15 +784,12 @@ function renderForge(){
   const hh=habits;
   let mlist='';
   if(!hh.length)mlist=`<div style="padding:22px;text-align:center;font-family:'Josefin Sans',sans-serif;font-size:8px;letter-spacing:3px;color:var(--ctd);text-transform:uppercase;line-height:2.5;text-shadow:var(--ts)">No disciplines yet.</div>`;
-  else hh.forEach((h,i)=>{mlist+=`<div class="manage-item card" style="animation-delay:${i*.04}s"><div class="mi-meta"><div class="mi-name">${h.name}</div><div class="mi-cat">${getCatName(h.cat)}</div></div><button class="del-btn" onclick="delH('${h.id}')">✕</button></div>`;});
-  const catPills=cats.map(c=>`<div class="cat-pill-mgr"><span class="cat-pill-name">${c.name}</span><button class="cat-pill-edit" onclick="renameCat('${c.id}')">✏</button><button class="cat-pill-del"${cats.length<=1?' disabled style="opacity:.2"':''}${catHasHabits(c.id)?' disabled title="Remove disciplines first" style="opacity:.2"':''} onclick="deleteCat('${c.id}')">×</button></div>`).join('');
-  return `<div class="shdr af s1"><span class="shdr-l">Categories</span><button class="sheet-done-btn" onclick="addCat()"${cats.length>=8?' disabled style="opacity:.3"':''}>+ Add</button></div>
-  <div class="card af s2" style="padding:12px 14px;"><div class="cat-mgr-list">${catPills}</div>${cats.length>=8?'<div class="rpt-empty">Maximum 8 categories</div>':''}</div>
-  <div class="shdr af s3"><span class="shdr-l">Forge a New Discipline</span></div>
-  <div class="forge-form card af s4"><input id="fi" class="forge-input" placeholder="Name your discipline…" onkeydown="if(event.key==='Enter')addH()"><div class="cats">${cats.map(c=>`<button class="catpill${selCat===c.id?' sel':''}" data-c="${c.id}" onclick="selCatFn('${c.id}')">${c.name}</button>`).join('')}</div><button class="forge-btn" onclick="addH()">Forge Discipline</button></div>
-  <div class="shdr af s5 mt6"><span class="shdr-l">Active (${hh.length})</span></div>
+  else hh.forEach((h,i)=>{mlist+=`<div class="manage-item card" style="animation-delay:${i*.04}s"><div class="mi-meta"><div class="mi-name">${h.name}</div><div class="mi-cat">${h.cat}</div></div><button class="del-btn" onclick="delH('${h.id}')">✕</button></div>`;});
+  return `<div class="shdr af"><span class="shdr-l">Forge a New Discipline</span></div>
+  <div class="forge-form card af s1"><input id="fi" class="forge-input" placeholder="Name your discipline…" onkeydown="if(event.key==='Enter')addH()"><div class="cats">${CATS.map(c=>`<button class="catpill ${selCat===c?'sel':''}" data-c="${c}" onclick="selCatFn('${c}')">${c}</button>`).join('')}</div><button class="forge-btn" onclick="addH()">Forge Discipline</button></div>
+  <div class="shdr af s2 mt6"><span class="shdr-l">Active (${hh.length})</span></div>
   <div class="manage-list">${mlist}</div>
-  <button class="export-btn af s6" onclick="exportData()">↓ Export Record</button>
+  <button class="export-btn af s3" onclick="exportData()">↓ Export Record</button>
   <div class="ftr"><div class="ftr-logo">Gritcore</div><div class="ftr-sub">Build the person you intend to be</div></div>`;
 }
 function render(){
