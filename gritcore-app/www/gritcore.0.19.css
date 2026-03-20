@@ -538,24 +538,3 @@ body { color: var(--color-text-hi); }
   min-height: 20px;
 }
 .hm-tooltip.show { opacity: 1; }
-
-/* ── Report Tab ── */
-.rpt-stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.rpt-stat-card { padding: 14px 12px; display: flex; flex-direction: column; }
-.rpt-stat-label { font-size: 7px; letter-spacing: 2px; text-transform: uppercase; color: var(--ctdd); margin-bottom: 8px; }
-.rpt-stat-num { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 30px; line-height: 1; color: var(--cthi); }
-.rpt-stat-sub { font-size: 9px; color: var(--ctd); margin-top: 3px; }
-.rpt-stat-hint { font-size: 8px; letter-spacing: .8px; color: var(--ctdd); margin-top: 6px; }
-.rpt-pbar-wrap { height: 2px; background: rgba(255,255,255,.06); border-radius: 2px; margin: 10px 0 4px; }
-.rpt-pbar-fill { height: 100%; border-radius: 2px; transition: width .6s ease; }
-.rpt-cat-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.rpt-cat-name { font-size: 9px; letter-spacing: 1px; color: var(--ctd); width: 44px; flex-shrink: 0; text-transform: uppercase; }
-.rpt-cat-bar-wrap { flex: 1; height: 3px; background: rgba(255,255,255,.06); border-radius: 2px; }
-.rpt-cat-bar { height: 100%; border-radius: 2px; background: linear-gradient(90deg, rgba(201,168,76,.5), #c9a84c); transition: width .6s ease; }
-.rpt-cat-pct { font-size: 9px; color: var(--ctdd); width: 26px; text-align: right; }
-.rpt-empty { font-size: 9px; color: var(--ctdd); text-align: center; padding: 8px 0; }
-.rpt-icon-row { display: flex; justify-content: space-around; padding: 14px 8px; background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.055); border-radius: 16px; }
-.rpt-icon-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; padding: 4px 8px; opacity: .7; transition: opacity .2s; }
-.rpt-icon-btn:active { opacity: 1; }
-.rpt-icon { font-size: 20px; line-height: 1; }
-.rpt-icon-lbl { font-size: 7px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ctd); font-family: 'Josefin Sans', sans-serif; }
