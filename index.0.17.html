@@ -297,7 +297,7 @@ body.dark #onboarding-card{background:rgba(7,6,4,.93);border-top-color:rgba(212,
   <div class="hdr">
     <div class="hdr-top">
       <div></div>
-      <div class="hdr-logo-wrap"><div class="logo"><span class="logo-d">◆</span><span class="logo-g">GRIT</span><span class="logo-c">CORE</span></div><div class="logo-sub" id="logo-tagline">Forge your discipline.</div></div>
+      <div class="hdr-logo-wrap"><div class="logo"><span class="logo-d">◆</span><span class="logo-g">GRIT</span><span class="logo-c">CORE</span></div><button id="dev-streak-btn-minus" onclick="devPrevStreakDay()">-1</button><button id="dev-streak-btn" onclick="devNextStreakDay()">+1</button><div class="logo-sub" id="logo-tagline">Forge your discipline.</div></div>
       <div class="hdr-right">
         <div id="hdr-date" class="hdr-date"></div>
         <div class="sbadge" id="sbadge"><span class="sfire" id="sfire">🔥</span><span class="stxt" id="stxt">0</span></div>
@@ -823,106 +823,6 @@ load().then(async()=>{
   const _t=getDate();const _tl=logs[_t]||{};updateHeat(habits.filter(h=>_tl[h.id]==='done').length,habits.length);
 });
 setInterval(()=>applyDarkness(),60000);
-/* ── Dev Console ── */
-let devConsoleOpen = false;
-
-function toggleDevConsole() {
-  devConsoleOpen ? closeDevConsole() : openDevConsole();
-}
-function openDevConsole() {
-  devConsoleOpen = true;
-  document.getElementById('dev-console-drawer').classList.add('open');
-  document.getElementById('dev-console-backdrop').classList.add('open');
-}
-function closeDevConsole() {
-  devConsoleOpen = false;
-  document.getElementById('dev-console-drawer').classList.remove('open');
-  document.getElementById('dev-console-backdrop').classList.remove('open');
-}
-function devDayPlus() {
-  const cur = getDate();
-  const d = new Date(cur + 'T12:00'); d.setDate(d.getDate() + 1);
-  localStorage.setItem('gc:sim_date', d.toISOString().split('T')[0]);
-  closeDevConsole(); render(); updateHeader();
-}
-function devDayMinus() {
-  const cur = getDate();
-  const d = new Date(cur + 'T12:00'); d.setDate(d.getDate() - 1);
-  localStorage.setItem('gc:sim_date', d.toISOString().split('T')[0]);
-  closeDevConsole(); render(); updateHeader();
-}
-function devAllDone() {
-  const today = getDate(); const hh = effH();
-  if (!logs[today]) logs[today] = {};
-  hh.forEach(h => { logs[today][h.id] = 'done'; });
-  saveL(); closeDevConsole(); render();
-}
-function devAllFailed() {
-  const today = getDate(); const hh = effH();
-  if (!logs[today]) logs[today] = {};
-  hh.forEach(h => { logs[today][h.id] = 'failed'; });
-  saveL(); closeDevConsole(); render();
-}
-function devSetStreak() {
-  const n = parseInt(prompt('Set streak to how many days?'), 10);
-  if (isNaN(n) || n < 1) return;
-  const hh = effH(); if (!hh.length) { showToast('Add disciplines first'); return; }
-  for (let i = 1; i <= n; i++) {
-    const d = daysBack(i, getDate());
-    if (!logs[d]) logs[d] = {};
-    hh.forEach(h => { logs[d][h.id] = 'done'; });
-  }
-  saveL(); closeDevConsole(); render();
-}
-function devAddTestData() {
-  const testHabits = [
-    {id:'t1',name:'Cold Shower',cat:'Body',created:daysBack(30,getDate())},
-    {id:'t2',name:'Meditation',cat:'Mind',created:daysBack(30,getDate())},
-    {id:'t3',name:'Deep Work',cat:'Craft',created:daysBack(30,getDate())},
-    {id:'t4',name:'Evening Reflection',cat:'Ritual',created:daysBack(30,getDate())},
-    {id:'t5',name:'Exercise',cat:'Body',created:daysBack(20,getDate())},
-  ];
-  habits = testHabits; isPlaceholder = false;
-  const testLogs = {};
-  for (let i = 1; i <= 30; i++) {
-    const d = daysBack(i, getDate());
-    testLogs[d] = {};
-    testHabits.forEach(h => {
-      testLogs[d][h.id] = Math.random() > 0.25 ? 'done' : 'failed';
-    });
-  }
-  logs = testLogs;
-  saveH(); saveL(); closeDevConsole(); render();
-  showToast('Test data added');
-}
-function devTriggerOnboarding() {
-  localStorage.removeItem('gc:onboarded');
-  closeDevConsole();
-  location.reload();
-}
-function devResetAll() {
-  if (!confirm('Reset ALL data? This cannot be undone.')) return;
-  localStorage.clear();
-  location.reload();
-}
 </script>
-
-<!-- Dev Console -->
-<button class="dev-console-btn" id="dev-console-btn" onclick="toggleDevConsole()">⚙</button>
-<div class="sheet-backdrop dev-console-backdrop" id="dev-console-backdrop" onclick="closeDevConsole()"></div>
-<div class="dev-console-drawer" id="dev-console-drawer">
-  <div class="sheet-handle"></div>
-  <div class="dev-console-title">Dev Console</div>
-  <div class="dev-console-grid">
-    <button class="dev-btn" onclick="devDayPlus()">+1 Day</button>
-    <button class="dev-btn" onclick="devDayMinus()">−1 Day</button>
-    <button class="dev-btn" onclick="devAllDone()">All Done ✓</button>
-    <button class="dev-btn" onclick="devAllFailed()">All Failed ✗</button>
-    <button class="dev-btn" onclick="devSetStreak()">Set Streak…</button>
-    <button class="dev-btn" onclick="devAddTestData()">Add Test Data</button>
-    <button class="dev-btn" onclick="devTriggerOnboarding()">Onboarding</button>
-    <button class="dev-btn dev-btn-danger" onclick="devResetAll()">Reset All</button>
-  </div>
-</div>
 </body>
 </html>
