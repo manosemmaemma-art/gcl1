@@ -144,8 +144,6 @@ body.dark{
 .sc-fire{display:block;line-height:1;margin-bottom:1px;transition:font-size .4s,filter .4s;}
 @keyframes tierUp{0%{opacity:0;transform:scale(.7)}25%{opacity:.55}100%{opacity:0;transform:scale(1.8)}}
 .tier-up-flash{position:absolute;inset:-4px;border-radius:12px;background:radial-gradient(circle,rgba(185,28,28,.45) 0%,rgba(185,28,28,.15) 50%,transparent 75%);animation:tierUp .9s ease-out forwards;pointer-events:none;z-index:10;}
-#dev-streak-btn{display:inline-block;margin-top:3px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);color:#c9a84c;font-family:'Josefin Sans',sans-serif;font-size:6px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 7px;border-radius:10px;cursor:pointer;}
-#dev-streak-btn-minus{display:inline-block;margin-top:3px;margin-right:3px;background:rgba(185,28,28,.12);border:1px solid rgba(185,28,28,.3);color:var(--blood,#B91C1C);font-family:'Josefin Sans',sans-serif;font-size:6px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 7px;border-radius:10px;cursor:pointer;}
 .sc-lbl{font-size:7px;letter-spacing:2.5px;color:var(--ctdd);text-transform:uppercase;margin-top:6px;font-family:'Josefin Sans',sans-serif;font-weight:400;text-shadow:var(--ts);}
 .sc-num.upd{animation:scUpd .35s ease;}
 .shdr{padding:20px 18px 10px;}
@@ -455,26 +453,6 @@ function updateStreakPanel(){
     const sc2=document.getElementById('sc2');
     if(sc2)sc2.style.borderColor='';
   }
-}
-function devNextStreakDay(){
-  const t=getDate();
-  const n=calcStreak();
-  if(!logs[t])logs[t]={};
-  habits.forEach(h=>{if(!logs[t][h.id])logs[t][h.id]='done';});
-  const target=daysBack(n,t);
-  if(!logs[target])logs[target]={};
-  habits.forEach(h=>{logs[target][h.id]='done';});
-  saveL();updateStreakBadge();updateStreakPanel();
-  if(typeof render==='function')render();
-}
-function devPrevStreakDay(){
-  const n=calcStreak();
-  if(n<=0)return;
-  const t=getDate();
-  const target=daysBack(n-1,t);
-  if(logs[target])habits.forEach(h=>{delete logs[target][h.id];});
-  saveL();updateStreakBadge();updateStreakPanel();
-  if(typeof render==='function')render();
 }
 function devMode(){document.body.classList.toggle('dev-mode');console.log('Dev mode:',document.body.classList.contains('dev-mode'));}
 
