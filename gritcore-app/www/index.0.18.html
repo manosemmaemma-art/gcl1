@@ -484,7 +484,6 @@ function getHour(){return new Date().getHours();}
 function daysBack(n,ref){const d=ref?new Date(ref+'T12:00'):new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];}
 function last7(){const a=[];for(let i=6;i>=0;i--)a.push(daysBack(i,getDate()));return a;}
 function last30(){const a=[];for(let i=29;i>=0;i--)a.push(daysBack(i,getDate()));return a;}
-function last365(){const a=[];for(let i=364;i>=0;i--)a.push(daysBack(i,getDate()));return a;}
 function effH(){return isPlaceholder?PH:habits;}
 function effL(){return isPlaceholder?PHL:logs;}
 function dayPct(date,hh,ll){const l=ll[date]||{};const done=hh.filter(h=>l[h.id]==='done').length;return hh.length>0?Math.round((done/hh.length)*100):null;}
@@ -628,63 +627,19 @@ function renderToday(){
   <div class="ftr"><div class="ftr-logo">Gritcore</div><div class="ftr-sub">Discipline is freedom</div></div>`;
 }
 function renderRecord(){
-  const hh=effH(),ll=effL();
-  const tp=todayPct(),wp=weekPct(),streak=calcStreak(),tier=getTier(streak);
-  const days=last365();
-  const firstDate=new Date(days[0]+'T12:00');
-  const startPad=(firstDate.getDay()+6)%7;
-  const cells=Array(startPad).fill(null).concat(days);
-  const weeks=[];
-  for(let i=0;i<cells.length;i+=7)weeks.push(cells.slice(i,i+7));
-  const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  let monthLabels='<div></div>';
-  let lastMonth=-1;
-  weeks.forEach(week=>{
-    const firstDay=week.find(d=>d!==null);
-    if(firstDay){const m=new Date(firstDay+'T12:00').getMonth();if(m!==lastMonth){monthLabels+=`<div class="hm-month">${monthNames[m]}</div>`;lastMonth=m;}else monthLabels+='<div></div>';}
-    else monthLabels+='<div></div>';
-  });
-  const dayLabels=['M','','W','','F','',''];
-  let cellsHtml='';
-  for(let row=0;row<7;row++){
-    cellsHtml+=`<div class="hm-day-lbl">${dayLabels[row]}</div>`;
-    weeks.forEach(week=>{
-      const d=week[row];
-      if(!d){cellsHtml+='<div class="hm-cell hm-empty"></div>';return;}
-      const pct=dayPct(d,hh,ll);
-      const cls=pct===null?'hm-empty':pct===100?'hm-full':pct>=80?'hm-hi':pct>=50?'hm-mid':'hm-lo';
-      const isToday=d===getDate()?' hm-today':'';
-      cellsHtml+=`<div class="hm-cell ${cls}${isToday}" data-date="${d}" data-pct="${pct??''}" onclick="hmTap(this)"></div>`;
-    });
-  }
-  const scRow=`<div class="scrow af s1">
-    <div class="sc card ${tp!==null&&tp>=70?'lit':tp!==null&&tp<40?'bad':tp!==null?'ok':''}" id="sc0"><div class="sc-num">${tp!==null?tp+'%':'—'}</div><div class="sc-word">${tp!==null?todayLabel(tp):''}</div><div class="sc-lbl">Today</div></div>
-    <div class="sc card ${wp!==null&&wp>=70?'lit':wp!==null&&wp<40?'bad':wp!==null?'ok':''}" id="sc1"><div class="sc-num">${wp!==null?wp+'%':'—'}</div><div class="sc-word">${wp!==null?weekLabel(wp):''}</div><div class="sc-lbl">7 Day</div></div>
-    <div class="sc card ${streak>=3?'lit':streak>0?'ok':'bad'}" id="sc2"><div class="sc-num">${streak>0?streak:'—'}</div><div class="sc-word">${streak>0?tier.name:'No Streak'}</div><div class="sc-lbl">Streak</div></div>
-  </div>`;
-  const html=`${scRow}
-  <div class="shdr af s1"><span class="shdr-l">52-Week Record</span></div>
-  <div class="card af s2" style="padding:14px 10px 10px;overflow:hidden;">
-    <div class="hm-wrap" id="hm-wrap">
-      <div class="hm-grid" style="grid-template-columns:18px repeat(${weeks.length},1fr);">
-        ${monthLabels}
-        ${cellsHtml}
-      </div>
-    </div>
-    <div class="hm-tooltip" id="hm-tooltip"></div>
-  </div>
+  const t=getDate(),hh=effH(),ll=effL(),days=last7();
+  const dl=days.map(d=>({lbl:new Date(d+'T12:00').toLocaleDateString('en-GB',{weekday:'short'}).slice(0,2).toUpperCase(),date:d}));
+  const cols=`grid-template-columns:70px ${days.map(()=>'1fr').join(' ')}`;
+  let head=`<div class="rgrid-head" style="${cols}"><div></div>${dl.map(d=>`<div class="rday-lbl ${d.date===t?'td':''}">${d.lbl}</div>`).join('')}</div>`;
+  let rows='';
+  if(!hh.length)rows=`<div style="padding:28px;text-align:center;font-family:'Josefin Sans',sans-serif;font-size:8px;letter-spacing:3px;color:var(--ctd);text-transform:uppercase;text-shadow:var(--ts)">No data yet</div>`;
+  else hh.forEach((h,i)=>{const cells=days.map(day=>{const s=ll[day]?.[h.id];return`<div class="rcell ${s||''} ${day===t?'tcol':''}">${s==='done'?'✓':s==='failed'?'✗':''}</div>`;}).join('');rows+=`<div class="rgrid-row af s${Math.min(i+1,6)}" style="${cols}"><div class="rhn">${h.name.substring(0,9)}</div>${cells}</div>`;});
+  const l30=last30(),hm=l30.map(d=>{const p=dayPct(d,hh,ll);const dv=p===null?0:p>=80?4:p>=60?3:p>=30?2:1;return`<div class="hmc ${d===t?'th':''}" d="${dv}" title="${d}"></div>`;}).join('');
+  return `<div class="shdr af"><span class="shdr-l">7-Day Record</span></div>
+  <div class="rec-card card af s1">${head}${rows}</div>
+  <div class="shdr af s2 mt6"><span class="shdr-l">30-Day Heatmap</span></div>
+  <div class="hmcard card af s3"><div class="hm-footer"><span class="hm-lbl">${l30[0]}</span><span class="hm-lbl">Today</span></div><div class="hmgrid">${hm}</div><div class="hm-legend"><span class="hm-lbl">Less</span><span class="hm-swatch" d="1"></span><span class="hm-swatch" d="2"></span><span class="hm-swatch" d="3"></span><span class="hm-swatch" d="4"></span><span class="hm-lbl">More</span></div></div>
   <div class="ftr"><div class="ftr-logo">Gritcore</div><div class="ftr-sub">Every mark is proof</div></div>`;
-  return html;
-}
-function hmTap(cell){
-  const d=cell.dataset.date;
-  const pct=cell.dataset.pct;
-  const tip=document.getElementById('hm-tooltip');
-  if(!tip)return;
-  tip.textContent=pct!==''?`${d} — ${pct}%`:`${d} — no data`;
-  tip.classList.add('show');
-  clearTimeout(tip._t);
-  tip._t=setTimeout(()=>tip.classList.remove('show'),2000);
 }
 function renderReport(){
   const hh=effH(),ll=effL(),wp=weekPct(),streak=calcStreak(),best=bestHabit(hh,ll),worst=worstHabit(hh,ll),bd=bestDayStr(hh,ll),cs=catScores(hh,ll);
@@ -716,7 +671,7 @@ function renderForge(){
 function render(){
   const c=document.getElementById('content');
   if(view==='today')c.innerHTML=renderToday();
-  else if(view==='record'){c.innerHTML=renderRecord();requestAnimationFrame(()=>{const wrap=document.getElementById('hm-wrap');if(wrap)wrap.scrollLeft=wrap.scrollWidth;});}
+  else if(view==='record')c.innerHTML=renderRecord();
   else if(view==='report')c.innerHTML=renderReport();
   else if(view==='forge')c.innerHTML=renderForge();
   updateHeader();
