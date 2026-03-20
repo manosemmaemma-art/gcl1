@@ -461,7 +461,7 @@ const QUOTES=[
   {t:"Make the best use of what is in your power.",a:"Epictetus"},
   {t:"First say to yourself what you would be; then do what you have to do.",a:"Epictetus"},
 ];
-const CATS=['Body','Mind','Craft','Ritual'];
+
 const PH=[{id:'ph1',name:'Cold Shower',cat:'Body'},{id:'ph2',name:'Meditation',cat:'Mind'},{id:'ph3',name:'Deep Work',cat:'Craft'},{id:'ph4',name:'Evening Reflection',cat:'Ritual'}];
 const PHL={};
 (()=>{for(let i=0;i<21;i++){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().split('T')[0];PHL[ds]={ph1:Math.random()>.2?'done':'failed',ph2:Math.random()>.3?'done':'failed',ph3:Math.random()>.35?'done':'failed',ph4:Math.random()>.25?'done':'failed'};}})();
@@ -592,7 +592,7 @@ function exportData(){let txt=`GRITCORE — DISCIPLINE RECORD\nExported: ${getDa
 function bestHabit(hh,ll){if(!hh.length)return null;let best=null,bs=-1;hh.forEach(h=>{let d=0,t=0;last30().forEach(day=>{const l=ll[day]||{};if(l[h.id]==='done'){d++;t++;}else if(l[h.id]==='failed')t++;});if(t>0){const s=d/t;if(s>bs){bs=s;best={name:h.name,pct:Math.round(s*100)};}}});return best;}
 function worstHabit(hh,ll){if(!hh.length)return null;let worst=null,ws=2;hh.forEach(h=>{let d=0,t=0;last30().forEach(day=>{const l=ll[day]||{};if(l[h.id]==='done'){d++;t++;}else if(l[h.id]==='failed')t++;});if(t>2){const s=d/t;if(s<ws){ws=s;worst={name:h.name,pct:Math.round(s*100)};}}});return worst;}
 function bestDayStr(hh,ll){const days=[0,0,0,0,0,0,0],tots=[0,0,0,0,0,0,0];last30().forEach(d=>{const wd=new Date(d+'T12:00').getDay();const p=dayPct(d,hh,ll);if(p!==null){days[wd]+=p;tots[wd]++;}});const avgs=days.map((s,i)=>tots[i]?s/tots[i]:0);const mx=avgs.indexOf(Math.max(...avgs));return tots[mx]?`${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][mx]} (${Math.round(avgs[mx])}%)`:'—';}
-function catScores(hh,ll){const scores={};cats.forEach(c=>scores[c.id]={d:0,t:0});last30().forEach(d=>{const l=ll[d]||{};hh.forEach(h=>{if(!scores[h.cat])return;if(l[h.id]==='done'){scores[h.cat].d++;scores[h.cat].t++;}else if(l[h.id]==='failed')scores[h.cat].t++;});});return cats.filter(c=>scores[c.id]&&scores[c.id].t>0).map(c=>({cat:c.name,pct:Math.round((scores[c.id].d/scores[c.id].t)*100)}));}
+
 
 function updateHeader(){
   const d=new Date();
@@ -837,7 +837,7 @@ function openFabSheet(){
       return `<div class="sheet-item${done?' ticked':failed?' failed':''}" id="si-${h.id}">
         <div class="sheet-item-meta">
           <div class="sheet-item-name">${h.name}</div>
-          <div class="sheet-item-cat">${h.cat}</div>
+          <div class="sheet-item-cat">${getCatName(h.cat)}</div>
         </div>
         <button class="sheet-tick" onclick="sheetTick('${h.id}',this)">
           ${done?'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--heat)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}
@@ -1000,11 +1000,11 @@ function devSetStreak() {
 }
 function devAddTestData() {
   const testHabits = [
-    {id:'t1',name:'Cold Shower',cat:'Body',created:daysBack(30,getDate())},
-    {id:'t2',name:'Meditation',cat:'Mind',created:daysBack(30,getDate())},
-    {id:'t3',name:'Deep Work',cat:'Craft',created:daysBack(30,getDate())},
-    {id:'t4',name:'Evening Reflection',cat:'Ritual',created:daysBack(30,getDate())},
-    {id:'t5',name:'Exercise',cat:'Body',created:daysBack(20,getDate())},
+    {id:'t1',name:'Cold Shower',cat:'c1',created:daysBack(30,getDate())},
+    {id:'t2',name:'Meditation',cat:'c2',created:daysBack(30,getDate())},
+    {id:'t3',name:'Deep Work',cat:'c3',created:daysBack(30,getDate())},
+    {id:'t4',name:'Evening Reflection',cat:'c4',created:daysBack(30,getDate())},
+    {id:'t5',name:'Exercise',cat:'c1',created:daysBack(20,getDate())},
   ];
   habits = testHabits; isPlaceholder = false;
   const testLogs = {};
