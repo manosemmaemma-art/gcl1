@@ -1,0 +1,166 @@
+<h2>GritCore — Complete Design Plan</h2>
+<p class="subtitle">Full app structure + dev console. Review and confirm before we write the spec.</p>
+
+<style>
+  .section { margin-bottom: 28px; }
+  .sec-title { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: #c9a84c; margin-bottom: 12px; border-bottom: 1px solid rgba(201,168,76,0.2); padding-bottom: 6px; }
+  .tab-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .tab-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+  .tab-card.highlight { border-color: rgba(201,168,76,0.35); background: rgba(201,168,76,0.06); }
+  .tab-icon { font-size: 20px; margin-bottom: 6px; }
+  .tab-name { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #f0ece0; font-weight: 700; margin-bottom: 8px; }
+  .tab-items { font-size: 9px; color: #777; line-height: 1.7; text-align: left; }
+  .tab-items li { list-style: none; padding-left: 0; }
+  .tab-items li::before { content: "· "; color: #c9a84c88; }
+  .badge { display: inline-block; font-size: 7px; letter-spacing: 1px; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; margin-left: 4px; vertical-align: middle; }
+  .badge.new { background: rgba(201,168,76,0.2); color: #c9a84c; }
+  .badge.changed { background: rgba(100,180,255,0.15); color: #7ab8f5; }
+  .badge.cut { background: rgba(255,80,80,0.15); color: #f57a7a; text-decoration: line-through; }
+
+  .dev-frame {
+    background: #0a0a0a;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    width: 280px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .dev-screen { padding: 16px 14px 50px; min-height: 220px; background: linear-gradient(180deg, #0d0d0d 0%, #080808 100%); }
+  .dev-screen-label { font-size: 7px; letter-spacing: 2.5px; text-transform: uppercase; color: #555; margin-bottom: 12px; }
+  .dev-content-placeholder { background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.07); border-radius: 10px; height: 100px; display: flex; align-items: center; justify-content: center; color: #444; font-size: 9px; letter-spacing: 1px; }
+  .dev-corner-btn {
+    position: absolute; bottom: 56px; right: 10px;
+    width: 22px; height: 22px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; cursor: pointer; color: #666;
+  }
+  .dev-nav { display: flex; justify-content: space-around; padding: 8px 0 4px; border-top: 1px solid rgba(255,255,255,0.06); }
+  .dev-nav span { font-size: 7px; letter-spacing: 1px; text-transform: uppercase; color: #555; }
+  .dev-drawer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: #111;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px 16px 0 0;
+    padding: 10px 12px 14px;
+  }
+  .drawer-handle { width: 28px; height: 2px; background: rgba(255,255,255,0.15); border-radius: 2px; margin: 0 auto 10px; }
+  .drawer-title { font-size: 7px; letter-spacing: 2.5px; text-transform: uppercase; color: #c9a84c; margin-bottom: 8px; }
+  .dev-btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+  .dev-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 7px;
+    padding: 6px 8px;
+    font-size: 8px;
+    letter-spacing: .8px;
+    color: #aaa;
+    text-align: center;
+  }
+  .dev-btn.danger { border-color: rgba(255,80,80,0.2); color: #f57a7a88; }
+
+  .feature-list { list-style: none; padding: 0; }
+  .feature-list li { font-size: 11px; color: #999; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; gap: 8px; }
+  .feature-list li::before { content: "→"; color: #c9a84c; font-size: 10px; flex-shrink: 0; }
+</style>
+
+<!-- SCREENS -->
+<div class="section">
+  <div class="sec-title">All Screens</div>
+  <div class="tab-grid">
+    <div class="tab-card">
+      <div class="tab-icon">☀️</div>
+      <div class="tab-name">Today</div>
+      <ul class="tab-items">
+        <li>Score cards</li>
+        <li>Streak badge</li>
+        <li>Discipline list</li>
+        <li>Quote card <span class="badge changed">upgraded</span></li>
+        <li>FAB sheet</li>
+      </ul>
+    </div>
+    <div class="tab-card highlight">
+      <div class="tab-icon">📅</div>
+      <div class="tab-name">Record</div>
+      <ul class="tab-items">
+        <li>GitHub heatmap <span class="badge new">new</span></li>
+        <li>52-week grid</li>
+        <li>Color by %</li>
+        <li>Tap for details</li>
+      </ul>
+    </div>
+    <div class="tab-card highlight">
+      <div class="tab-icon">📊</div>
+      <div class="tab-name">Report</div>
+      <ul class="tab-items">
+        <li>Next Milestone <span class="badge new">new</span></li>
+        <li>Lifetime Stats <span class="badge new">new</span></li>
+        <li>Category bars <span class="badge changed">auto%</span></li>
+        <li>Icons row <span class="badge new">new</span></li>
+        <li>Focus timer <span class="badge cut">cut</span></li>
+      </ul>
+    </div>
+    <div class="tab-card highlight">
+      <div class="tab-icon">⚒️</div>
+      <div class="tab-name">Forge</div>
+      <ul class="tab-items">
+        <li>Add discipline</li>
+        <li>Custom cats <span class="badge new">new</span></li>
+        <li>Edit/delete cats</li>
+        <li>Max 8 cats</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- DEV CONSOLE -->
+<div class="section">
+  <div class="sec-title">Dev Console — Bottom Drawer</div>
+  <div class="dev-frame">
+    <div class="dev-screen">
+      <div class="dev-screen-label">Any screen — corner icon always visible</div>
+      <div class="dev-content-placeholder">App content here</div>
+      <div class="dev-corner-btn">⚙</div>
+    </div>
+    <div class="dev-nav">
+      <span>Today</span><span>Record</span><span>Report</span><span>Forge</span>
+    </div>
+    <div class="dev-drawer">
+      <div class="drawer-handle"></div>
+      <div class="drawer-title">Dev Console</div>
+      <div class="dev-btn-grid">
+        <div class="dev-btn">+1 Day →</div>
+        <div class="dev-btn">← -1 Day</div>
+        <div class="dev-btn">All Done ✓</div>
+        <div class="dev-btn">All Failed ✗</div>
+        <div class="dev-btn">Set Streak…</div>
+        <div class="dev-btn">Add Test Data</div>
+        <div class="dev-btn">Onboarding</div>
+        <div class="dev-btn danger">Reset All</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BUILD ORDER -->
+<div class="section">
+  <div class="sec-title">Build Order (feature-by-feature)</div>
+  <ul class="feature-list">
+    <li>Step 1 — Strip paywall/RevenueCat, no external deps</li>
+    <li>Step 2 — Dev console (bottom drawer, corner icon)</li>
+    <li>Step 3 — Heatmap upgrade (Record tab)</li>
+    <li>Step 4 — Report redesign (stats + icon row)</li>
+    <li>Step 5 — Custom categories (Forge tab, max 8, auto %)</li>
+    <li>Step 6 — Quote card (visual upgrade + daily auto-rotate)</li>
+    <li>Step 7 — Final CSS polish sweep (transitions, spacing, consistency)</li>
+  </ul>
+</div>

@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm ls:*)",
+      "Bash(npx --version)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(find /c/Users/emman/Desktop/clkaude -type f -name *.json -o -name *.md -o -name *.toml -o -name *.yaml)",
+      "Bash(npm --version)",
+      "Bash(\"/c/Users/emman/AppData/Roaming/npm/node.exe\" --version)",
+      "Bash(\"/c/Users/emman/AppData/Roaming/npm/npm.cmd\" --version)",
+      "Bash(powershell.exe -Command \"Get-ChildItem ''C:\\\\Program Files\\\\nodejs'' -ErrorAction SilentlyContinue | Select-Object Name; Get-ChildItem ''C:\\\\Users\\\\emman\\\\AppData\\\\Local\\\\Programs\\\\nodejs'' -ErrorAction SilentlyContinue | Select-Object Name; Get-ChildItem ''C:\\\\Users\\\\emman\\\\.nvm'' -ErrorAction SilentlyContinue | Select-Object Name\")",
+      "Bash(powershell.exe -Command \"& ''C:\\\\Program Files\\\\nodejs\\\\node.exe'' --version\")",
+      "Bash(powershell.exe -Command \"& ''C:\\\\Program Files\\\\nodejs\\\\npm.cmd'' --version\")",
+      "mcp__plugin_context-mode_context-mode__ctx_batch_execute",
+      "Bash(bash \"C:/Users/emman/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/skills/brainstorming/scripts/start-server.sh\" --project-dir \"C:/Users/emman/Desktop/gritcore/clkaude\")"
+    ]
+  }
+}

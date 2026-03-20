@@ -1,0 +1,24 @@
+{
+  "appId": "com.gritcore.app",
+  "appName": "Gritcore",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0,
+      "backgroundColor": "#f0ece5",
+      "iosSpinnerStyle": "small",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "DEFAULT",
+      "backgroundColor": "#00000000"
+    }
+  },
+  "ios": {
+    "contentInset": "always",
+    "backgroundColor": "#f0ece5"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "gritcore",
+  "version": "1.0.0",
+  "description": "Forge your discipline.",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'No build step — static files in www/'",
+    "sync": "npx cap sync",
+    "open:ios": "npx cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
+    "@capacitor/status-bar": "^6.0.0",
+    "@capacitor/splash-screen": "^6.0.0",
+    "@revenuecat/purchases-capacitor": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.0.0"
+  }
+}

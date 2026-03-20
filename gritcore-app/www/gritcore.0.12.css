@@ -1,0 +1,127 @@
+/* ── GritCore Visual Overhaul v0.11 ── */
+
+:root {
+  --heat: rgb(232, 232, 232); /* default: silver, updated by JS */
+}
+
+/* ── FIX 1: Marble background with blur + dark ── */
+/* Marble as a blurred fixed layer behind everything */
+html, body {
+  height: 100%;
+  overflow: hidden; /* prevents page scroll — only .content scrolls */
+}
+
+/* App shell fills full viewport */
+#app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Scrollable content area — nav always stays fixed above */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 16px));
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  transform: scale(1.08); /* scale beyond edges to hide blur artifacts */
+  background: url('img/marble.jpg') center center / cover no-repeat;
+  filter: blur(5px) brightness(0.35);
+  z-index: -1;
+}
+
+/* Remove old direct background */
+body, #app {
+  background: none !important;
+  min-height: 100vh;
+}
+
+/* Additional dark veil for readability */
+#app::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* All content sits above overlays */
+.content, .bnav, .toast, #onboarding, .hdr, .fab {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── FIX 2: Score boxes — more visible ── */
+.sc.card {
+  background: rgba(255, 255, 255, 0.13) !important;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.sc-num {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.sc-lbl {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+/* ── Frosted glass cards ── */
+.card {
+  background: rgba(255, 255, 255, 0.08) !important;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 16px !important;
+}
+
+/* ── Text ── */
+body { color: #fff; }
+.muted { color: rgba(255, 255, 255, 0.6); }
+
+/* ── Heat accents (fix 3 — visible on dark bg) ── */
+.fab,
+.bni.on .bni-dot,
+#sbadge {
+  background: var(--heat) !important;
+  color: #111 !important;
+}
+
+/* ── Bottom nav — frosted glass ── */
+.bnav {
+  background: rgba(6, 5, 4, 0.7) !important;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ── FAB ── */
+.fab {
+  position: fixed;
+  bottom: calc(60px + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 16px var(--heat);
+  z-index: 10;
+  transition: box-shadow 0.4s ease, background 0.4s ease;
+}
+

@@ -1,0 +1,318 @@
+/* ── GritCore Visual Overhaul v0.11 ── */
+
+:root {
+  --heat: rgb(232, 232, 232); /* default: silver, updated by JS */
+}
+
+/* ── FIX 1: Marble background with blur + dark ── */
+/* Marble as a blurred fixed layer behind everything */
+html, body {
+  height: 100%;
+  overflow: hidden; /* prevents page scroll — only .content scrolls */
+}
+
+/* App shell fills full viewport */
+#app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Scrollable content area — nav always stays fixed above */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 16px));
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  transform: scale(1.08); /* scale beyond edges to hide blur artifacts */
+  background: url('img/marble.jpg') center center / cover no-repeat;
+  filter: blur(5px) brightness(0.35);
+  z-index: -1;
+}
+
+/* Remove old direct background */
+body, #app {
+  background: none !important;
+  min-height: 100vh;
+}
+
+/* Additional dark veil for readability */
+#app::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* All content sits above overlays */
+.content, .bnav, .toast, #onboarding, .hdr, .fab {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── FIX 2: Score boxes — more visible ── */
+.sc.card {
+  background: rgba(255, 255, 255, 0.13) !important;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.sc-num {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.sc-lbl {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+/* ── Frosted glass cards ── */
+.card {
+  background: rgba(255, 255, 255, 0.08) !important;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 16px !important;
+}
+
+/* ── Text ── */
+body { color: #fff; }
+.muted { color: rgba(255, 255, 255, 0.6); }
+
+/* ── Heat accents (fix 3 — visible on dark bg) ── */
+.fab,
+.bni.on .bni-dot,
+#sbadge {
+  background: var(--heat) !important;
+  color: #111 !important;
+}
+
+/* ── Bottom nav — frosted glass ── */
+.bnav {
+  background: rgba(6, 5, 4, 0.7) !important;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ── FAB ── */
+.fab {
+  position: fixed;
+  bottom: calc(60px + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 16px var(--heat);
+  z-index: 10;
+  transition: box-shadow 0.4s ease, background 0.4s ease;
+}
+
+/* ── FAB Bottom Sheet ── */
+
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  z-index: 20;
+  pointer-events: none;
+  transition: background 0.3s ease;
+}
+.sheet-backdrop.open {
+  background: rgba(0, 0, 0, 0.65);
+  pointer-events: all;
+}
+
+.fab-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  width: 100%;
+  max-width: 430px;
+  z-index: 21;
+  background: rgba(18, 14, 10, 0.78);
+  -webkit-backdrop-filter: blur(28px);
+  backdrop-filter: blur(28px);
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 22px 22px 0 0;
+  max-height: 72vh;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.36s cubic-bezier(0.32, 0.72, 0, 1);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+}
+.fab-sheet.open { transform: translateX(-50%) translateY(0); }
+
+.sheet-handle {
+  width: 32px;
+  height: 2px;
+  background: var(--heat);
+  opacity: 0.5;
+  border-radius: 1px;
+  margin: 14px auto 0;
+  flex-shrink: 0;
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+.sheet-title {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 9px;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+.sheet-done-btn {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--heat);
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  padding: 4px 0;
+}
+.sheet-done-btn.visible { opacity: 1; pointer-events: all; }
+
+.sheet-list {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+}
+
+.sheet-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 22px;
+  gap: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: opacity 0.3s ease;
+}
+.sheet-item:last-child { border-bottom: none; }
+.sheet-item.ticked { opacity: 0.38; }
+.sheet-item-meta { flex: 1; }
+.sheet-item-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+.sheet-item.ticked .sheet-item-name {
+  text-decoration: line-through;
+  color: rgba(255, 255, 255, 0.45);
+}
+.sheet-item-cat {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 8.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.28);
+  margin-top: 2px;
+}
+.sheet-tick {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+.sheet-item.ticked .sheet-tick {
+  border-color: var(--heat);
+  background: rgba(212, 160, 23, 0.12);
+}
+.sheet-fail {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+.sheet-item.failed .sheet-fail {
+  border-color: rgba(110, 16, 16, 0.7);
+  background: rgba(110, 16, 16, 0.18);
+}
+/* Sheet button animations — both use same timing for consistency */
+.sheet-tick.stamp-done { animation: stampFail .28s cubic-bezier(.34,1.56,.64,1); }
+.sheet-fail.stamp-fail { animation: stampFail .28s cubic-bezier(.34,1.56,.64,1); }
+.sheet-empty {
+  padding: 32px 22px;
+  text-align: center;
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.25);
+}
+.sheet-add {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.sheet-add:active { opacity: 0.6; }
+.sheet-add-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 28px;
+  padding-bottom: 1px;
+}
+.sheet-add-label {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 9.5px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+}
+

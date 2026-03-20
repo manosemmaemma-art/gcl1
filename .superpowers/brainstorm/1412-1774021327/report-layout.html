@@ -1,0 +1,119 @@
+<h2>Report Tab — New Layout</h2>
+<p class="subtitle">Does this structure feel right? Approve or suggest changes.</p>
+
+<style>
+  .phone-frame {
+    width: 320px;
+    margin: 20px auto;
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: 32px;
+    overflow: hidden;
+    background: #0a0a0a;
+    font-family: 'Josefin Sans', sans-serif;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+  .phone-content { padding: 16px 14px 80px; }
+  .tab-label { font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: #888; margin-bottom: 14px; }
+
+  /* Two-col cards */
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .stat-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 14px 12px;
+  }
+  .stat-card .sc-label { font-size: 7px; letter-spacing: 2px; text-transform: uppercase; color: #666; margin-bottom: 8px; }
+  .stat-card .sc-main { font-size: 22px; font-family: 'Cormorant Garamond', serif; font-weight: 700; color: #c9a84c; line-height: 1; }
+  .stat-card .sc-sub { font-size: 9px; color: #888; margin-top: 4px; }
+  .stat-card .sc-prog { height: 2px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-top: 10px; }
+  .stat-card .sc-prog-fill { height: 100%; width: 68%; background: linear-gradient(90deg, #c9a84c, #e8c96a); border-radius: 2px; }
+
+  /* Category breakdown (kept, smaller) */
+  .section-label { font-size: 7px; letter-spacing: 2.5px; text-transform: uppercase; color: #555; margin: 14px 0 8px; }
+  .cat-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+  .cat-name { font-size: 9px; letter-spacing: 1px; color: #aaa; width: 40px; flex-shrink: 0; }
+  .cat-bar-wrap { flex: 1; height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; }
+  .cat-bar { height: 100%; border-radius: 2px; background: linear-gradient(90deg, #c9a84c88, #c9a84c); }
+  .cat-pct { font-size: 9px; color: #666; width: 26px; text-align: right; }
+
+  /* Settings icon row */
+  .icon-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 20px;
+    padding: 12px 8px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.055);
+    border-radius: 14px;
+  }
+  .icon-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; opacity: 0.6; }
+  .icon-btn:hover { opacity: 1; }
+  .icon-btn .icon-glyph { font-size: 18px; }
+  .icon-btn .icon-lbl { font-size: 7px; letter-spacing: 1.5px; text-transform: uppercase; color: #888; }
+
+  /* Fake nav bar */
+  .fake-nav { display: flex; justify-content: space-around; padding: 10px 0 6px; border-top: 1px solid rgba(255,255,255,0.07); }
+  .nav-item { font-size: 7px; letter-spacing: 1.5px; text-transform: uppercase; color: #555; text-align: center; }
+  .nav-item.active { color: #c9a84c; }
+</style>
+
+<div class="phone-frame">
+  <div class="phone-content">
+    <div class="tab-label">◆ Report</div>
+
+    <!-- B + C side by side -->
+    <div class="stats-row">
+      <!-- B: Next Milestone -->
+      <div class="stat-card">
+        <div class="sc-label">Next Tier</div>
+        <div class="sc-main">12</div>
+        <div class="sc-sub">Iron Grip · 3 to go</div>
+        <div class="sc-prog"><div class="sc-prog-fill"></div></div>
+      </div>
+      <!-- C: Lifetime Stats -->
+      <div class="stat-card">
+        <div class="sc-label">All Time</div>
+        <div class="sc-main">247</div>
+        <div class="sc-sub">18 perfect days</div>
+      </div>
+    </div>
+
+    <!-- Category breakdown (trimmed) -->
+    <div class="section-label">By Category</div>
+    <div class="cat-row"><span class="cat-name">Body</span><div class="cat-bar-wrap"><div class="cat-bar" style="width:82%"></div></div><span class="cat-pct">82%</span></div>
+    <div class="cat-row"><span class="cat-name">Mind</span><div class="cat-bar-wrap"><div class="cat-bar" style="width:61%"></div></div><span class="cat-pct">61%</span></div>
+    <div class="cat-row"><span class="cat-name">Craft</span><div class="cat-bar-wrap"><div class="cat-bar" style="width:74%"></div></div><span class="cat-pct">74%</span></div>
+    <div class="cat-row"><span class="cat-name">Ritual</span><div class="cat-bar-wrap"><div class="cat-bar" style="width:45%"></div></div><span class="cat-pct">45%</span></div>
+
+    <!-- Icon row: settings, profile, export, about -->
+    <div class="icon-row">
+      <div class="icon-btn">
+        <div class="icon-glyph">👤</div>
+        <div class="icon-lbl">Profile</div>
+      </div>
+      <div class="icon-btn">
+        <div class="icon-glyph">⚙️</div>
+        <div class="icon-lbl">Settings</div>
+      </div>
+      <div class="icon-btn">
+        <div class="icon-glyph">📤</div>
+        <div class="icon-lbl">Export</div>
+      </div>
+      <div class="icon-btn">
+        <div class="icon-glyph">◆</div>
+        <div class="icon-lbl">About</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fake-nav">
+    <div class="nav-item">Today</div>
+    <div class="nav-item">Record</div>
+    <div class="nav-item active">Report</div>
+    <div class="nav-item">Forge</div>
+  </div>
+</div>
+
+<p class="subtitle" style="text-align:center;margin-top:16px;font-size:11px;">This is a wireframe — final styling will match the marble/glass GritCore aesthetic</p>
