@@ -360,8 +360,6 @@ body.dark #onboarding-card{background:rgba(7,6,4,.93);border-top-color:rgba(212,
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="config.js"></script>
-<script src="paywall.js"></script>
 <script>
 /* STORAGE — localStorage */
 const store={
@@ -654,10 +652,7 @@ function renderToday(){
     hhtml+='</div></div>';
     if(isPlaceholder)hhtml+=`<div class="sample-banner" onclick="swTo('forge')"><span class="sample-banner-icon">⚒</span><div><div class="sample-banner-tag">Sample Data</div><div class="sample-banner-sub">Tap to forge your own →</div></div></div>`;
   }
-  const trialDaysLeft=paywall.getTrialDaysLeft();
-  const trialBanner=trialDaysLeft>0&&!paywall.isUnlocked()?`<div style="text-align:center;padding-top:12px"><span class="trial-badge">✦ ${trialDaysLeft} day${trialDaysLeft===1?'':'s'} remaining in your trial</span></div>`:'';
   return `
-  ${trialBanner}
   <div id="qcard" class="qcard card af" onclick="nextQ()"><div class="qmark">"</div><div class="qtext">${QUOTES[qi].t}</div><div class="qauth">— ${QUOTES[qi].a}</div><div class="qtap">Tap for new wisdom</div></div>
   <div class="scrow af s1">
     <div class="sc card ${tp!==null&&tp>=70?'lit':tp!==null&&tp<40?'bad':tp!==null?'ok':''}" id="sc0"><div class="sc-num">${tp!==null?tp+'%':'—'}</div><div class="sc-word">${tp!==null?todayLabel(tp):''}</div><div class="sc-lbl">Today</div></div>
@@ -685,22 +680,6 @@ function renderRecord(){
   <div class="ftr"><div class="ftr-logo">Gritcore</div><div class="ftr-sub">Every mark is proof</div></div>`;
 }
 function renderReport(){
-  if(!paywall.isUnlocked()&&paywall.isLocked()){
-    return`<div class="paywall-overlay af">
-      <div class="paywall-title">Unlock Gritcore</div>
-      <div class="paywall-sub">Your analytics await</div>
-      <ul class="paywall-features">
-        <li>Full habit analytics &amp; weekly score</li>
-        <li>30-day performance heatmap</li>
-        <li>Category breakdown by Body, Mind, Craft &amp; Ritual</li>
-        <li>Stoic verdict — truth before comfort</li>
-        <li>Best &amp; worst habit insights</li>
-      </ul>
-      <button class="paywall-cta" onclick="paywall.purchase()">$9.99 — One Time · Unlock Forever</button>
-      <button class="paywall-restore" onclick="paywall.restore()">Restore Purchase</button>
-    </div>
-    <div class="ftr"><div class="ftr-logo">Gritcore</div><div class="ftr-sub">Truth before comfort</div></div>`;
-  }
   const hh=effH(),ll=effL(),wp=weekPct(),streak=calcStreak(),best=bestHabit(hh,ll),worst=worstHabit(hh,ll),bd=bestDayStr(hh,ll),cs=catScores(hh,ll);
   const l7=last7();let td=0,tt=0;l7.forEach(d=>{const l=ll[d]||{};hh.forEach(h=>{if(l[h.id]==='done'){td++;tt++;}else if(l[h.id]==='failed')tt++;});});
   const tier=getTier(streak);
@@ -825,9 +804,7 @@ function showOnboarding(){
   card.innerHTML=`
     <div id="onboarding-wordmark">Gritcore</div>
     <div id="onboarding-tagline">Forge your discipline.</div>
-    <div id="onboarding-trial">7 days free — full access.</div>
-    <div id="onboarding-price">Then $9.99 · Yours forever.</div>
-    <button id="onboarding-btn" onclick="beginApp()">Begin Your Trial</button>
+    <button id="onboarding-btn" onclick="beginApp()">Begin</button>
   `;
   ol.appendChild(card);
   document.body.appendChild(ol);
@@ -836,13 +813,10 @@ function beginApp(){
   const ol=document.getElementById('onboarding');
   if(ol){ol.style.transition='opacity .4s ease';ol.style.opacity='0';setTimeout(()=>ol.remove(),400);}
   store.set('gc:onboarded','1');
-  paywall.initTrial();
-  showToast('7-day trial started');
 }
 
 /* INIT */
 load().then(async()=>{
-  await paywall.init();
   const onboarded=await store.get('gc:onboarded');
   if(!onboarded){showOnboarding();}
   render();
