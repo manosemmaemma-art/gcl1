@@ -239,8 +239,41 @@ body.dark .forge-btn{color:#0c0a06;}
 .export-btn{display:block;margin:9px 18px 0;padding:12px;background:var(--cs2);border:1px solid var(--cbor);border-radius:10px;color:var(--ctd);font-family:'Josefin Sans',sans-serif;font-weight:400;font-size:8.5px;letter-spacing:3px;cursor:pointer;text-transform:uppercase;width:calc(100% - 36px);text-align:center;transition:all .2s;text-shadow:var(--ts);}
 .export-btn:hover{border-color:var(--goldbor);color:var(--gold);}
 .export-btn:active{transform:scale(.98);}
-.toast{position:fixed;bottom:calc(72px + env(safe-area-inset-bottom, 10px));left:50%;transform:translateX(-50%);background:var(--cs);backdrop-filter:blur(16px);border:1px solid var(--cbor);border-radius:20px;padding:8px 18px;font-family:'Josefin Sans',sans-serif;font-weight:600;font-size:8.5px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;box-shadow:var(--card-shadow);text-shadow:var(--ts);}
-.toast.show{opacity:1;}
+.toast{
+  position:fixed;
+  top:-80px;
+  left:12px;
+  right:12px;
+  background:rgba(25,25,25,0.95);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(212,160,23,0.35);
+  border-radius:12px;
+  padding:10px 14px;
+  font-family:'Josefin Sans',sans-serif;
+  font-weight:600;
+  font-size:8.5px;
+  letter-spacing:2px;
+  color:var(--gold);
+  text-transform:uppercase;
+  z-index:300;
+  opacity:0;
+  transition:top 0.25s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s ease;
+  pointer-events:none;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  box-shadow:var(--card-shadow);
+  text-shadow:var(--ts);
+}
+.toast.show{
+  opacity:1;
+  top:calc(var(--hdr-h, 56px) + 8px);
+}
+.toast-icon{font-size:13px;flex-shrink:0;}
+.toast-body{display:flex;flex-direction:column;gap:2px;}
+.toast-msg{font-size:8.5px;letter-spacing:2px;color:var(--gold);}
+.toast-sub{font-size:7px;letter-spacing:1px;color:var(--ctdd);text-transform:uppercase;font-weight:400;}
 .ftr{text-align:center;padding:20px;margin-top:14px;border-top:1px solid var(--cbor);}
 .ftr-logo{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:var(--ctdd);text-transform:uppercase;font-weight:700;text-shadow:var(--ts);}
 .ftr-sub{font-size:8px;color:var(--ctdd);letter-spacing:2.5px;margin-top:3px;font-style:italic;opacity:.7;font-family:'Cormorant Garamond',serif;text-shadow:var(--ts);}
@@ -330,7 +363,13 @@ body.dark #onboarding-card{background:rgba(7,6,4,.93);border-top-color:rgba(212,
     </button>
   </nav>
 </div>
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast">
+  <span class="toast-icon">✦</span>
+  <div class="toast-body">
+    <span class="toast-msg" id="toast-msg"></span>
+    <span class="toast-sub" id="toast-sub"></span>
+  </div>
+</div>
 <div id="ach-banner">
   <div class="ach-banner-icon" id="ach-icon"></div>
   <div class="ach-banner-body">
@@ -633,7 +672,18 @@ async function load(){
 async function saveH(){try{await store.set('gc1:habits',JSON.stringify(habits));}catch{}}
 async function saveL(){try{await store.set('gc1:logs',JSON.stringify(logs));}catch{}}
 async function saveCats(){try{await store.set('gc1:cats',JSON.stringify(cats));}catch{}}
-function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1800);}
+function showToast(msg, sub) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  const hdrH = document.getElementById('hdr')?.offsetHeight || 56;
+  document.documentElement.style.setProperty('--hdr-h', hdrH + 'px');
+  document.getElementById('toast-msg').textContent = msg;
+  const subEl = document.getElementById('toast-sub');
+  if (subEl) { subEl.textContent = sub || ''; subEl.style.display = sub ? '' : 'none'; }
+  t.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+}
 function addRipple(btn){const r=document.createElement('span');r.className='ripple';const sz=Math.max(btn.offsetWidth,btn.offsetHeight);r.style.width=r.style.height=sz+'px';r.style.left=r.style.top='0';btn.appendChild(r);setTimeout(()=>r.remove(),500);}
 function getDarkPct(h){if(h>=8&&h<17)return 0;if(h>=17&&h<20)return((h-17)/3)*.65;if(h>=20&&h<22)return .65+((h-20)/2)*.35;if(h>=22||h<2)return 1;if(h>=2&&h<5)return .85;if(h>=5&&h<8)return .85*(1-(h-5)/3);return 0;}
 function applyDarkness(){const p=getDarkPct(getHour());document.body.classList.toggle('dark',p>=0.5);}
@@ -678,9 +728,11 @@ function markH(id,status,btnEl){
   const t=getDate();if(!logs[t])logs[t]={};
   const prev=logs[t][id];logs[t][id]=prev===status?null:status;saveL();checkAchievements();
   if(btnEl){btnEl.classList.add(status==='done'?'stamp-done':'stamp-fail');setTimeout(()=>btnEl.classList.remove('stamp-done','stamp-fail'),320);addRipple(btnEl);}
-  if(logs[t][id]==='done')showToast('Discipline marked');
-  else if(logs[t][id]==='failed')showToast('Logged — face it');
-  else showToast('Cleared');
+  const done2 = habits.filter(h => logs[t][h.id] === 'done').length;
+  const tot2 = habits.length;
+  if(logs[t][id]==='done') showToast('Discipline marked', tot2 > 0 ? `${done2} of ${tot2} today` : null);
+  else if(logs[t][id]==='failed') showToast('Logged — face it', null);
+  else showToast('Cleared', null);
   patchHabitCard(id,logs[t][id]);renderScores();updateHeader();
   const _tl=logs[t]||{};updateHeat(habits.filter(h=>_tl[h.id]==='done').length,habits.length);
 }
