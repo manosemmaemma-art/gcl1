@@ -757,6 +757,32 @@ function getWeeklyBars() {
   }
   return days;
 }
+function getMonthOverMonth() {
+  const hh = effH(), ll = effL();
+  const now = new Date();
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  function monthStats(year, month) { // month is 1-based
+    const key = `${year}-${String(month).padStart(2,'0')}`;
+    const daysInMonth = new Date(year, month, 0).getDate();
+    let doneDays = 0;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${key}-${String(d).padStart(2,'00')}`;
+      const pct = dayPct(dateStr, hh, ll);
+      if (pct !== null && pct >= 50) doneDays++;
+    }
+    const elapsed = year === now.getFullYear() && month === now.getMonth()+1
+      ? now.getDate() : daysInMonth;
+    const pct = elapsed > 0 ? Math.round((doneDays / elapsed) * 100) : 0;
+    return { name: monthNames[month-1], pct: doneDays > 0 ? pct : null, elapsed, daysInMonth };
+  }
+
+  const curM = now.getMonth() + 1, curY = now.getFullYear();
+  const prevM = curM === 1 ? 12 : curM - 1;
+  const prevY = curM === 1 ? curY - 1 : curY;
+
+  return { current: monthStats(curY, curM), previous: monthStats(prevY, prevM) };
+}
 function todayPct(){return dayPct(getDate(),effH(),effL());}
 function weekPct(){const hh=effH(),ll=effL(),days=last7();let td=0;days.forEach(d=>{const l=ll[d]||{};hh.forEach(h=>{if(l[h.id]==='done')td++;});});return hh.length>0?Math.round((td/(hh.length*7))*100):null;}
 
@@ -1058,6 +1084,22 @@ function renderReport() {
     </div>
   </div>`;
 
+  const mom = getMonthOverMonth();
+  const momHtml = `
+  <div class="shdr af s4" style="margin:12px 18px 0;"><span class="shdr-l">Month Over Month</span></div>
+  <div class="rpt-month-row af s5">
+    <div class="rpt-month-card current">
+      <div class="rpt-month-name">${mom.current.name}</div>
+      <div class="rpt-month-pct">${mom.current.pct !== null ? mom.current.pct + '%' : '—'}</div>
+      <div class="rpt-month-sub">${mom.current.elapsed} days in</div>
+    </div>
+    <div class="rpt-month-card">
+      <div class="rpt-month-name">${mom.previous.name}</div>
+      <div class="rpt-month-pct">${mom.previous.pct !== null ? mom.previous.pct + '%' : '—'}</div>
+      <div class="rpt-month-sub">${mom.previous.daysInMonth} days</div>
+    </div>
+  </div>`;
+
   document.getElementById('content').innerHTML = `
     <div class="shdr af s1"><span class="shdr-l">Report</span></div>
 
@@ -1078,6 +1120,7 @@ function renderReport() {
     </div>
     ${(()=>{const bests=getPersonalBests();return`<div class="shdr af s2" style="margin:12px 18px 0;"><span class="shdr-l">Personal Bests</span></div><div class="rpt-bests-grid af s3"><div class="rpt-best-card"><div class="rpt-best-val">${bests.bestStreak>0?bests.bestStreak:'—'}</div><div class="rpt-best-lbl">Best Streak</div></div><div class="rpt-best-card"><div class="rpt-best-val">${bests.bestMonth!==null?bests.bestMonth+'%':'—'}</div><div class="rpt-best-lbl">Best Month</div></div><div class="rpt-best-card"><div class="rpt-best-val">${bests.bestWeek!==null?bests.bestWeek+'%':'—'}</div><div class="rpt-best-lbl">Best Week</div></div><div class="rpt-best-card"><div class="rpt-best-val">${perfectDays}</div><div class="rpt-best-lbl">Perfect Days</div></div></div>`;})()}
     ${weekHtml}
+    ${momHtml}
 
     <div class="card af s3" style="padding:14px;">
       <div style="font-size:7px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ctdd);margin-bottom:12px;">By Category</div>
