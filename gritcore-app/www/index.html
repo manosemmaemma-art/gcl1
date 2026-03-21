@@ -748,11 +748,11 @@ function getWeeklyBars() {
   const hh = effH(), ll = effL();
   const today = getDate();
   const days = [];
+  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   for (let i = 6; i >= 0; i--) {
     const d = daysBack(i, today);
     const pct = dayPct(d, hh, ll);
     const date = new Date(d + 'T12:00');
-    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     days.push({ date: d, pct, label: dayNames[date.getDay()], isToday: d === today });
   }
   return days;
