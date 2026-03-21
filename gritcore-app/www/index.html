@@ -398,7 +398,8 @@ function updateHeat(completed,total){
   const b=Math.round(232+(23-232)*pct);
   const root=document.documentElement;
   root.style.setProperty('--heat',`rgb(${r},${g},${b})`);
-  root.style.setProperty('--heat-overlay-alpha',(pct*0.16).toFixed(3));
+  const overlayAlpha=(completed===total&&total>0)?0.18:(pct*0.16).toFixed(3);
+  root.style.setProperty('--heat-overlay-alpha',overlayAlpha);
   root.style.setProperty('--heat-color',`rgba(201,168,76,${(0.3+pct*0.7).toFixed(3)})`);
   updateMotivation();
 }
