@@ -979,6 +979,7 @@ function renderRecord(monthOffset){
   if(monthOffset===undefined)monthOffset=0;
   const hh=effH(),ll=effL();
   const now=new Date();
+  now.setDate(1);
   now.setMonth(now.getMonth()+monthOffset);
   const viewYear=now.getFullYear();
   const viewMonth=now.getMonth();
