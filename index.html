@@ -681,6 +681,69 @@ function todayLabel(p){if(p===null)return'—';if(p>=80)return'Iron';if(p>=60)re
 function weekLabel(p){if(p===null)return'—';if(p>=80)return'Forged';if(p>=60)return'Steady';if(p>=40)return'Wavering';return'Broken';}
 function calcStreak(){const hh=effH(),ll=effL();let s=0;const todayP=dayPct(getDate(),hh,ll);const startI=(todayP!==null&&todayP>=50)?0:1;for(let i=startI;i<=400;i++){const p=dayPct(daysBack(i,getDate()),hh,ll);if(p===null||p<50)break;s++;}return s;}
 function calcHabitStreak(habitId){const ll=effL();let s=0;for(let i=1;i<=400;i++){const d=daysBack(i,getDate());if((ll[d]||{})[habitId]!=='done')break;s++;}return s;}
+function getPersonalBests() {
+  const hh = effH(), ll = effL();
+  if (!hh.length) return { bestStreak: null, bestMonth: null, bestWeek: null };
+
+  // Best all-time streak (≥50% completion days chained consecutively)
+  let bestStreak = 0, cur = 0;
+  const allDates = Object.keys(ll).sort();
+  if (allDates.length) {
+    let prev = null;
+    allDates.forEach(d => {
+      const pct = dayPct(d, hh, ll);
+      if (pct !== null && pct >= 50) {
+        if (prev) {
+          const diff = (new Date(d) - new Date(prev)) / 86400000;
+          cur = diff === 1 ? cur + 1 : 1;
+        } else { cur = 1; }
+        if (cur > bestStreak) bestStreak = cur;
+        prev = d;
+      } else { cur = 0; prev = null; }
+    });
+  }
+
+  // Best elapsed full calendar month
+  let bestMonth = null;
+  const monthMap = {};
+  Object.keys(ll).forEach(d => {
+    const key = d.slice(0, 7); // "YYYY-MM"
+    if (!monthMap[key]) monthMap[key] = [];
+    monthMap[key].push(d);
+  });
+  const now = new Date();
+  const curMonthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  Object.entries(monthMap).forEach(([key, dates]) => {
+    if (key === curMonthKey) return; // skip current incomplete month
+    const [y, m] = key.split('-').map(Number);
+    const daysInMonth = new Date(y, m, 0).getDate();
+    const pct = Math.round((dates.filter(d => dayPct(d, hh, ll) >= 50).length / daysInMonth) * 100);
+    if (bestMonth === null || pct > bestMonth) bestMonth = pct;
+  });
+
+  // Best elapsed full Mon-Sun calendar week
+  let bestWeek = null;
+  const weekMap = {};
+  Object.keys(ll).forEach(d => {
+    const date = new Date(d + 'T12:00');
+    const dow = (date.getDay() + 6) % 7; // Mon=0
+    const mon = new Date(date); mon.setDate(date.getDate() - dow);
+    const key = mon.toISOString().slice(0, 10);
+    if (!weekMap[key]) weekMap[key] = [];
+    weekMap[key].push(d);
+  });
+  const todayD = new Date();
+  const todayDow = (todayD.getDay() + 6) % 7;
+  const thisMon = new Date(todayD); thisMon.setDate(todayD.getDate() - todayDow);
+  const thisMonKey = thisMon.toISOString().slice(0, 10);
+  Object.entries(weekMap).forEach(([key, dates]) => {
+    if (key === thisMonKey) return; // skip current incomplete week
+    const pct = Math.round((dates.filter(d => dayPct(d, hh, ll) >= 50).length / 7) * 100);
+    if (bestWeek === null || pct > bestWeek) bestWeek = pct;
+  });
+
+  return { bestStreak, bestMonth, bestWeek };
+}
 function todayPct(){return dayPct(getDate(),effH(),effL());}
 function weekPct(){const hh=effH(),ll=effL(),days=last7();let td=0;days.forEach(d=>{const l=ll[d]||{};hh.forEach(h=>{if(l[h.id]==='done')td++;});});return hh.length>0?Math.round((td/(hh.length*7))*100):null;}
 
@@ -984,6 +1047,7 @@ function renderReport() {
         <div class="rpt-stat-hint" style="margin-top:auto">Best: ${bestName}</div>
       </div>
     </div>
+    ${(()=>{const bests=getPersonalBests();return`<div class="shdr af s2" style="margin:12px 18px 0;"><span class="shdr-l">Personal Bests</span></div><div class="rpt-bests-grid af s3"><div class="rpt-best-card"><div class="rpt-best-val">${bests.bestStreak??'—'}</div><div class="rpt-best-lbl">Best Streak</div></div><div class="rpt-best-card"><div class="rpt-best-val">${bests.bestMonth!==null?bests.bestMonth+'%':'—'}</div><div class="rpt-best-lbl">Best Month</div></div><div class="rpt-best-card"><div class="rpt-best-val">${bests.bestWeek!==null?bests.bestWeek+'%':'—'}</div><div class="rpt-best-lbl">Best Week</div></div><div class="rpt-best-card"><div class="rpt-best-val">${perfectDays}</div><div class="rpt-best-lbl">Perfect Days</div></div></div>`;})()}
 
     <div class="card af s3" style="padding:14px;">
       <div style="font-size:7px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ctdd);margin-bottom:12px;">By Category</div>
