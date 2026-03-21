@@ -160,7 +160,8 @@ body.dark{
 .hcard.done .hcard-name{color:var(--gold);}
 .hcard.failed .hcard-name{color:var(--ctdd);text-decoration:line-through;}
 .hcard-cat{font-size:8px;letter-spacing:2px;color:var(--ctd);margin-top:2px;text-transform:uppercase;font-family:'Josefin Sans',sans-serif;font-weight:300;text-shadow:var(--ts);}
-.hcard-btns{display:flex;gap:5px;}
+.hcard-btns{display:flex;gap:5px;align-items:center;}
+.hcard-streak{font-family:'Josefin Sans',sans-serif;font-size:7.5px;letter-spacing:1px;color:var(--ctdd);text-transform:uppercase;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:2px 7px;white-space:nowrap;text-shadow:var(--ts);}
 .hbtn{width:42px;height:42px;border-radius:9px;border:1px solid var(--cbor);background:var(--cs2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
 .hbtn:active{transform:scale(.82);}
 .hbtn.don{background:var(--goldb);border-color:var(--goldbor);}
@@ -679,6 +680,7 @@ function dayPct(date,hh,ll){const l=ll[date]||{};const done=hh.filter(h=>l[h.id]
 function todayLabel(p){if(p===null)return'—';if(p>=80)return'Iron';if(p>=60)return'Solid';if(p>=40)return'Holding';return'Weak';}
 function weekLabel(p){if(p===null)return'—';if(p>=80)return'Forged';if(p>=60)return'Steady';if(p>=40)return'Wavering';return'Broken';}
 function calcStreak(){const hh=effH(),ll=effL();let s=0;const todayP=dayPct(getDate(),hh,ll);const startI=(todayP!==null&&todayP>=50)?0:1;for(let i=startI;i<=400;i++){const p=dayPct(daysBack(i,getDate()),hh,ll);if(p===null||p<50)break;s++;}return s;}
+function calcHabitStreak(habitId){const ll=effL();let s=0;for(let i=1;i<=400;i++){const d=daysBack(i,getDate());if((ll[d]||{})[habitId]!=='done')break;s++;}return s;}
 function todayPct(){return dayPct(getDate(),effH(),effL());}
 function weekPct(){const hh=effH(),ll=effL(),days=last7();let td=0;days.forEach(d=>{const l=ll[d]||{};hh.forEach(h=>{if(l[h.id]==='done')td++;});});return hh.length>0?Math.round((td/(hh.length*7))*100):null;}
 
@@ -805,7 +807,9 @@ function renderHabits(){
   const t=getDate(),hh=effH(),ll=effL(),tl=ll[t]||{};
   let h='<div class="hlist">';
   hh.forEach((hb,i)=>{const s=tl[hb.id],dis=isPlaceholder?'style="opacity:.55;pointer-events:none"':'';
-    h+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns"><button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
+    const hStreak=isPlaceholder?0:calcHabitStreak(hb.id);
+    const streakBadge=hStreak>=2?`<span class="hcard-streak">${hStreak}d</span>`:'';
+    h+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns">${streakBadge}<button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
   });
   h+='</div>';w.innerHTML=h;
 }
@@ -848,7 +852,9 @@ function renderToday(){
   else{
     hhtml=`<div id="hlist-wrap"><div class="hlist">`;
     hh.forEach((hb,i)=>{const s=tl[hb.id],dis=isPlaceholder?'style="opacity:.55;pointer-events:none"':'';
-      hhtml+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns"><button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
+      const hStreak=isPlaceholder?0:calcHabitStreak(hb.id);
+      const streakBadge=hStreak>=2?`<span class="hcard-streak">${hStreak}d</span>`:'';
+      hhtml+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns">${streakBadge}<button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
     });
     hhtml+='</div></div>';
     if(isPlaceholder)hhtml+=`<div class="sample-banner" onclick="swTo('forge')"><span class="sample-banner-icon">⚒</span><div><div class="sample-banner-tag">Sample Data</div><div class="sample-banner-sub">Tap to forge your own →</div></div></div>`;
