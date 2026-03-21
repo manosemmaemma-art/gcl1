@@ -84,6 +84,7 @@ body.dark{
 .hdr-logo-wrap{text-align:center;}
 .hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;justify-self:end;}
 .hdr-date{font-size:8px;color:var(--ctd);letter-spacing:1px;font-family:'Josefin Sans',sans-serif;font-weight:400;text-shadow:var(--ts);}
+#motivation-line{font-family:'Josefin Sans',sans-serif;font-size:7.5px;letter-spacing:1px;text-transform:uppercase;color:var(--ctdd);text-shadow:var(--ts);margin-top:2px;display:block;}
 .sbadge{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;border:1px solid var(--cbor);background:var(--cs);box-shadow:var(--card-shadow);transition:border-color .4s,background .4s;min-width:60px;justify-content:center;}
 .sbadge.bad{background:var(--bloodb);border-color:var(--bloodbor);}
 .sfire{line-height:1;display:block;transform-origin:bottom center;}
@@ -323,6 +324,7 @@ body.dark #onboarding-card{background:rgba(7,6,4,.93);border-top-color:rgba(212,
       <div class="hdr-logo-wrap"><div class="logo"><span class="logo-d">◆</span><span class="logo-g">GRIT</span><span class="logo-c">CORE</span></div><div class="logo-sub" id="logo-tagline">Forge your discipline.</div></div>
       <div class="hdr-right">
         <div id="hdr-date" class="hdr-date"></div>
+        <span id="motivation-line"></span>
         <div class="sbadge" id="sbadge"><span class="sfire" id="sfire">🔥</span><span class="stxt" id="stxt">0</span></div>
       </div>
     </div>
@@ -398,6 +400,26 @@ function updateHeat(completed,total){
   root.style.setProperty('--heat',`rgb(${r},${g},${b})`);
   root.style.setProperty('--heat-overlay-alpha',(pct*0.16).toFixed(3));
   root.style.setProperty('--heat-color',`rgba(201,168,76,${(0.3+pct*0.7).toFixed(3)})`);
+  updateMotivation();
+}
+function updateMotivation(){
+  const el=document.getElementById('motivation-line');
+  if(!el)return;
+  const hh=effH(),ll=effL();
+  const total=hh.length;
+  if(!total||isPlaceholder){el.textContent='';return;}
+  const t=getDate();
+  const completed=hh.filter(h=>(ll[t]||{})[h.id]==='done').length;
+  const remaining=total-completed;
+  const streak=calcStreak();
+  let msg='';
+  if(completed===total)                          msg='Iron discipline.';
+  else if(completed===0)                         msg='Nothing logged yet. Begin.';
+  else if(remaining===1)                         msg='One left. Finish strong.';
+  else if(remaining<=Math.ceil(total/2))         msg='More than halfway. Push.';
+  else if(streak>=30)                            msg=`${streak} days forged.`;
+  else                                           msg='Stay the course.';
+  el.textContent=msg;
 }
 
 /* STREAK TIERS */
@@ -1219,7 +1241,7 @@ load().then(async()=>{
     if(el)el.textContent=TAGLINES[Math.floor(Math.random()*TAGLINES.length)];
   })();
 
-  const _t=getDate();const _tl=logs[_t]||{};updateHeat(habits.filter(h=>_tl[h.id]==='done').length,habits.length);
+  const _t=getDate();const _tl=logs[_t]||{};updateHeat(habits.filter(h=>_tl[h.id]==='done').length,habits.length);updateMotivation();
 });
 setInterval(()=>applyDarkness(),60000);
 /* ── Dev Console ── */
