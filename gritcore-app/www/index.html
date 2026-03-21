@@ -686,7 +686,21 @@ function showToast(msg, sub) {
   if (toastTimer) clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
 }
-function addRipple(btn){const r=document.createElement('span');r.className='ripple';const sz=Math.max(btn.offsetWidth,btn.offsetHeight);r.style.width=r.style.height=sz+'px';r.style.left=r.style.top='0';btn.appendChild(r);setTimeout(()=>r.remove(),500);}
+function addRipple(btn, e) {
+  const r = document.createElement('span');
+  r.className = 'ripple';
+  const sz = Math.max(btn.offsetWidth, btn.offsetHeight);
+  r.style.width = r.style.height = sz + 'px';
+  if (e) {
+    const rect = btn.getBoundingClientRect();
+    r.style.left = (e.clientX - rect.left - sz / 2) + 'px';
+    r.style.top  = (e.clientY - rect.top  - sz / 2) + 'px';
+  } else {
+    r.style.left = r.style.top = '0';
+  }
+  btn.appendChild(r);
+  setTimeout(() => r.remove(), 500);
+}
 function getDarkPct(h){if(h>=8&&h<17)return 0;if(h>=17&&h<20)return((h-17)/3)*.65;if(h>=20&&h<22)return .65+((h-20)/2)*.35;if(h>=22||h<2)return 1;if(h>=2&&h<5)return .85;if(h>=5&&h<8)return .85*(1-(h-5)/3);return 0;}
 function applyDarkness(){const p=getDarkPct(getHour());document.body.classList.toggle('dark',p>=0.5);}
 function hexToRgb(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`${r},${g},${b}`;}
@@ -734,11 +748,11 @@ function nextQ(){const qc=document.getElementById('qcard');if(qc){qc.classList.a
 function getTodayQuote(){const d=Math.floor(Date.now()/86400000);return QUOTES[d%QUOTES.length];}
 function getTomorrowQuote(){const d=Math.floor(Date.now()/86400000)+1;return QUOTES[d%QUOTES.length];}
 function qPreview(el){if(QUOTES.length<=1)return;const q2=getTomorrowQuote();const txt=el.querySelector('.qtext');const auth=el.querySelector('.qauth');const orig=getTodayQuote();txt.textContent=q2.t;auth.textContent='— '+q2.a;el.style.opacity='0.7';clearTimeout(el._qt);el._qt=setTimeout(()=>{txt.textContent=orig.t;auth.textContent='— '+orig.a;el.style.opacity='';},3000);}
-function markH(id,status,btnEl){
+function markH(id,status,btnEl,evt){
   if(isPlaceholder)return;
   const t=getDate();if(!logs[t])logs[t]={};
   const prev=logs[t][id];logs[t][id]=prev===status?null:status;saveL();checkAchievements();
-  if(btnEl){btnEl.classList.add(status==='done'?'stamp-done':'stamp-fail');setTimeout(()=>btnEl.classList.remove('stamp-done','stamp-fail'),320);addRipple(btnEl);}
+  if(btnEl){btnEl.classList.add(status==='done'?'stamp-done':'stamp-fail');setTimeout(()=>btnEl.classList.remove('stamp-done','stamp-fail'),320);addRipple(btnEl,evt);}
   const done2 = habits.filter(h => logs[t][h.id] === 'done').length;
   const tot2 = habits.length;
   if(logs[t][id]==='done') showToast('Discipline marked', tot2 > 0 ? `${done2} of ${tot2} today` : null);
@@ -768,7 +782,7 @@ function renderHabits(){
   const t=getDate(),hh=effH(),ll=effL(),tl=ll[t]||{};
   let h='<div class="hlist">';
   hh.forEach((hb,i)=>{const s=tl[hb.id],dis=isPlaceholder?'style="opacity:.55;pointer-events:none"':'';
-    h+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns"><button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
+    h+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns"><button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
   });
   h+='</div>';w.innerHTML=h;
 }
@@ -811,7 +825,7 @@ function renderToday(){
   else{
     hhtml=`<div id="hlist-wrap"><div class="hlist">`;
     hh.forEach((hb,i)=>{const s=tl[hb.id],dis=isPlaceholder?'style="opacity:.55;pointer-events:none"':'';
-      hhtml+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns"><button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
+      hhtml+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns"><button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
     });
     hhtml+='</div></div>';
     if(isPlaceholder)hhtml+=`<div class="sample-banner" onclick="swTo('forge')"><span class="sample-banner-icon">⚒</span><div><div class="sample-banner-tag">Sample Data</div><div class="sample-banner-sub">Tap to forge your own →</div></div></div>`;
