@@ -60,3 +60,63 @@ When spawning subagents (Agent/Task tool), the routing block is automatically in
 | `ctx stats` | Call the `ctx_stats` MCP tool and display the full output verbatim |
 | `ctx doctor` | Call the `ctx_doctor` MCP tool, run the returned shell command, display as checklist |
 | `ctx upgrade` | Call the `ctx_upgrade` MCP tool, run the returned shell command, display as checklist |
+
+## Plan Mode Rule
+BEFORE writing any code, ALWAYS enter plan mode via EnterPlanMode.
+No exceptions — even for "small" changes.
+Only skip if the user explicitly says "just do it."
+
+---
+
+## GritCore Project Context
+
+**App:** GritCore — "Forge your discipline." iOS app (Capacitor 6, vanilla JS, no build step)
+**Owner:** First-time developer, no coding experience. Co-create simple, working, quality app.
+**Files:** All work happens in `gritcore-app/www/` — `index.html` (main app), `gritcore.css` (overhaul styles), `paywall.js`, `config.js`, `marble-interpolator.js`
+
+**Design language:**
+- Black marble texture (`img/marble.jpg`), frosted glass cards, dark/premium feel
+- Fonts: Cormorant Garamond (display) + Josefin Sans (labels/UI)
+- Heat system: `--heat` CSS variable, silver → gold as disciplines are completed today
+- FAB `+` button opens a bottom sheet for quick-logging disciplines
+
+**Key APIs (vanilla JS globals):**
+- `habits[]` / `logs{}` — raw storage; always use `effH()` / `effL()` instead
+- `getDate()` — returns today's date string (YYYY-MM-DD)
+- `daysBack(n, fromDate)` — returns date string n days before fromDate
+- `dayPct(dateStr, hh, ll)` — daily completion % (null if no habits)
+- `markH(id, status, btnEl, evt)` — marks a habit done/failed; `evt` passed for ripple coords
+- `sw(view, el)` — switches active tab; resets `recordMonthOffset` when leaving Record tab
+- `updateHeat(completed, total)` — updates `--heat` CSS variable + calls `updateMotivation()`
+- `updateMotivation()` — updates contextual motivation line in header (6 priority states)
+- `showToast(msg, sub)` — top-banner toast drop; `sub` optional (shows "X of Y today")
+- `calcStreak()` — overall app streak (current)
+- `calcHabitStreak(id)` — per-discipline consecutive-done streak (from yesterday back)
+- `getPersonalBests()` — `{bestStreak, bestMonth, bestWeek}` from full log history
+- `getWeeklyBars()` — 7-day bar data array for Report tab
+- `getMonthOverMonth()` — current + previous month stats for Report tab
+- `goRecordMonth(delta)` — navigates Record tab by month; clamps at 0 (no future)
+- `isPlaceholder` — true when no real habits yet (demo mode)
+- `recordMonthOffset` — module-level int (0 = current month, -1 = last month, etc.)
+
+**New CSS classes added in v0.25** (all in `gritcore.css`):
+- `.hcard-streak` — per-discipline streak pill on Today tab cards
+- `#motivation-line` — contextual motivation text in header right column
+- `.toast-body`, `#toast-msg`, `#toast-sub` — top-banner toast structure
+- `.rpt-bests-grid`, `.rpt-best-card`, `.rpt-best-val`, `.rpt-best-lbl` — Personal Bests 2×2
+- `.rpt-week-wrap`, `.rpt-week-bars`, `.rpt-wbar`, `.rpt-wday` — Last 7 Days bar chart
+- `.rpt-month-row`, `.rpt-month-card`, `.rpt-month-pct`, `.rpt-month-sub` — Month Over Month
+- `.rec-month-nav`, `.rec-month-label`, `.rec-nav-btn` — Record tab month nav header
+- `.rec-day-list`, `.rec-day-row`, `.rec-day-date`, `.rec-day-bar`, `.rec-day-pct` — Record day-list
+- `.empty-card`, `.empty-title`, `.empty-sub`, `.empty-cta` — Today tab empty state
+- `.bni.on` — gold pill active state (tab bar, replaces dot indicator)
+- `.tab-fade-in` — tab content 0.2s fade-in on `sw()`
+- `.fab-sheet.open` — spring cubic-bezier(0.34,1.56,0.64,1) on bottom sheet open
+
+**Versioning:** Backup before every change set. v0.24 backups: `index.0.24.html`, `gritcore.0.24.css`. v0.25 backups: `index.0.25.html`, `gritcore.0.25.css`. Next version: 0.26.
+
+**Dev console:** Purged (dormant stub). Will be rebuilt later.
+**marble-interpolator.js:** Preserved untouched for future time-of-day marble (v2 feature).
+
+## Git commit rule
+Before every `git commit`, update `CLAUDE.md` to reflect any new conventions, decisions, or structural changes made in that session.
