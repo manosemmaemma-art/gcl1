@@ -744,6 +744,19 @@ function getPersonalBests() {
 
   return { bestStreak, bestMonth, bestWeek };
 }
+function getWeeklyBars() {
+  const hh = effH(), ll = effL();
+  const today = getDate();
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = daysBack(i, today);
+    const pct = dayPct(d, hh, ll);
+    const date = new Date(d + 'T12:00');
+    const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    days.push({ date: d, pct, label: dayNames[date.getDay()], isToday: d === today });
+  }
+  return days;
+}
 function todayPct(){return dayPct(getDate(),effH(),effL());}
 function weekPct(){const hh=effH(),ll=effL(),days=last7();let td=0;days.forEach(d=>{const l=ll[d]||{};hh.forEach(h=>{if(l[h.id]==='done')td++;});});return hh.length>0?Math.round((td/(hh.length*7))*100):null;}
 
@@ -1029,6 +1042,22 @@ function renderReport() {
         </div>`).join('')
     : '<div class="rpt-empty">Log disciplines to see category stats</div>';
 
+  const weekBars = getWeeklyBars();
+  const weekHtml = `
+  <div class="shdr af s3" style="margin:12px 18px 0;"><span class="shdr-l">Last 7 Days</span></div>
+  <div class="rpt-week-wrap af s4">
+    <div class="rpt-week-bars">
+      ${weekBars.map(d => `
+        <div class="rpt-wbar-col">
+          <div class="rpt-wbar ${d.isToday?'today':''} ${d.pct===null?'empty':''}"
+               style="height:${d.pct !== null ? Math.max(d.pct, 4) : 100}%"></div>
+        </div>`).join('')}
+    </div>
+    <div style="display:flex;gap:4px;">
+      ${weekBars.map(d => `<div class="rpt-wday ${d.isToday?'today':''}" style="flex:1;text-align:center;">${d.label}</div>`).join('')}
+    </div>
+  </div>`;
+
   document.getElementById('content').innerHTML = `
     <div class="shdr af s1"><span class="shdr-l">Report</span></div>
 
@@ -1048,6 +1077,7 @@ function renderReport() {
       </div>
     </div>
     ${(()=>{const bests=getPersonalBests();return`<div class="shdr af s2" style="margin:12px 18px 0;"><span class="shdr-l">Personal Bests</span></div><div class="rpt-bests-grid af s3"><div class="rpt-best-card"><div class="rpt-best-val">${bests.bestStreak>0?bests.bestStreak:'—'}</div><div class="rpt-best-lbl">Best Streak</div></div><div class="rpt-best-card"><div class="rpt-best-val">${bests.bestMonth!==null?bests.bestMonth+'%':'—'}</div><div class="rpt-best-lbl">Best Month</div></div><div class="rpt-best-card"><div class="rpt-best-val">${bests.bestWeek!==null?bests.bestWeek+'%':'—'}</div><div class="rpt-best-lbl">Best Week</div></div><div class="rpt-best-card"><div class="rpt-best-val">${perfectDays}</div><div class="rpt-best-lbl">Perfect Days</div></div></div>`;})()}
+    ${weekHtml}
 
     <div class="card af s3" style="padding:14px;">
       <div style="font-size:7px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ctdd);margin-bottom:12px;">By Category</div>
