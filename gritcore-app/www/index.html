@@ -398,17 +398,17 @@ function saveAch(a) { localStorage.setItem('gc1:ach', JSON.stringify(a)); }
 
 function checkAchievements() {
   const earned = loadAch();
+  if(Object.keys(earned).length >= ACHIEVEMENTS.length) return;
   const hh = effH(), ll = effL();
-  let totalDone = 0, perfectDayFound = false, noMiss = true;
+  let totalDone = 0, perfectDayFound = false;
   const today = getDate(), todayLog = ll[today] || {};
   Object.entries(ll).forEach(([d, dayLog]) => {
     let dd = 0;
     hh.forEach(h => { if(dayLog[h.id]==='done'){ totalDone++; dd++; } });
     if(hh.length && dd === hh.length) perfectDayFound = true;
   });
-  hh.forEach(h => { if(todayLog[h.id]==='failed') noMiss = false; });
   const streak = calcStreak();
-  const realHabits = habits.filter(h => !isPlaceholder);
+  const realHabits = isPlaceholder ? [] : habits;
 
   const conditions = {
     first_log:   totalDone >= 1,
@@ -442,6 +442,7 @@ function checkAchievements() {
   }
 }
 
+let achBannerTimer = null;
 function showAchBanner(ach) {
   const b = document.getElementById('ach-banner');
   if(!b) return;
@@ -449,7 +450,8 @@ function showAchBanner(ach) {
   document.getElementById('ach-name').textContent = ach.name;
   document.getElementById('ach-desc').textContent = ach.desc;
   b.classList.add('show');
-  setTimeout(() => b.classList.remove('show'), 3500);
+  if(achBannerTimer) clearTimeout(achBannerTimer);
+  achBannerTimer = setTimeout(() => { b.classList.remove('show'); achBannerTimer = null; }, 3500);
 }
 
 function flameData(days){
@@ -916,12 +918,13 @@ function rptSheet(type) {
       const streak = calcStreak();
       const tier = getTier(streak);
       const name = localStorage.getItem('gc1:profile.name') || 'Warrior';
+      const safeName = name.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
       return `<div class="sheet-header"><span class="sheet-title">Profile</span></div>
     <div style="padding:20px 18px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;">
       <div style="width:64px;height:64px;border-radius:50%;background:var(--heat);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:28px;color:#111;font-weight:700;box-shadow:0 0 24px var(--heat);">${name[0].toUpperCase()}</div>
-      <input id="profile-name-input" value="${name}" maxlength="20"
+      <input id="profile-name-input" value="${safeName}" maxlength="20"
         style="background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);text-align:center;font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--cthi);letter-spacing:2px;width:180px;padding:4px 0;outline:none;"
-        onchange="localStorage.setItem('gc1:profile.name',this.value.trim()||'Warrior');render();">
+        onchange="localStorage.setItem('gc1:profile.name',this.value.trim()||'Warrior');closeRptSheet();render();">
       <div style="font-size:7px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;font-family:'Josefin Sans',sans-serif;">${tier.name}</div>
     </div>
     <div style="padding:0 16px 20px;display:flex;flex-direction:column;gap:1px;">
