@@ -623,6 +623,49 @@ body { color: var(--color-text-hi); }
   text-transform:uppercase;
 }
 .rpt-wday.today{color:var(--gold);}
+.rpt-month-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:0 18px 8px;
+}
+.rpt-month-card{
+  background:var(--cs);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--cbor);
+  border-radius:14px;
+  box-shadow:var(--card-shadow);
+  padding:12px 12px;
+}
+.rpt-month-card.current{border-color:rgba(212,160,23,0.3);}
+.rpt-month-name{
+  font-family:'Josefin Sans',sans-serif;
+  font-size:7px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--ctdd);
+  text-shadow:var(--ts);
+  margin-bottom:4px;
+}
+.rpt-month-pct{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;
+  font-weight:600;
+  font-style:italic;
+  line-height:1;
+  text-shadow:var(--ts);
+}
+.rpt-month-card.current .rpt-month-pct{color:var(--gold);}
+.rpt-month-card:not(.current) .rpt-month-pct{color:var(--cts);}
+.rpt-month-sub{
+  font-family:'Josefin Sans',sans-serif;
+  font-size:6.5px;
+  letter-spacing:0.5px;
+  color:var(--ctdd);
+  margin-top:4px;
+  text-shadow:var(--ts);
+}
 .rpt-pbar-wrap { height: 2px; background: rgba(255,255,255,.06); border-radius: 2px; margin: 10px 0 4px; }
 .rpt-pbar-fill { height: 100%; border-radius: 2px; transition: width .6s ease; }
 .rpt-cat-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
