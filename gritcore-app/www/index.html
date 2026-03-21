@@ -767,7 +767,7 @@ function getMonthOverMonth() {
     const daysInMonth = new Date(year, month, 0).getDate();
     let doneDays = 0;
     for (let d = 1; d <= daysInMonth; d++) {
-      const dateStr = `${key}-${String(d).padStart(2,'00')}`;
+      const dateStr = `${key}-${String(d).padStart(2,'0')}`;
       const pct = dayPct(dateStr, hh, ll);
       if (pct !== null && pct >= 50) doneDays++;
     }
