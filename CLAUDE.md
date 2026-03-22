@@ -120,3 +120,47 @@ Only skip if the user explicitly says "just do it."
 
 ## Git commit rule
 Before every `git commit`, update `CLAUDE.md` to reflect any new conventions, decisions, or structural changes made in that session.
+
+## UI Development
+
+When making UI/styling changes, always describe what changed visually since the owner cannot see the app in a browser. If changes could break layout, list potential visual side effects.
+
+After making UI changes to HTML/CSS files, list every visual change made so the user can verify via screenshot. Never claim changes look correct without the user confirming visually.
+
+## Safety Rules
+
+Never delete or reset user data during code cleanup. Before removing any file, function, or localStorage references, check if it stores user state (streaks, settings, achievements) and confirm with the user first.
+
+Never do broad code cleanup, refactoring, or file reorganization unless explicitly asked. Preserve all existing user data, dev tools, and features during any edit.
+
+## General Instructions
+
+When implementing multi-step plans, complete each step fully and commit progress before moving to the next. If hitting usage limits is a risk, prioritize finishing current work over starting new tasks.
+
+Use agents (parallel subagents) whenever possible for 2+ independent tasks — do not perform sequential edits when tasks can be parallelized.
+
+---
+
+## v0.26 Session Progress (2026-03-22)
+
+**Completed Tasks:**
+1. **Task 1: Commit the rollback** — Reverted to v0.25 stable state (commit `225d473`)
+2. **Task 2: Token unification** — Unified color tokens to `--ct*` namespace; 17 CSS classes converted
+3. **Task 3: Spacing scale** — Introduced `--sp-xs` (4px), `--sp-sm` (8px), `--sp-md` (12px), `--sp-lg` (16px), `--sp-xl` (24px); 11 properties converted; fixed 3 missed conversions (lines 135, 537, 718)
+   - Fixed `.sp-trow gap: 8px → var(--sp-sm)`
+   - Fixed `.rpt-stat-label margin-bottom: 8px → var(--sp-sm)`
+   - Fixed `.rpt-cat-row gap: 8px + margin-bottom: 8px → var(--sp-sm)` (both)
+   - Amended commit: `dafb876`
+
+**Remaining Tasks (Tasks 4-14):**
+- Task 4: Typography lift (Cormorant Garamond weights, Josefin Sans hierarchy)
+- Task 5: Inline style cleanup (remove all `style=` attributes, convert to CSS classes)
+- Task 6: A11y div→button (replace semantic divs with proper buttons)
+- Task 7: Staggered card entrance (250ms delays, `.hcard` fade-in)
+- Task 8: Progress bar transition (`.rpt-pbar-fill` 0.6s ease transitions)
+- Task 9: Heat veil ambient pulse (semi-transparent gold wash overlay on `.hcard`)
+- Task 10: Perfect Day moment (celebration modal on 100% completion)
+- Task 11: Streak milestone toasts (notification at 7/14/30/100 day streaks)
+- Task 12: Tab bar labels (add icon text labels below `.bni` items)
+- Task 13: Settings icon + sheet (gear icon in header, bottom sheet for prefs)
+- Task 14: Discipline reorder (drag-reorder on Record tab day-list)
