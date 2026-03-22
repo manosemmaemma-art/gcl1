@@ -979,6 +979,7 @@ function renderRecord(monthOffset){
   if(monthOffset===undefined)monthOffset=0;
   const hh=effH(),ll=effL();
   const now=new Date();
+  now.setDate(1);
   now.setMonth(now.getMonth()+monthOffset);
   const viewYear=now.getFullYear();
   const viewMonth=now.getMonth();
@@ -1296,7 +1297,7 @@ function renderForge(){
 function render(){
   const c=document.getElementById('content');
   if(view==='today')c.innerHTML=renderToday();
-  else if(view==='record'){c.innerHTML=renderRecord();requestAnimationFrame(()=>{const wrap=document.getElementById('hm-wrap');if(wrap)wrap.scrollLeft=wrap.scrollWidth;});}
+  else if(view==='record'){c.innerHTML=renderRecord(recordMonthOffset);requestAnimationFrame(()=>{const wrap=document.getElementById('hm-wrap');if(wrap)wrap.scrollLeft=wrap.scrollWidth;});}
   else if(view==='report')renderReport();
   else if(view==='forge')c.innerHTML=renderForge();
   updateHeader();
@@ -1499,9 +1500,14 @@ function devAddTestData() {
   showToast('Test data added');
 }
 function devTriggerOnboarding() {
+  if (!confirm('Re-trigger onboarding? App will reload.')) return;
   localStorage.removeItem('gc:onboarded');
   closeDevConsole();
   location.reload();
+}
+function devResetDate() {
+  localStorage.removeItem('gc:sim_date');
+  closeDevConsole(); render(); updateHeader();
 }
 function devResetAll() {
   if (!confirm('Reset ALL data? This cannot be undone.')) return;
@@ -1524,7 +1530,8 @@ function devResetAll() {
     <button class="dev-btn" onclick="devSetStreak()">Set Streak…</button>
     <button class="dev-btn" onclick="devAddTestData()">Add Test Data</button>
     <button class="dev-btn" onclick="devTriggerOnboarding()">Onboarding</button>
-    <button class="dev-btn dev-btn-danger" onclick="devResetAll()">Reset All</button>
+    <button class="dev-btn" onclick="devResetDate()">Reset Date</button>
+    <button class="dev-btn dev-btn-danger" style="grid-column: span 2;" onclick="devResetAll()">Reset All</button>
   </div>
 </div>
 </body>
