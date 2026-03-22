@@ -282,7 +282,7 @@ body { color: var(--ct); }
 }
 .sheet-done-btn {
   font-family: 'Josefin Sans', sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 2.5px;
   text-transform: uppercase;
   color: var(--heat);
@@ -474,7 +474,7 @@ body.dev-mode .dev-console-btn {
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 8px;
   padding: 9px 8px;
-  font-size: 10px; letter-spacing: .8px;
+  font-size: 11px; letter-spacing: .8px;
   color: #bbb; cursor: pointer;
   font-family: 'Josefin Sans', sans-serif;
   transition: background .15s;
