@@ -431,7 +431,8 @@ body { color: var(--color-text-hi); }
 }
 
 /* ── Dev Console ── */
-.dev-console-btn {
+.dev-console-btn { display: none; }
+body.dev-mode .dev-console-btn {
   position: fixed;
   bottom: calc(64px + env(safe-area-inset-bottom) + 8px);
   right: 10px;
