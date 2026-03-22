@@ -1,29 +1,5 @@
 /* ── GritCore Design System v0.14 ── */
 
-:root {
-  /* Surface */
-  --color-surface:      rgba(10, 8, 6, 1);
-  --color-veil:         rgba(0, 0, 0, 0.30);
-  --color-card:         rgba(255, 255, 255, 0.07);
-  --color-card-border:  rgba(255, 255, 255, 0.06);
-  --color-nav:          rgba(10, 8, 6, 0.65);
-
-  /* Text */
-  --color-text-hi:      rgba(255, 255, 255, 1.00);
-  --color-text-mid:     rgba(255, 255, 255, 0.55);
-  --color-text-lo:      rgba(255, 255, 255, 0.30);
-
-  /* Accents */
-  --color-gold:         rgb(212, 160, 23);
-  --color-silver:       rgb(232, 232, 232);
-  --color-blood:        rgb(160, 20, 20);
-  --color-blood-dim:    rgba(160, 20, 20, 0.18);
-
-  /* Heat — JS-controlled */
-  --heat:               rgb(232, 232, 232); /* silver → gold via updateHeat() */
-  --heat-overlay-alpha: 0;                  /* 0 → 0.16 via updateHeat() */
-}
-
 /* ── FIX 1: Marble background with blur + dark ── */
 /* Marble as a blurred fixed layer behind everything */
 html, body {
@@ -59,7 +35,7 @@ body::before {
 
 /* Remove old direct background */
 body, #app {
-  background: none !important;
+  background: none;
 }
 
 /* Additional dark veil for readability */
@@ -67,7 +43,7 @@ body, #app {
   content: '';
   position: fixed;
   inset: 0;
-  background: var(--color-veil);
+  background: rgba(0,0,0,0.30);
   z-index: 0;
   pointer-events: none;
 }
@@ -80,20 +56,20 @@ body, #app {
 
 /* ── Content glass — 14px blur ── */
 .card {
-  background: var(--color-card) !important;
+  background: var(--cs);
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
-  border: 1px solid var(--color-card-border) !important;
-  border-radius: 16px !important;
+  border: 1px solid var(--cbor);
+  border-radius: 16px;
 }
 
 .sc-num {
-  color: var(--color-text-hi) !important;
+  color: var(--ct);
   font-weight: 600;
 }
 
 .sc-lbl {
-  color: var(--color-text-mid) !important;
+  color: var(--cts);
 }
 
 .sc-word {
@@ -102,7 +78,7 @@ body, #app {
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-text-mid, var(--ctdd));
+  color: var(--cts, var(--ctdd));
   margin-top: 1px;
 }
 
@@ -181,15 +157,15 @@ body, #app {
 }
 
 /* ── Text ── */
-body { color: var(--color-text-hi); }
-.muted { color: var(--color-text-mid); }
+body { color: var(--ct); }
+.muted { color: var(--cts); }
 
 /* ── Heat accents (fix 3 — visible on dark bg) ── */
 .fab,
 .bni.on .bni-dot,
 #sbadge {
-  background: var(--heat) !important;
-  color: #111 !important;
+  background: var(--heat);
+  color: #111;
 }
 
 /* ── Tab-bar item opacity — inactive dims, active pops ── */
@@ -208,17 +184,17 @@ body { color: var(--color-text-hi); }
 .bnav {
   display: flex;
   align-items: stretch;
-  background: var(--color-nav) !important;
+  background: var(--cs);
   -webkit-backdrop-filter: blur(28px);
   backdrop-filter: blur(28px);
-  border-top: 1px solid var(--color-card-border) !important;
+  border-top: 1px solid var(--cbor);
 }
 
 /* Header chrome glass — matches nav */
 .hdr {
-  background: var(--color-nav) !important;
-  -webkit-backdrop-filter: blur(28px) !important;
-  backdrop-filter: blur(28px) !important;
+  background: var(--cs);
+  -webkit-backdrop-filter: blur(28px);
+  backdrop-filter: blur(28px);
   box-shadow: 0 1px 0 0 rgba(201, 168, 76, calc(var(--heat) * 0.35));
 }
 
@@ -265,10 +241,10 @@ body { color: var(--color-text-hi); }
   width: 100%;
   max-width: 430px;
   z-index: 21;
-  background: var(--color-nav);
+  background: var(--cs);
   -webkit-backdrop-filter: blur(28px);
   backdrop-filter: blur(28px);
-  border-top: 1px solid var(--color-card-border);
+  border-top: 1px solid var(--cbor);
   border-radius: 22px 22px 0 0;
   max-height: 72vh;
   display: flex;
@@ -341,7 +317,7 @@ body { color: var(--color-text-hi); }
   font-family: 'Cormorant Garamond', serif;
   font-size: 19px;
   font-weight: 600;
-  color: var(--color-text-hi);
+  color: var(--ct);
   letter-spacing: 0.3px;
   line-height: 1.2;
 }
@@ -389,7 +365,7 @@ body { color: var(--color-text-hi); }
 }
 .sheet-item.failed .sheet-fail {
   border-color: rgba(160, 20, 20, 0.7);
-  background: var(--color-blood-dim);
+  background: var(--bloodb);
 }
 /* Sheet button animations — both use same timing for consistency */
 .sheet-tick.stamp-done { animation: stampFail .28s cubic-bezier(.34,1.56,.64,1); }
@@ -569,8 +545,8 @@ body.dev-mode .dev-console-btn {
   margin:0 18px 8px;
 }
 .rpt-best-card{
-  background:var(--color-card);
-  border:1px solid var(--color-card-border);
+  background:var(--cs);
+  border:1px solid var(--cbor);
   backdrop-filter:blur(14px);
   -webkit-backdrop-filter:blur(14px);
   border-radius:14px;
@@ -599,8 +575,8 @@ body.dev-mode .dev-console-btn {
 }
 .rpt-week-wrap{
   margin:0 18px 8px;
-  background:var(--color-card);
-  border:1px solid var(--color-card-border);
+  background:var(--cs);
+  border:1px solid var(--cbor);
   backdrop-filter:blur(14px);
   -webkit-backdrop-filter:blur(14px);
   border-radius:14px;
@@ -631,7 +607,7 @@ body.dev-mode .dev-console-btn {
   transition:height 0.4s ease;
 }
 .rpt-wbar.today{background:var(--gold);}
-.rpt-wbar.empty{background:rgba(255,255,255,0.06);height:100%!important;}
+.rpt-wbar.empty{background:rgba(255,255,255,0.06);height:100%;}
 .rpt-wday{
   font-family:'Josefin Sans',sans-serif;
   font-size:6.5px;
@@ -647,8 +623,8 @@ body.dev-mode .dev-console-btn {
   margin:0 18px 8px;
 }
 .rpt-month-card{
-  background:var(--color-card);
-  border:1px solid var(--color-card-border);
+  background:var(--cs);
+  border:1px solid var(--cbor);
   backdrop-filter:blur(14px);
   -webkit-backdrop-filter:blur(14px);
   border-radius:14px;
