@@ -53,6 +53,7 @@ Audit and normalize padding/margin/gap across all 4 tabs in both files. Replace 
 Minimum font size: **11px**. Lift all instances below threshold:
 `6.5px→11px`, `7px→11px`, `7.5px→11px`, `8px→11px`, `8.5px→11px`, `9px→11px`
 Labels stay `text-transform:uppercase` + `letter-spacing` — just readable.
+**Exception:** Tab bar labels (`.bni-lbl`, Section 3.3) use `8px` — they are a deliberate UI micro-label below the icon and are exempt from this rule.
 
 ### 1.4 — Inline Style Cleanup
 Extract top 20 repeated inline styles to named CSS classes. Target patterns:
@@ -91,8 +92,8 @@ Triggered in `updateHeat(n, n)` when `completed === total && total > 0`.
 - Only fires once per calendar day (track in `sessionStorage` key `gc:perfectFired:YYYY-MM-DD`)
 
 ### 3.2 — Streak Milestone Toasts
-In `markH()`, after computing new streak via `calcHabitStreak(id)`:
-Check milestones `[7, 14, 30, 100]`. If hit, call `showToast()` with forge-voice message:
+In `markH()`, after the log is written, compute `const streak = calcHabitStreak(id) + 1` — the `+1` accounts for today's just-logged mark (calcHabitStreak counts from yesterday back, so today must be added manually).
+Check milestones `[7, 14, 30, 100]`. If `streak` hits a milestone, call `showToast()` with forge-voice message:
 - 7: *"Seven days. The forge is lit."*
 - 14: *"Two weeks. Discipline compounds."*
 - 30: *"Thirty days. You're forged."*
@@ -111,12 +112,13 @@ Labels: Today · Record · Report · Forge.
 **Sheet:** Reuses `.fab-sheet` pattern + spring cubic-bezier open animation.
 **Contents (v0.26 scope):**
 - Notification reminder time (stores to `localStorage` `gc1:notif-time`)
-- "Reset all data" danger button (calls `devResetAll()` with confirm)
+- "Reset all data" danger button — calls existing `devResetAll()` (already in dev console: clears all `gc1:*` localStorage keys + `gc:*` sessionStorage keys, then calls `location.reload()`)
 - Version label: *GritCore v0.26*
 
 ### 3.5 — Discipline Reorder (Hold + Drag)
 **Storage:** `localStorage` key `gc1:order` — array of habit IDs in user-defined order.
-**effH() update:** merge `habits` with `gc1:order` — return habits sorted by order array, new habits appended at end.
+**effH() initialization:** On first call, if `gc1:order` is absent or empty, seed it from the current `habits` array order and write to localStorage. This ensures existing v0.25 users get a valid order on upgrade with no drag required.
+**effH() update:** merge `habits` with `gc1:order` — return habits sorted by order array, new habits (IDs not in order array) appended at end.
 **Interaction:**
 1. `pointerdown` on `.hcard` → start 500ms long-press timer
 2. If held: card gets class `.dragging` (scale 1.02, enhanced shadow, cursor grab)
