@@ -137,7 +137,8 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
 .shdr{padding:20px 18px 10px;}
 .shdr-l{font-family:'Josefin Sans',sans-serif;font-weight:600;font-size:11px;letter-spacing:3.5px;color:var(--ct);text-transform:uppercase;text-shadow:var(--ts);}
 .hlist{padding:0 18px;display:flex;flex-direction:column;gap:9px;}
-.hcard{padding:16px 14px;display:flex;align-items:center;gap:10px;transition:border-color .2s,transform .15s,background .6s;}
+@keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.hcard{padding:16px 14px;display:flex;align-items:center;gap:10px;transition:border-color .2s,transform .15s,background .6s;animation:cardIn 0.25s ease-out both;}
 .hcard:active{transform:scale(.99);}
 .hcard.crack-anim{animation:crack .42s cubic-bezier(.36,.07,.19,.97) both;}
 .hcard.crack-anim::after{content:'';position:absolute;inset:0;border-radius:16px;background:linear-gradient(128deg,transparent 38%,rgba(110,16,16,.18) 50%,transparent 62%);animation:crackFlash .42s ease both;pointer-events:none;}
@@ -944,7 +945,7 @@ function renderToday(){
     hh.forEach((hb,i)=>{const s=tl[hb.id],dis=isPlaceholder?'style="opacity:.55;pointer-events:none"':'';
       const hStreak=isPlaceholder?0:calcHabitStreak(hb.id);
       const streakBadge=hStreak>=2?`<span class="hcard-streak">${hStreak}d</span>`:'';
-      hhtml+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns">${streakBadge}<button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
+      hhtml+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" style="animation-delay:${i*40}ms" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns">${streakBadge}<button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
     });
     hhtml+='</div></div>';
     if(isPlaceholder)hhtml+=`<button class="sample-banner btn-reset" onclick="swTo('forge')"><span class="sample-banner-icon">⚒</span><div><div class="sample-banner-tag">Sample Data</div><div class="sample-banner-sub">Tap to forge your own →</div></div></button>`;
