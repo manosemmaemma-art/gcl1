@@ -302,6 +302,8 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
 .btn-reset{background:none;border:none;cursor:pointer;padding:0;color:inherit;font:inherit;text-align:inherit;width:100%;}
 .flex-fill{flex:1;}
 .shdr-m{margin:12px 18px 0;}
+@keyframes heatPulse{0%,100%{opacity:var(--veil-base,0)}50%{opacity:calc(var(--veil-base,0) + 0.04)}}
+#heat-veil.pulsing{animation:heatPulse 3s ease-in-out infinite;}
 </style>
 <link rel="stylesheet" href="gritcore.css">
 </head>
@@ -392,6 +394,11 @@ function updateHeat(completed,total){
   const overlayAlpha=(completed===total&&total>0)?'0.180':(pct*0.16).toFixed(3);
   root.style.setProperty('--heat-overlay-alpha',overlayAlpha);
   root.style.setProperty('--heat-color',`rgba(201,168,76,${(0.3+pct*0.7).toFixed(3)})`);
+  const veil=document.getElementById('heat-veil');
+  if(veil){
+    document.documentElement.style.setProperty('--veil-base',overlayAlpha);
+    veil.classList.toggle('pulsing',pct>=0.7&&total>0);
+  }
   updateMotivation();
 }
 function updateMotivation(){
