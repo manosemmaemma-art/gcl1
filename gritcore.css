@@ -950,3 +950,37 @@ body.dev-mode .dev-console-btn {
   color: var(--ctdd);
   letter-spacing: 2px;
 }
+
+/* ── Discipline reorder ── */
+.drag-handle {
+  font-size: 14px;
+  color: var(--ctdd);
+  padding: 4px 8px 4px 2px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  flex-shrink: 0;
+}
+.manage-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+}
+.drag-placeholder {
+  opacity: 0.3;
+}
+.drag-clone {
+  position: fixed;
+  z-index: 10020;
+  pointer-events: none;
+  opacity: 0.9;
+  transform: scale(1.03);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  border-radius: 12px;
+  background: var(--cs);
+  border: 1px solid var(--goldbor);
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+}

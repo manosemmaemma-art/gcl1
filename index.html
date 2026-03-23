@@ -1367,7 +1367,7 @@ function renderForge(){
   const hh=habits;
   let mlist='';
   if(!hh.length)mlist=`<div style="padding:22px;text-align:center;font-family:'Josefin Sans',sans-serif;font-size:11px;letter-spacing:3px;color:var(--ctd);text-transform:uppercase;line-height:2.5;text-shadow:var(--ts)">No disciplines yet.</div>`;
-  else hh.forEach((h,i)=>{mlist+=`<div class="manage-item card" style="animation-delay:${i*.04}s"><div class="mi-meta"><div class="mi-name">${h.name}</div><div class="mi-cat">${getCatName(h.cat)}</div></div><button class="del-btn" onclick="delH('${h.id}')">✕</button></div>`;});
+  else hh.forEach((h,i)=>{mlist+=`<div class="manage-item card" data-id="${h.id}" style="animation-delay:${i*.04}s"><span class="drag-handle">&#9776;</span><div class="mi-meta"><div class="mi-name">${h.name}</div><div class="mi-cat">${getCatName(h.cat)}</div></div><button class="del-btn" onclick="delH('${h.id}')">&#10005;</button></div>`;});
   const catPills=cats.map(c=>`<div class="cat-pill-mgr"><span class="cat-pill-name">${c.name}</span><button class="cat-pill-edit" onclick="renameCat('${c.id}')">✏</button><button class="cat-pill-del"${cats.length<=1?' disabled style="opacity:.2"':''}${catHasHabits(c.id)?' disabled title="Remove disciplines first" style="opacity:.2"':''} onclick="deleteCat('${c.id}')">×</button></div>`).join('');
   return `<div class="shdr af s1"><span class="shdr-l">Categories</span><button class="sheet-done-btn" onclick="addCat()"${cats.length>=8?' disabled style="opacity:.3"':''}>+ Add</button></div>
   <div class="card af s2" style="padding:12px 14px;"><div class="cat-mgr-list">${catPills}</div>${cats.length>=8?'<div class="rpt-empty">Maximum 8 categories</div>':''}</div>
@@ -1378,12 +1378,76 @@ function renderForge(){
   <button class="export-btn af s6" onclick="exportData()">↓ Export Record</button>
   <div class="ftr"><div class="ftr-logo">Gritcore</div><div class="ftr-sub">Build the person you intend to be</div></div>`;
 }
+/* ── Discipline Reorder (touch drag) ── */
+let dragEl=null,dragClone=null,dragStartY=0,dragOffsetY=0;
+let dragItems=[],dragIdx=-1;
+function initReorder(){
+  const list=document.querySelector('.manage-list');
+  if(!list)return;
+  list.addEventListener('touchstart',onDragStart,{passive:false});
+  list.addEventListener('touchmove',onDragMove,{passive:false});
+  list.addEventListener('touchend',onDragEnd);
+}
+function onDragStart(e){
+  const handle=e.target.closest('.drag-handle');
+  if(!handle)return;
+  const item=handle.closest('.manage-item');
+  if(!item)return;
+  e.preventDefault();
+  dragEl=item;
+  dragItems=Array.from(item.parentElement.children);
+  dragIdx=dragItems.indexOf(item);
+  const touch=e.touches[0];
+  const rect=item.getBoundingClientRect();
+  dragStartY=touch.clientY;
+  dragOffsetY=touch.clientY-rect.top;
+  dragClone=item.cloneNode(true);
+  dragClone.classList.add('drag-clone');
+  dragClone.style.width=rect.width+'px';
+  dragClone.style.top=rect.top+'px';
+  dragClone.style.left=rect.left+'px';
+  document.body.appendChild(dragClone);
+  item.classList.add('drag-placeholder');
+}
+function onDragMove(e){
+  if(!dragEl||!dragClone)return;
+  e.preventDefault();
+  const touch=e.touches[0];
+  dragClone.style.top=(touch.clientY-dragOffsetY)+'px';
+  const items=Array.from(dragEl.parentElement.children);
+  for(let i=0;i<items.length;i++){
+    if(items[i]===dragEl)continue;
+    const rect=items[i].getBoundingClientRect();
+    const mid=rect.top+rect.height/2;
+    if(touch.clientY<mid&&i<items.indexOf(dragEl)){
+      dragEl.parentElement.insertBefore(dragEl,items[i]);
+      break;
+    }else if(touch.clientY>mid&&i>items.indexOf(dragEl)){
+      dragEl.parentElement.insertBefore(dragEl,items[i].nextSibling);
+      break;
+    }
+  }
+}
+function onDragEnd(){
+  if(!dragEl)return;
+  const newOrder=Array.from(dragEl.parentElement.children).map(el=>el.dataset.id).filter(Boolean);
+  if(newOrder.length===habits.length){
+    const map={};habits.forEach(h=>map[h.id]=h);
+    habits=newOrder.map(id=>map[id]).filter(Boolean);
+    saveH();
+  }
+  dragEl.classList.remove('drag-placeholder');
+  if(dragClone){dragClone.remove();dragClone=null;}
+  dragEl=null;dragItems=[];dragIdx=-1;
+}
+
 function render(){
   const c=document.getElementById('content');
   if(view==='today')c.innerHTML=renderToday();
   else if(view==='record'){c.innerHTML=renderRecord(recordMonthOffset);requestAnimationFrame(()=>{const wrap=document.getElementById('hm-wrap');if(wrap)wrap.scrollLeft=wrap.scrollWidth;});}
   else if(view==='report')renderReport();
   else if(view==='forge')c.innerHTML=renderForge();
+  if(view==='forge')setTimeout(initReorder,0);
   updateHeader();
   setTimeout(()=>document.querySelectorAll('.cbar-fill[data-pct]').forEach(el=>{el.style.width=el.dataset.pct+'%';}),80);
 }
