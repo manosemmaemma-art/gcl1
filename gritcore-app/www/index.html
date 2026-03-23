@@ -17,7 +17,7 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
 :root{
   --gold:#D4AA50;--goldb:rgba(212,170,80,.12);--goldbor:rgba(212,170,80,.3);
   --blood:#C02020;--bloodb:rgba(192,32,32,.14);--bloodbor:rgba(192,32,32,.32);
-  --ct:#f0ece6;--cts:#c0b8ac;--ctd:#a09890;--ctdd:#c0b8b0;
+  --ct:#f0ece6;--cts:#c0b8ac;--ctd:#a09890;--ctdd:#c0b8b0;--cthi:#f5f2ec;
   --cs:rgba(28,24,18,.82);--cs2:rgba(24,20,14,.78);
   --cbor:rgba(255,255,255,.09);--cborl:rgba(255,255,255,.045);
   --cnb:rgba(7,6,4,.98);--cnbbor:rgba(212,170,80,.09);
@@ -80,7 +80,7 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
 .bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--cnb);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--cnbbor);display:flex;z-index:10001;height:68px;padding-bottom:env(safe-area-inset-bottom,0);transition:background .6s,border-color .6s;}
 .bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;padding:6px 4px;-webkit-user-select:none;user-select:none;}
 .bni svg{width:20px;height:20px;stroke:var(--ctd);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .4s;}
-.bni-lbl{font-size:7.5px;letter-spacing:2px;color:var(--ctd);font-family:'Josefin Sans',sans-serif;font-weight:400;text-transform:uppercase;text-shadow:var(--ts);}
+.bni-lbl{font-size:9px;letter-spacing:2px;color:var(--ctd);font-family:'Josefin Sans',sans-serif;font-weight:400;text-transform:uppercase;text-shadow:var(--ts);}
 .bni.on svg{stroke:var(--gold);}
 .bni.on .bni-lbl{color:var(--gold);}
 .bni.tap{animation:navPop .25s cubic-bezier(.34,1.56,.64,1);}
@@ -102,7 +102,7 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
 .sc.lit .sc-num{color:var(--gold);}
 .sc.bad .sc-num{color:var(--blood);}
 .sc.ok .sc-num{color:var(--cts);}
-.sc-word{font-family:'Josefin Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--color-text-mid,var(--ctdd));margin-top:1px;}
+.sc-word{font-family:'Josefin Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--ctdd);margin-top:1px;}
 #streak-panel{display:none;border-radius:14px;overflow:hidden;border:1px solid var(--cbor);margin:8px 0 4px;position:relative;background:rgba(10,8,6,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:var(--card-shadow);transition:border-color .5s;}
 #streak-panel.open{display:block;animation:spIn .28s ease;}
 @keyframes spIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
@@ -311,7 +311,7 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
 <div id="app">
   <div id="heat-veil"></div>
   <div id="ambient-veil"></div>
-  <div class="hdr">
+  <div class="hdr" id="hdr">
     <div class="hdr-top">
       <div class="hdr-left"><button class="settings-btn btn-reset" onclick="openSettings()" aria-label="Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ctd)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
       <div class="hdr-logo-wrap"><div class="logo"><span class="logo-d">◆</span><span class="logo-g">GRIT</span><span class="logo-c">CORE</span></div><div class="logo-sub" id="logo-tagline">Forge your discipline.</div></div>
@@ -875,6 +875,7 @@ function updateStreakBadge(){
 
 function sw(v,el){
   if(view===v)return;
+  const prevView=view;
   if(view==='record'&&v!=='record')recordMonthOffset=0;
   view=v;
   document.querySelectorAll('.bni').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
@@ -882,7 +883,7 @@ function sw(v,el){
   render();
   const c=document.getElementById('content');
   if(c){c.classList.remove('tab-fade-in');void c.offsetWidth;c.classList.add('tab-fade-in');c.addEventListener('animationend',()=>c.classList.remove('tab-fade-in'),{once:true});}
-  if(v==='today'||view==='today')setTimeout(updateStreakPanel,0);
+  if(v==='today'||prevView==='today')setTimeout(updateStreakPanel,0);
 }
 function swTo(v){view=v;document.querySelectorAll('.bni').forEach(b=>b.classList.toggle('on',b.dataset.v===v));render();}
 function nextQ(){const qc=document.getElementById('qcard');if(qc){qc.classList.add('flash');setTimeout(()=>qc.classList.remove('flash'),250);}qi=(qi+1)%QUOTES.length;const q2=document.getElementById('qcard');if(q2){q2.querySelector('.qtext').textContent=QUOTES[qi].t;q2.querySelector('.qauth').textContent='— '+QUOTES[qi].a;}}
@@ -996,7 +997,7 @@ function renderHabits(){
   hh.forEach((hb,i)=>{const s=tl[hb.id],dis=isPlaceholder?'style="opacity:.55;pointer-events:none"':'';
     const hStreak=isPlaceholder?0:calcHabitStreak(hb.id);
     const streakBadge=hStreak>=2?`<span class="hcard-streak">${hStreak}d</span>`:'';
-    h+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns">${streakBadge}<button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
+    h+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div>${streakBadge}</div><div class="hcard-btns"><button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
   });
   h+='</div>';w.innerHTML=h;
 }
@@ -1011,12 +1012,12 @@ function patchHabitCard(id,status){
 function addH(){const v=document.getElementById('fi')?.value?.trim();if(!v)return;habits.push({id:Date.now().toString(),name:v,cat:selCat,created:getDate()});isPlaceholder=false;saveH();checkAchievements();showToast('Discipline forged');render();setTimeout(()=>{const e=document.getElementById('fi');if(e){e.value='';e.focus();}},60);}
 function delH(id){habits=habits.filter(h=>h.id!==id);isPlaceholder=habits.length===0;saveH();showToast('Removed');render();}
 function selCatFn(id){selCat=id;document.querySelectorAll('.catpill').forEach(p=>p.classList.toggle('sel',p.dataset.c===id));}
-function getCatName(id){return cats.find(c=>c.id===id)?.name||id;}
+function getCatName(id){return cats.find(c=>c.id===id||c.id.toLowerCase()===id?.toLowerCase())?.name||(id?id.charAt(0).toUpperCase()+id.slice(1):'');}
 function catHasHabits(id){return habits.some(h=>h.cat===id);}
 function addCat(){if(cats.length>=8)return;const name=prompt('New category name (max 20 chars):')?.trim().slice(0,20);if(!name)return;cats.push({id:'c'+Date.now(),name});saveCats();render();}
 function renameCat(id){const cat=cats.find(c=>c.id===id);if(!cat)return;const name=prompt('Rename category:',cat.name)?.trim().slice(0,20);if(!name)return;cat.name=name;saveCats();render();}
 function deleteCat(id){if(cats.length<=1)return;if(catHasHabits(id)){showToast('Remove disciplines first');return;}cats=cats.filter(c=>c.id!==id);if(selCat===id)selCat=cats[0]?.id||'';saveCats();render();}
-function exportData(){let txt=`GRITCORE — DISCIPLINE RECORD\nExported: ${getDate()}\n${'═'.repeat(40)}\n\nHABITS:\n`;habits.forEach(h=>{txt+=`  • ${h.name} [${h.cat}]\n`;});txt+=`\n30-DAY LOG:\n\n`;last30().forEach(d=>{const l=logs[d]||{};const done=habits.filter(h=>l[h.id]==='done').length;const tot=habits.filter(h=>l[h.id]).length;txt+=`${d}: ${tot?`${done}/${habits.length}`:'-'}\n`;});const blob=new Blob([txt],{type:'text/plain'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='gritcore-log.txt';a.click();showToast('Exported');}
+function exportData(){let txt=`GRITCORE — DISCIPLINE RECORD\nExported: ${getDate()}\n${'═'.repeat(40)}\n\nHABITS:\n`;habits.forEach(h=>{txt+=`  • ${h.name} [${getCatName(h.cat)}]\n`;});txt+=`\n30-DAY LOG:\n\n`;last30().forEach(d=>{const l=logs[d]||{};const done=habits.filter(h=>l[h.id]==='done').length;const tot=habits.filter(h=>l[h.id]).length;txt+=`${d}: ${tot?`${done}/${habits.length}`:'-'}\n`;});const blob=new Blob([txt],{type:'text/plain'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='gritcore-log.txt';a.click();showToast('Exported');}
 function bestHabit(hh,ll){if(!hh.length)return null;let best=null,bs=-1;hh.forEach(h=>{let d=0,t=0;last30().forEach(day=>{const l=ll[day]||{};if(l[h.id]==='done'){d++;t++;}else if(l[h.id]==='failed')t++;});if(t>0){const s=d/t;if(s>bs){bs=s;best={name:h.name,pct:Math.round(s*100)};}}});return best;}
 function worstHabit(hh,ll){if(!hh.length)return null;let worst=null,ws=2;hh.forEach(h=>{let d=0,t=0;last30().forEach(day=>{const l=ll[day]||{};if(l[h.id]==='done'){d++;t++;}else if(l[h.id]==='failed')t++;});if(t>2){const s=d/t;if(s<ws){ws=s;worst={name:h.name,pct:Math.round(s*100)};}}});return worst;}
 function bestDayStr(hh,ll){const days=[0,0,0,0,0,0,0],tots=[0,0,0,0,0,0,0];last30().forEach(d=>{const wd=new Date(d+'T12:00').getDay();const p=dayPct(d,hh,ll);if(p!==null){days[wd]+=p;tots[wd]++;}});const avgs=days.map((s,i)=>tots[i]?s/tots[i]:0);const mx=avgs.indexOf(Math.max(...avgs));return tots[mx]?`${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][mx]} (${Math.round(avgs[mx])}%)`:'—';}
@@ -1041,22 +1042,22 @@ function renderToday(){
     hh.forEach((hb,i)=>{const s=tl[hb.id],dis=isPlaceholder?'style="opacity:.55;pointer-events:none"':'';
       const hStreak=isPlaceholder?0:calcHabitStreak(hb.id);
       const streakBadge=hStreak>=2?`<span class="hcard-streak">${hStreak}d</span>`:'';
-      hhtml+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" style="animation-delay:${i*40}ms" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns">${streakBadge}<button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
+      hhtml+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" style="animation-delay:${i*40}ms" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div>${streakBadge}</div><div class="hcard-btns"><button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
     });
     hhtml+='</div></div>';
     if(isPlaceholder)hhtml+=`<button class="sample-banner btn-reset" onclick="swTo('forge')"><span class="sample-banner-icon">⚒</span><div><div class="sample-banner-tag">Sample Data</div><div class="sample-banner-sub">Tap to forge your own →</div></div></button>`;
   }
   const q=getTodayQuote();
   return `
-  <button id="qcard" class="qcard card af btn-reset" onclick="qPreview(this)"><div class="qtext">${q.t}</div><div class="qauth">— ${q.a}</div></button>
   <div class="scrow af s1">
     <div class="sc card ${tp!==null&&tp>=70?'lit':tp!==null&&tp<40?'bad':tp!==null?'ok':''}" id="sc0"><div class="sc-num">${tp!==null?tp+'%':'—'}</div><div class="sc-word">${tp!==null?todayLabel(tp):''}</div><div class="sc-lbl">Today</div></div>
     <div class="sc card ${wp!==null&&wp>=70?'lit':wp!==null&&wp<40?'bad':wp!==null?'ok':''}" id="sc1"><div class="sc-num">${wp!==null?wp+'%':'—'}</div><div class="sc-word">${wp!==null?weekLabel(wp):''}</div><div class="sc-lbl">7 Day</div></div>
     <div class="sc card ${streak>=3?'lit':streak>0?'ok':'bad'}" id="sc2" onclick="toggleStreakPanel()" style="cursor:pointer;">${streak>0?`<span class="sc-fire" id="sc2-fire" style="font-size:${flameData(streak).compactSize}px;filter:saturate(${flameData(streak).sat}) hue-rotate(${flameData(streak).hue}deg);">🔥</span>`:'<span class="sc-fire" id="sc2-fire"></span>'}<div class="sc-num">${streak>0?streak:'—'}</div><div class="sc-word">${streak>0?getTier(streak).name:'No Streak'}</div><div class="sc-lbl">Streak</div></div>
   </div>
   <div id="streak-panel"></div>
-  <div class="shdr af s2"><span class="shdr-l">Disciplines — ${ds}</span></div>
+  <div class="shdr af s2"><span class="shdr-l">Today's Disciplines</span></div>
   ${hhtml}
+  <button id="qcard" class="qcard card af btn-reset" onclick="qPreview(this)" style="margin:12px 18px 0;"><div class="qtext">${q.t}</div><div class="qauth">— ${q.a}</div></button>
   <div class="ftr"><div class="ftr-logo">Gritcore</div><div class="ftr-sub">Discipline is freedom</div></div>`;
 }
 function renderRecord(monthOffset){
@@ -1325,7 +1326,7 @@ function rptSheet(type) {
         </button>
       </div>
     </div>
-    <div style="font-size:11px;letter-spacing:1.5px;color:var(--ctdd);text-align:center;padding-top:4px;font-family:'Josefin Sans',sans-serif;">GritCore v0.24</div>
+    <div style="font-size:11px;letter-spacing:1.5px;color:var(--ctdd);text-align:center;padding-top:4px;font-family:'Josefin Sans',sans-serif;">GritCore v0.27</div>
   </div>`,
     achievements: () => {
       const earned = loadAch();
@@ -1349,7 +1350,7 @@ function rptSheet(type) {
     <div style="font-size:11px;line-height:1.8;color:var(--ctd);font-family:'Josefin Sans',sans-serif;letter-spacing:.5px;max-width:280px;margin:0 auto;">
       GritCore is a daily discipline tracker built on one belief: small, consistent actions compound into extraordinary character. Show up every day. Mark your disciplines. Watch your streak grow.
     </div>
-    <div style="margin-top:24px;font-size:11px;color:var(--ctdd);letter-spacing:1.5px;font-family:'Josefin Sans',sans-serif;">Version 0.24</div>
+    <div style="margin-top:24px;font-size:11px;color:var(--ctdd);letter-spacing:1.5px;font-family:'Josefin Sans',sans-serif;">Version 0.27</div>
   </div>`,
   };
   content.innerHTML = sheets[type]?.() || '';

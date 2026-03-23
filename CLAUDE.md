@@ -113,7 +113,23 @@ Only skip if the user explicitly says "just do it."
 - `.tab-fade-in` — tab content 0.2s fade-in on `sw()`
 - `.fab-sheet.open` — spring cubic-bezier(0.34,1.56,0.64,1) on bottom sheet open
 
-**Versioning:** Backup before every change set. v0.24 backups: `index.0.24.html`, `gritcore.0.24.css`. v0.25 backups: `index.0.25.html`, `gritcore.0.25.css`. Next version: 0.26.
+**New APIs added in v0.26:**
+- `showPerfectDay()` / `closePerfectDay()` — Perfect Day celebration modal (fires once per page load when 100% complete)
+- `checkStreakMilestone()` — checks streak against milestones (7/14/30/60/100/365), shows toast once per milestone via `gc1:milestones` localStorage
+- `openSettings()` / `closeSettings()` — settings gear bottom sheet (export, reset milestones, about)
+- `initReorder()` / `onDragStart()` / `onDragMove()` / `onDragEnd()` — touch drag-reorder on Forge tab's discipline list
+- `pdShownToday` — guard flag preventing Perfect Day modal from re-firing
+
+**New CSS classes added in v0.26** (in `gritcore.css`):
+- `.pd-overlay`, `.pd-modal`, `.pd-icon`, `.pd-title`, `.pd-sub`, `.pd-btn` — Perfect Day celebration modal
+- `.hdr-left`, `.settings-btn` — header left column gear icon
+- `.settings-list`, `.settings-row`, `.settings-row-label`, `.settings-row-value`, `.settings-row-icon`, `.settings-row-left`, `.settings-version` — settings sheet rows
+- `.drag-handle`, `.drag-placeholder`, `.drag-clone` — discipline reorder on Forge tab
+
+**New inline CSS in v0.26** (in `index.html <style>`):
+- `@keyframes heatPulse` + `#heat-veil.pulsing` — heat veil ambient pulse at ≥70% completion
+
+**Versioning:** Backup before every change set. v0.24 backups: `index.0.24.html`, `gritcore.0.24.css`. v0.25 backups: `index.0.25.html`, `gritcore.0.25.css`. v0.26 backups: `index.0.26.html`, `gritcore.0.26.css`. Next version: 0.27.
 
 **Dev console:** Purged (dormant stub). Will be rebuilt later.
 **marble-interpolator.js:** Preserved untouched for future time-of-day marble (v2 feature).
@@ -141,26 +157,26 @@ Use agents (parallel subagents) whenever possible for 2+ independent tasks — d
 
 ---
 
-## v0.26 Session Progress (2026-03-22)
+## v0.26 Session Progress (2026-03-22) — COMPLETED
 
-**Completed Tasks:**
-1. **Task 1: Commit the rollback** — Reverted to v0.25 stable state (commit `225d473`)
-2. **Task 2: Token unification** — Unified color tokens to `--ct*` namespace; 17 CSS classes converted
-3. **Task 3: Spacing scale** — Introduced `--sp-xs` (4px), `--sp-sm` (8px), `--sp-md` (12px), `--sp-lg` (16px), `--sp-xl` (24px); 11 properties converted; fixed 3 missed conversions (lines 135, 537, 718)
-   - Fixed `.sp-trow gap: 8px → var(--sp-sm)`
-   - Fixed `.rpt-stat-label margin-bottom: 8px → var(--sp-sm)`
-   - Fixed `.rpt-cat-row gap: 8px + margin-bottom: 8px → var(--sp-sm)` (both)
-   - Amended commit: `dafb876`
+All 14 tasks completed. See git log for individual commits.
 
-**Remaining Tasks (Tasks 4-14):**
-- Task 4: Typography lift (Cormorant Garamond weights, Josefin Sans hierarchy)
-- Task 5: Inline style cleanup (remove all `style=` attributes, convert to CSS classes)
-- Task 6: A11y div→button (replace semantic divs with proper buttons)
-- Task 7: Staggered card entrance (250ms delays, `.hcard` fade-in)
-- Task 8: Progress bar transition (`.rpt-pbar-fill` 0.6s ease transitions)
-- Task 9: Heat veil ambient pulse (semi-transparent gold wash overlay on `.hcard`)
-- Task 10: Perfect Day moment (celebration modal on 100% completion)
-- Task 11: Streak milestone toasts (notification at 7/14/30/100 day streaks)
-- Task 12: Tab bar labels (add icon text labels below `.bni` items)
-- Task 13: Settings icon + sheet (gear icon in header, bottom sheet for prefs)
-- Task 14: Discipline reorder (drag-reorder on Record tab day-list)
+## v0.27 Session Progress (2026-03-23) — Today Tab Polish
+
+**Completed:**
+1. Fixed horizontal scrollbar (`overflow-x: hidden` on `#app` and `.content`)
+2. Restructured Today tab: scores → disciplines → quote → footer (disciplines first)
+3. Score card typography: number 26px/700, word label 9px dimmed, more padding
+4. Done-state card differentiation: graduated gold wash via `nth-child`, `✓` badge, subtler border
+5. Fixed C4 category bug: case-insensitive `getCatName()` + capitalized fallback
+6. Streak pill moved from buttons area to below card name
+7. Section header changed from "Disciplines — {date}" to "Today's Disciplines"
+
+**Bugs fixed from code review:**
+- Added missing `--cthi:#f5f2ec` CSS variable (was used in 10+ places, never defined)
+- Added `id="hdr"` to header div (toast positioning now uses real header height)
+- Updated version strings from 0.24 → 0.27
+- Cleaned up orphaned `--color-text-mid` reference → `var(--ctdd)`
+- Fixed `exportData()` to use `getCatName()` instead of raw category ID
+- Fixed `sw()` logic bug: captured `prevView` before reassignment for streak panel update
+- Fixed `bni-lbl` font-size from 7.5px → 9px
