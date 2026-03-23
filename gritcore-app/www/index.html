@@ -49,6 +49,8 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes tabFadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 .tab-fade-in{animation:tabFadeIn 0.2s ease-out both;}
+@keyframes tabFadeOut{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(-4px);}}
+.tab-fade-out{animation:tabFadeOut 0.15s ease-in both;}
 @keyframes crack{0%{transform:scale(1)}8%{transform:scale(.982) translateX(-2px) skewX(-1.5deg);box-shadow:0 0 0 1px var(--bloodbor),var(--card-shadow);}20%{transform:scale(.988) translateX(2px) skewX(1deg);}35%{transform:scale(.994) translateX(-1px);}50%{transform:scale(1.004);}100%{transform:scale(1);}}
 @keyframes crackFlash{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
 @keyframes stampDone{0%{transform:scale(1)}30%{transform:scale(.85)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
@@ -861,10 +863,14 @@ function sw(v,el){
   view=v;
   document.querySelectorAll('.bni').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   if(el){el.classList.add('tap');setTimeout(()=>el.classList.remove('tap'),300);}
-  render();
   const c=document.getElementById('content');
-  if(c){c.classList.remove('tab-fade-in');void c.offsetWidth;c.classList.add('tab-fade-in');c.addEventListener('animationend',()=>c.classList.remove('tab-fade-in'),{once:true});}
-  if(v==='today'||prevView==='today')setTimeout(updateStreakPanel,0);
+  if(c)c.classList.add('tab-fade-out');
+  setTimeout(()=>{
+    if(c)c.classList.remove('tab-fade-out');
+    render();
+    if(c){c.classList.remove('tab-fade-in');void c.offsetWidth;c.classList.add('tab-fade-in');c.addEventListener('animationend',()=>c.classList.remove('tab-fade-in'),{once:true});}
+    if(v==='today'||prevView==='today')setTimeout(updateStreakPanel,0);
+  },150);
 }
 function swTo(v){view=v;document.querySelectorAll('.bni').forEach(b=>b.classList.toggle('on',b.dataset.v===v));render();}
 function nextQ(){const qc=document.getElementById('qcard');if(qc){qc.classList.add('flash');setTimeout(()=>qc.classList.remove('flash'),250);}qi=(qi+1)%QUOTES.length;const q2=document.getElementById('qcard');if(q2){q2.querySelector('.qtext').textContent=QUOTES[qi].t;q2.querySelector('.qauth').textContent='— '+QUOTES[qi].a;}}
@@ -935,9 +941,10 @@ function openSettings() {
 }
 function closeSettings() {
   const el = document.getElementById('settings-sheet');
-  const backdrop = document.getElementById('settings-backdrop');
-  if (el) el.classList.remove('open');
-  if (backdrop) backdrop.style.display = 'none';
+  const bd = document.getElementById('settings-backdrop');
+  if (!el) return;
+  el.classList.remove('open');
+  if (bd) { bd.classList.remove('open'); setTimeout(() => { bd.style.display = 'none'; }, 380); }
 }
 function markH(id,status,btnEl,evt){
   if(isPlaceholder)return;
@@ -991,6 +998,7 @@ function patchHabitCard(id,status){
   if(btns[0]){btns[0].className='hbtn'+(status==='done'?' don':'');btns[0].querySelector('svg').setAttribute('stroke',status==='done'?'var(--gold)':'var(--ctd)');}
   if(btns[1]){btns[1].className='hbtn'+(status==='failed'?' fai':'');btns[1].querySelector('svg').setAttribute('stroke',status==='failed'?'var(--blood)':'var(--ctd)');}
   if(status==='failed'){card.classList.add('crack-anim');card.addEventListener('animationend',()=>card.classList.remove('crack-anim'),{once:true});}
+  if(status==='done'){card.classList.add('done-anim');card.addEventListener('animationend',()=>card.classList.remove('done-anim'),{once:true});}
 }
 function addH(){const v=document.getElementById('fi')?.value?.trim();if(!v)return;habits.push({id:Date.now().toString(),name:v,cat:selCat,created:getDate()});isPlaceholder=false;saveH();checkAchievements();showToast('Discipline forged');render();setTimeout(()=>{const e=document.getElementById('fi');if(e){e.value='';e.focus();}},60);}
 function delH(id){habits=habits.filter(h=>h.id!==id);isPlaceholder=habits.length===0;saveH();showToast('Removed');render();}
