@@ -879,6 +879,26 @@ function nextQ(){const qc=document.getElementById('qcard');if(qc){qc.classList.a
 function getTodayQuote(){const d=Math.floor(Date.now()/86400000);return QUOTES[d%QUOTES.length];}
 function getTomorrowQuote(){const d=Math.floor(Date.now()/86400000)+1;return QUOTES[d%QUOTES.length];}
 function qPreview(el){if(QUOTES.length<=1)return;const q2=getTomorrowQuote();const txt=el.querySelector('.qtext');const auth=el.querySelector('.qauth');const orig=getTodayQuote();txt.textContent=q2.t;auth.textContent='— '+q2.a;el.style.opacity='0.7';clearTimeout(el._qt);el._qt=setTimeout(()=>{txt.textContent=orig.t;auth.textContent='— '+orig.a;el.style.opacity='';},3000);}
+const STREAK_MILESTONES = [
+  { days: 7,   msg: '7-Day Streak',   sub: 'One week of iron will.' },
+  { days: 14,  msg: '14-Day Streak',  sub: 'Two weeks. Unshakeable.' },
+  { days: 30,  msg: '30-Day Streak',  sub: 'A month of discipline.' },
+  { days: 60,  msg: '60-Day Streak',  sub: 'Two months forged.' },
+  { days: 100, msg: '100-Day Streak', sub: 'Legendary commitment.' },
+  { days: 365, msg: '365-Day Streak', sub: 'One full year. You are rare.' },
+];
+function checkStreakMilestone() {
+  const streak = calcStreak();
+  if (streak < 7) return;
+  let shown;
+  try { shown = JSON.parse(localStorage.getItem('gc1:milestones') || '{}'); } catch(e) { shown = {}; }
+  const milestone = STREAK_MILESTONES.slice().reverse().find(m => streak >= m.days && !shown[m.days]);
+  if (milestone) {
+    shown[milestone.days] = Date.now();
+    localStorage.setItem('gc1:milestones', JSON.stringify(shown));
+    setTimeout(() => showToast(milestone.msg, milestone.sub), 1200);
+  }
+}
 let pdShownToday = false;
 function showPerfectDay() {
   if (pdShownToday) return;
@@ -910,6 +930,7 @@ function markH(id,status,btnEl,evt){
   if (done2 === tot2 && tot2 > 0 && logs[t][id] === 'done') {
     setTimeout(showPerfectDay, 600);
   }
+  checkStreakMilestone();
 }
 function renderScores(){
   const tp=todayPct(),wp=weekPct(),streak=calcStreak(),tier=getTier(streak);
