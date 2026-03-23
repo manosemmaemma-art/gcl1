@@ -667,6 +667,39 @@ let habits=[],logs={},cats=[],view='today',qi=0,selCat='';
 let isPlaceholder=false,toastTimer=null;
 let monthList=[], currentMonthIdx=0;
 
+function scoreWord(pct){
+  if(pct>=80)return'Forged';
+  if(pct>=60)return'Holding';
+  if(pct>=40)return'Wavering';
+  return'Broken';
+}
+
+function getMonthList(){
+  const ll=effL(),hh=effH();
+  const today=getDate();
+  const logKeys=Object.keys(ll).sort();
+  const earliest=logKeys[0]||today;
+  let[ey,em]=earliest.slice(0,7).split('-').map(Number);
+  const[ty,tm]=today.slice(0,7).split('-').map(Number);
+  const months=[];
+  while(ey<ty||(ey===ty&&em<=tm)){
+    const daysInMonth=new Date(ey,em,0).getDate();
+    const startDow=new Date(ey,em-1,1).getDay();
+    const prefix=`${ey}-${String(em).padStart(2,'0')}`;
+    const dayPcts=[];
+    for(let d=1;d<=daysInMonth;d++){
+      const ds=`${prefix}-${String(d).padStart(2,'0')}`;
+      const p=dayPct(ds,hh,ll);
+      if(p!==null)dayPcts.push(p);
+    }
+    const hasData=dayPcts.length>0;
+    const avg=hasData?Math.round(dayPcts.reduce((a,b)=>a+b,0)/dayPcts.length):0;
+    months.push({year:ey,month:em,prefix,daysInMonth,startDow,pct:avg,hasData,word:scoreWord(avg)});
+    em++;if(em>12){em=1;ey++;}
+  }
+  return months;
+}
+
 function getDate(){const sim=localStorage.getItem('gc:sim_date');return sim||new Date().toISOString().split('T')[0];}
 function getHour(){return new Date().getHours();}
 function daysBack(n,ref){const d=ref?new Date(ref+'T12:00'):new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];}
