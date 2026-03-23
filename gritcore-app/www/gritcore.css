@@ -895,8 +895,9 @@ body.dev-mode .dev-console-btn {
 /* ── Settings ── */
 .hdr-left {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-self: start;
+  gap: 8px;
 }
 .settings-btn {
   padding: 6px;
