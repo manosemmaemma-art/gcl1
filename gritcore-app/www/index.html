@@ -960,6 +960,62 @@ function initRingTilt(){
   }
 }
 
+function tapWedge(day,dateStr,pct,isToday){
+  const center=document.getElementById('fr-ring-center');
+  const detail=document.getElementById('fr-day-detail');
+  if(!center||!detail)return;
+
+  // Fill detail content
+  const hh=effH(),ll=effL();
+  const dayLog=ll[dateStr]||{};
+
+  const d=new Date(dateStr+'T00:00:00');
+  const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('fr-dd-date').textContent=`${monthNames[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+
+  if(isToday){
+    document.getElementById('fr-dd-pct').textContent=`${pct||0}% — In progress…`;
+  } else {
+    document.getElementById('fr-dd-pct').textContent=`${pct||0}% — ${scoreWord(pct||0)}`;
+  }
+
+  const habitsEl=document.getElementById('fr-dd-habits');
+  habitsEl.innerHTML='';
+  hh.forEach(h=>{
+    const status=dayLog[h.id];
+    const icon=status==='done'?'✓':status==='failed'?'✗':'·';
+    const cls=status==='done'?'fr-dd-done':status==='failed'?'fr-dd-fail':'fr-dd-skip';
+    const row=document.createElement('div');
+    row.className='fr-dd-row';
+    row.innerHTML=`<span class="fr-dd-icon ${cls}">${icon}</span><span class="fr-dd-name">${h.name}</span>`;
+    habitsEl.appendChild(row);
+  });
+
+  // Crossfade center → detail
+  center.style.transition='opacity 130ms ease-in';
+  center.style.opacity='0';
+  setTimeout(()=>{
+    center.style.display='none';
+    detail.style.display='flex';
+    detail.style.transition='opacity 220ms cubic-bezier(0.22,1,0.36,1)';
+    requestAnimationFrame(()=>detail.style.opacity='1');
+  },140);
+}
+
+function closeDetail(){
+  const center=document.getElementById('fr-ring-center');
+  const detail=document.getElementById('fr-day-detail');
+  if(!center||!detail)return;
+  detail.style.transition='opacity 130ms ease-in';
+  detail.style.opacity='0';
+  setTimeout(()=>{
+    detail.style.display='none';
+    center.style.display='';
+    center.style.transition='opacity 180ms cubic-bezier(0.22,1,0.36,1)';
+    requestAnimationFrame(()=>center.style.opacity='1');
+  },140);
+}
+
 function getDate(){const sim=localStorage.getItem('gc:sim_date');return sim||new Date().toISOString().split('T')[0];}
 function getHour(){return new Date().getHours();}
 function daysBack(n,ref){const d=ref?new Date(ref+'T12:00'):new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];}
