@@ -129,7 +129,7 @@ Only skip if the user explicitly says "just do it."
 **New inline CSS in v0.26** (in `index.html <style>`):
 - `@keyframes heatPulse` + `#heat-veil.pulsing` — heat veil ambient pulse at ≥70% completion
 
-**Versioning:** Backup before every change set. v0.24 backups: `index.0.24.html`, `gritcore.0.24.css`. v0.25 backups: `index.0.25.html`, `gritcore.0.25.css`. v0.26 backups: `index.0.26.html`, `gritcore.0.26.css`. Next version: 0.27.
+**Versioning:** Backup before every change set. v0.24–v0.26 backups exist. v0.27 backups: `index.0.27.html`, `gritcore.0.27.css`. Next version: 0.28.
 
 **Dev console:** Purged (dormant stub). Will be rebuilt later.
 **marble-interpolator.js:** Preserved untouched for future time-of-day marble (v2 feature).
@@ -161,16 +161,36 @@ Use agents (parallel subagents) whenever possible for 2+ independent tasks — d
 
 All 14 tasks completed. See git log for individual commits.
 
-## v0.27 Session Progress (2026-03-23) — Today Tab Polish
+## v0.27 Session Progress (2026-03-23) — COMPLETED
 
-**Completed:**
+**Today Tab Polish:**
 1. Fixed horizontal scrollbar (`overflow-x: hidden` on `#app` and `.content`)
-2. Restructured Today tab: scores → disciplines → quote → footer (disciplines first)
-3. Score card typography: number 26px/700, word label 9px dimmed, more padding
-4. Done-state card differentiation: graduated gold wash via `nth-child`, `✓` badge, subtler border
+2. Restructured Today tab: scores → disciplines → quote → footer
+3. Score card typography: number 26px/700, word label 10px dimmed, more padding
+4. Done-state card differentiation: graduated gold wash (0.08–0.18), `✓` badge, 0.38 border
 5. Fixed C4 category bug: case-insensitive `getCatName()` + capitalized fallback
 6. Streak pill moved from buttons area to below card name
-7. Section header changed from "Disciplines — {date}" to "Today's Disciplines"
+7. Section header changed to "Today's Disciplines"
+
+**Final Polish (2026-03-23 session 2):**
+- Quote card restored below disciplines (removed from above scores, kept at bottom)
+- Motivation line (`#motivation-line`) removed from header HTML, CSS, and JS gutted
+- Ambient veil: `position:fixed` → `position:absolute` (no longer bleeds outside #app)
+- Header top padding: `max(50px,…)` → `max(14px,…)`
+- Card backgrounds: undone `rgba(28,24,18,0.52)`, done gold wash bumped
+- Done card border: `opacity:0.18` → `0.38`
+- FAB sheet animation: spring bezier → smooth `cubic-bezier(0.22,1,0.36,1)`
+- Alive animations: logo gold breath (6s), nav glow pulse (8s), badge ambient (5s)
+- Streak card: `flex:1.3`, `font-size:28px` — visual prominence
+- `.sc.lit` score card: gold number + inner glow delight
+- Logo tagline: `opacity:0.45`
+- `bni-lbl`: 9px → 10px; `sc-word`: 9px → 10px
+- Done button `.hbtn.don`: gold box-shadow
+- Quote card hover lift (scale 1.01)
+- `prefers-reduced-motion` added to inline `<style>` block
+- `:focus-visible` gold outline styles added (keyboard/VoiceOver)
+- Hard-coded `#c9a84c` → `var(--gold-true)` in 4 places
+- Nav buttons: `aria-label` + `aria-current="page"`
 
 **Bugs fixed from code review:**
 - Added missing `--cthi:#f5f2ec` CSS variable (was used in 10+ places, never defined)
