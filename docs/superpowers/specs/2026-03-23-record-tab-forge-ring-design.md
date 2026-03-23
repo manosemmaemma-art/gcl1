@@ -247,7 +247,7 @@ function getMonthList() {
 - `effH()`, `effL()` — used for all data access
 - `dayPct(dateStr, hh, ll)` — used per-day pct
 - `getDate()` — today's date string
-- `sw(view, el)` — tab switching; **one line must change inside `sw()`**: the existing `recordMonthOffset=0` reset (line ~862) must be replaced with `currentMonthIdx = monthList.length - 1`. **`monthList` must be a module-level variable** (declared as `let monthList = []` alongside `let currentMonthIdx = 0`). Call `monthList = getMonthList()` at the top of `renderForgeRing()` to populate it before use.
+- `sw(view, el)` — tab switching; **one line must change inside `sw()`**: the existing `recordMonthOffset=0` reset (line ~862) must be replaced with `currentMonthIdx = Math.max(0, monthList.length - 1)`. **`monthList` must be a module-level variable** (declared as `let monthList = []` alongside `let currentMonthIdx = 0`). Call `monthList = getMonthList()` at the top of `renderForgeRing()` to populate it before use.
 
 ---
 
