@@ -45,13 +45,13 @@ Two vertically stacked zones, each interactive:
 ### Layout
 - SVG-based radial ring, 256×256px, centered in a `flex:1` zone
 - Outer radius R=122, inner radius ri=82 → ring band width = 40px
-- 31 (or 28/30) path segments (wedges), one per day of the month
-- Ghost month name: positioned **above** the ring SVG (not behind it), `font-size: 96px`, Cormorant Garamond italic, `rgba(201,168,76,0.10)`, `pointer-events:none`. It sits in a `position:absolute` layer at the top of `.fr-ring-scene`, above the tilt wrapper — so the ring never covers it. On month navigate it slides ±30px + fades with `ghostSlide` keyframe.
+- 31 (or 28/30) path segments (wedges), one per day of the month. Each wedge uses a **padding angle of 1.5°** (gap between adjacent wedges) so seams are clean — no doubled stroke artifacts. Wedges have `stroke: none`.
+- Ghost month name: positioned **above** the ring SVG (not behind it), `font-size: clamp(52px, 20vw, 96px)` (prevents overflow on 320px phones), Cormorant Garamond italic, `rgba(201,168,76,0.10)`, `pointer-events:none`, `overflow:hidden`, `white-space:nowrap`, `max-width:100%`. It sits in a `position:absolute` layer at the top of `.fr-ring-scene`, above the tilt wrapper — so the ring never covers it. On month navigate it slides ±24px + fades with `ghostSlide` keyframe.
 
 ### Ring Center (default state)
 - `%` number: Cormorant Garamond 46px bold, `#c9a84c`
 - Word label: "Forged / Holding / Wavering / Broken" — 9px Josefin, `#7a7060`
-- Day count: "22 days logged" — 8px, `#4a4038`
+- Day count: "22 days forged" — 8px, `var(--ctdd)` (uses CSS variable, not hardcoded hex)
 
 ### Wedge States
 | State | Fill color | Notes |
@@ -59,7 +59,7 @@ Two vertically stacked zones, each interactive:
 | 100% Perfect | `rgba(201,168,76,0.93)` | Brightest gold |
 | 70–99% | `rgba(201,168,76,0.60)` | Rich gold |
 | 40–69% | `rgba(201,168,76,0.32)` | Mid amber |
-| 1–39% | `rgba(200,50,40,0.45)` | Crimson — failed |
+| 1–39% | `rgba(200,50,40,0.45)` | Crimson + `✕` icon in wedge center (color not sole differentiator — accessibility 1.4.1) |
 | 0% / no data | `rgba(255,255,255,0.07)` | Faint — ring structure visible |
 | Future | `rgba(255,255,255,0.04)` | Ghosted — ring outline visible, no interaction |
 | Today | `#e8c84c` | Pulsing glow animation |
@@ -79,15 +79,17 @@ The ring is a real draggable 3D object, not a decorative effect. Both mouse and 
 - The ring lives inside `.fr-ring-tilt` with `transform-style: preserve-3d`
 - `mousedown`/`touchstart`: start capture, record pointer position
 - `mousemove`/`touchmove`: compute `dx`/`dy` delta from last position → apply `rotateX(-dy*0.4) rotateY(dx*0.4)` transform, clamped ±22° (X) / ±18° (Y). Updated every frame — feels live under the finger.
-- `mouseup`/`touchend`/`mouseleave`: launch spring-back via `requestAnimationFrame`. `velocityX *= 0.88; velocityY *= 0.88` per frame, applied to current tilt angles until `|v| < 0.05°` — then snaps to flat with `transition: transform 0.15s ease-out`
+- `mouseup`/`touchend`/`mouseleave`: launch spring-back via `requestAnimationFrame`. `velocityX *= 0.88; velocityY *= 0.88` per frame until `|v| < 0.3°` (raised threshold vs 0.05 — terminates faster on older devices) — then snaps to flat with `transition: transform 0.15s ease-out`
+- **Single shared rAF loop**: ring tilt spring-back and terrain momentum run in **one** `requestAnimationFrame` loop (`animFrame()`), not two separate loops. This halves rAF overhead on older iPhones. Loop exits when both velocities are below threshold.
 - `cursor: grab` while idle, `cursor: grabbing` while dragging
+- **Drag affordance hint**: on first tab entry only, a subtle "drag me" nudge — the ring auto-tilts 8° then springs back over 1.2s (plays once, stored in `sessionStorage` so it doesn't repeat). Makes interactivity discoverable without a label.
 - Parent `perspective: 700px` on `.fr-ring-scene`
 
 ### Wedge Tap — Day Detail
 When user taps a past/logged wedge:
 1. `.ring-center` fades out (`opacity: 0`)
 2. `.day-detail` fades in (`opacity: 1`) inside the ring center
-3. Shows: date string, `%` + word, per-discipline rows (✓ done / ✗ failed / · skipped)
+3. Shows: date string, `%` + word, per-discipline rows (✓ done / ✗ failed / · skipped). Discipline names truncated with `text-overflow: ellipsis; overflow:hidden; max-width: 110px` — prevents overflow from the ring center hole (≈140px wide)
 4. "✕ close" tap restores ring center
 5. Today wedge tap shows "In progress…" with current state
 
@@ -289,7 +291,7 @@ function getMonthList() {
 ### Header
 - `.fr-hdr` — sticky top bar, 52px
 - `.fr-hdr-arrow` — nav arrow button
-- `.fr-hdr-arrow.dim` — disabled state
+- `.fr-hdr-arrow.dim` — disabled state: `opacity: 0.3`, `pointer-events: none`, `cursor: default`
 - `.fr-month-title` — month label text
 
 ### Ring Zone
@@ -330,8 +332,10 @@ function getMonthList() {
 }
 
 @keyframes activeGlow {
-  0%, 100% { box-shadow: 0 0 8px rgba(201,168,76,0.5); }
-  50%       { box-shadow: 0 0 20px rgba(201,168,76,0.9); }
+  /* Uses filter:drop-shadow NOT box-shadow — box-shadow doesn't project
+     correctly inside rotateX(46deg) preserve-3d on iOS Safari */
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(201,168,76,0.5)); }
+  50%       { filter: drop-shadow(0 0 12px rgba(201,168,76,0.95)); }
 }
 
 @keyframes ghostSlide {
