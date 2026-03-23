@@ -923,7 +923,7 @@ function initRingTilt(){
     if(!dragging)return;
     dragging=false;
     tilt.style.cursor='grab';
-    rafId=requestAnimationFrame(springBack);
+    startAnimFrame();
   }
 
   tilt.addEventListener('mousedown',e=>{startDrag(e.clientX,e.clientY);e.preventDefault();});
@@ -1203,7 +1203,7 @@ function initTerrainDrag(){
     dragging=false;
     stage.style.cursor='grab';
     if(Math.abs(velocity)>0.5){
-      rafId=requestAnimationFrame(momentum);
+      startAnimFrame();
     }
   }
 
@@ -1222,6 +1222,54 @@ function initTerrainDrag(){
     set velocity(v){velocity=v;},
     momentum:()=>{rafId=requestAnimationFrame(momentum);}
   };
+}
+
+let _frRafId=null;
+
+function animFrame(){
+  let active=false;
+  const tilt=window._frTilt;
+  const terrain=window._frTerrain;
+
+  // Ring spring-back
+  if(tilt&&!tilt.dragging&&(Math.abs(tilt.velX)>0.3||Math.abs(tilt.velY)>0.3)){
+    tilt.velX*=0.88;tilt.velY*=0.88;
+    tilt.rotX=Math.max(-22,Math.min(22,tilt.rotX+tilt.velX));
+    tilt.rotY=Math.max(-18,Math.min(18,tilt.rotY+tilt.velY));
+    tilt.applyTilt();
+    active=true;
+  } else if(tilt&&!tilt.dragging&&(Math.abs(tilt.velX)<=0.3&&Math.abs(tilt.velY)<=0.3)&&(Math.abs(tilt.rotX)>0.5||Math.abs(tilt.rotY)>0.5)){
+    // Final snap to flat
+    tilt.velX=0;tilt.velY=0;
+    tilt.rotX=0;tilt.rotY=0;
+    tilt.applyTilt();
+  }
+
+  // Terrain momentum
+  if(terrain&&!terrain.dragging&&Math.abs(terrain.velocity)>0.5){
+    terrain.velocity*=0.88;
+    const inner=document.getElementById('fr-terrain-inner');
+    const stage=document.getElementById('fr-terrain-stage');
+    if(inner&&stage){
+      const innerW=inner.scrollWidth,stageW=stage.offsetWidth;
+      const min=Math.min(0,stageW-innerW);
+      let off=(inner._terrainOffset||0)+terrain.velocity;
+      off=Math.max(min,Math.min(0,off));
+      inner.style.transform=`translateX(${off}px)`;
+      inner._terrainOffset=off;
+    }
+    active=true;
+  }
+
+  if(active){
+    _frRafId=requestAnimationFrame(animFrame);
+  } else {
+    _frRafId=null;
+  }
+}
+
+function startAnimFrame(){
+  if(!_frRafId)_frRafId=requestAnimationFrame(animFrame);
 }
 
 function getDate(){const sim=localStorage.getItem('gc:sim_date');return sim||new Date().toISOString().split('T')[0];}
