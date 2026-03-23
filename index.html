@@ -751,6 +751,125 @@ function renderForgeRing(){
   });
 }
 
+function drawRing(mode){
+  const m=monthList[currentMonthIdx];
+  if(!m)return;
+  const hh=effH(),ll=effL();
+  const today=getDate();
+  const todayPrefix=today.slice(0,7);
+  const isCurrentMonth=(m.prefix===todayPrefix);
+  const todayDay=isCurrentMonth?parseInt(today.slice(8)):0;
+
+  const CX=128,CY=128,R=122,RI=82;
+  const PAD=1.5*(Math.PI/180); // 1.5 degree padding in radians
+  const total=m.daysInMonth;
+  const slice=(2*Math.PI/total);
+
+  function wedgePath(i){
+    const start=-Math.PI/2+i*slice+PAD/2;
+    const end=start+slice-PAD;
+    const x1=CX+R*Math.cos(start),y1=CY+R*Math.sin(start);
+    const x2=CX+R*Math.cos(end),y2=CY+R*Math.sin(end);
+    const x3=CX+RI*Math.cos(end),y3=CY+RI*Math.sin(end);
+    const x4=CX+RI*Math.cos(start),y4=CY+RI*Math.sin(start);
+    return`M${x1},${y1} A${R},${R} 0 0,1 ${x2},${y2} L${x3},${y3} A${RI},${RI} 0 0,0 ${x4},${y4}Z`;
+  }
+
+  function wedgeColor(day){
+    const ds=`${m.prefix}-${String(day).padStart(2,'0')}`;
+    const isFuture=(isCurrentMonth&&day>todayDay)||(m.year>parseInt(today.slice(0,4)))||(m.year===parseInt(today.slice(0,4))&&m.month>parseInt(today.slice(5,7)));
+    if(isFuture)return{fill:'rgba(255,255,255,0.04)',interact:false};
+    const p=dayPct(ds,hh,ll);
+    if(p===null)return{fill:'rgba(255,255,255,0.07)',interact:false};
+    if(p===0)return{fill:'rgba(255,255,255,0.07)',interact:true,pct:0,ds};
+    if(p<40)return{fill:'rgba(200,50,40,0.45)',interact:true,pct:p,ds,failed:true};
+    if(p<70)return{fill:'rgba(201,168,76,0.32)',interact:true,pct:p,ds};
+    if(p<100)return{fill:'rgba(201,168,76,0.60)',interact:true,pct:p,ds};
+    return{fill:'rgba(201,168,76,0.93)',interact:true,pct:p,ds};
+  }
+
+  function buildWedges(){
+    const g=document.getElementById('fr-wedges');
+    if(!g)return;
+    g.innerHTML='';
+    for(let d=1;d<=total;d++){
+      const isToday=(isCurrentMonth&&d===todayDay);
+      const info=isToday?{fill:'#e8c84c',interact:true,pct:dayPct(`${m.prefix}-${String(d).padStart(2,'0')}`,hh,ll)||0,ds:`${m.prefix}-${String(d).padStart(2,'0')}`,isToday:true}:wedgeColor(d);
+      const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d',wedgePath(d-1));
+      path.setAttribute('fill',info.fill);
+      path.setAttribute('stroke','none');
+      if(isToday)path.classList.add('fr-wedge-today');
+      if(info.interact){
+        const label=isToday?`Today, in progress`:`Day ${d}: ${info.pct}% — ${scoreWord(info.pct||0)}`;
+        path.setAttribute('role','button');
+        path.setAttribute('tabindex','0');
+        path.setAttribute('aria-label',label);
+        path.style.cursor='pointer';
+        path.addEventListener('click',()=>tapWedge(d,info.ds,info.pct,info.isToday));
+        path.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')tapWedge(d,info.ds,info.pct,info.isToday);});
+        // Add small X for failed days
+        if(info.failed){
+          const ang=-Math.PI/2+(d-1)*slice+slice/2;
+          const mr=(R+RI)/2;
+          const tx=CX+mr*Math.cos(ang),ty=CY+mr*Math.sin(ang);
+          const txt=document.createElementNS('http://www.w3.org/2000/svg','text');
+          txt.setAttribute('x',tx);txt.setAttribute('y',ty);
+          txt.setAttribute('text-anchor','middle');txt.setAttribute('dominant-baseline','central');
+          txt.setAttribute('font-size','7');txt.setAttribute('fill','rgba(255,255,255,0.7)');
+          txt.setAttribute('pointer-events','none');txt.textContent='✕';
+          g.appendChild(path);g.appendChild(txt);continue;
+        }
+      } else {
+        path.setAttribute('aria-hidden','true');
+      }
+      g.appendChild(path);
+    }
+  }
+
+  // Update center info
+  const pctEl=document.getElementById('fr-rc-pct');
+  const wordEl=document.getElementById('fr-rc-word');
+  const daysEl=document.getElementById('fr-rc-days');
+  if(pctEl&&wordEl&&daysEl){
+    if(!m.hasData&&effH().length===0){
+      pctEl.textContent='—';
+      wordEl.textContent='Start forging';
+      daysEl.innerHTML='<a class="fr-rc-cta" style="cursor:pointer;color:var(--gold);text-decoration:none;font-size:9px;" onclick="sw(\'forge\',document.querySelector(\'.bni[data-v=forge]\'))">Set up your first discipline →</a>';
+    } else {
+      pctEl.textContent=m.hasData?`${m.pct}%`:'—';
+      wordEl.textContent=m.hasData?m.word:'No data';
+      const forgedDays=m.hasData?
+        (()=>{let n=0;for(let d=1;d<=m.daysInMonth;d++){const ds=`${m.prefix}-${String(d).padStart(2,'0')}`;const p=dayPct(ds,hh,ll);if(p!==null&&p>=50)n++;}return n;})()
+        :0;
+      daysEl.textContent=`${forgedDays} day${forgedDays!==1?'s':''} forged`;
+    }
+  }
+
+  const svg=document.getElementById('fr-ring-svg');
+  if(!svg)return;
+
+  if(mode==='transition'){
+    svg.style.transition='opacity 150ms ease-in';
+    svg.style.opacity='0';
+    setTimeout(()=>{
+      buildWedges();
+      svg.style.transition='opacity 220ms cubic-bezier(0.22,1,0.36,1)';
+      svg.style.opacity='1';
+    },160);
+  } else if(mode==='assemble'){
+    buildWedges();
+    // Stagger animation on each wedge
+    const paths=svg.querySelectorAll('path');
+    paths.forEach((p,i)=>{
+      p.style.animation=`wedgeIn 0.06s ${i*14}ms cubic-bezier(0.22,1,0.36,1) both`;
+    });
+  } else {
+    // mode === false: instant
+    buildWedges();
+  }
+}
+
 function getDate(){const sim=localStorage.getItem('gc:sim_date');return sim||new Date().toISOString().split('T')[0];}
 function getHour(){return new Date().getHours();}
 function daysBack(n,ref){const d=ref?new Date(ref+'T12:00'):new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];}
