@@ -870,6 +870,96 @@ function drawRing(mode){
   }
 }
 
+function initRingTilt(){
+  const tilt=document.getElementById('fr-ring-tilt');
+  if(!tilt)return;
+  let rotX=0,rotY=0,velX=0,velY=0;
+  let dragging=false,lastX=0,lastY=0,rafId=null;
+
+  function applyTilt(){
+    tilt.style.transform=`rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+  }
+
+  function springBack(){
+    if(!dragging){
+      velX*=0.88;velY*=0.88;
+      rotX+=velX;rotY+=velY;
+      // clamp
+      rotX=Math.max(-22,Math.min(22,rotX));
+      rotY=Math.max(-18,Math.min(18,rotY));
+      applyTilt();
+      if(Math.abs(velX)>0.3||Math.abs(velY)>0.3){
+        rafId=requestAnimationFrame(springBack);
+      } else {
+        tilt.style.transition='transform 0.15s ease-out';
+        rotX=0;rotY=0;applyTilt();
+        setTimeout(()=>tilt.style.transition='',160);
+        rafId=null;
+      }
+    }
+  }
+
+  function startDrag(x,y){
+    dragging=true;
+    lastX=x;lastY=y;
+    velX=0;velY=0;
+    if(rafId){cancelAnimationFrame(rafId);rafId=null;}
+    tilt.style.transition='';
+    tilt.style.cursor='grabbing';
+  }
+
+  function moveDrag(x,y){
+    if(!dragging)return;
+    const dx=x-lastX,dy=y-lastY;
+    lastX=x;lastY=y;
+    velX=dx*0.4;velY=dy*0.4;
+    rotY+=dx*0.4;rotX-=dy*0.4;
+    rotX=Math.max(-22,Math.min(22,rotX));
+    rotY=Math.max(-18,Math.min(18,rotY));
+    applyTilt();
+  }
+
+  function endDrag(){
+    if(!dragging)return;
+    dragging=false;
+    tilt.style.cursor='grab';
+    rafId=requestAnimationFrame(springBack);
+  }
+
+  tilt.addEventListener('mousedown',e=>{startDrag(e.clientX,e.clientY);e.preventDefault();});
+  window.addEventListener('mousemove',e=>{if(dragging)moveDrag(e.clientX,e.clientY);});
+  window.addEventListener('mouseup',endDrag);
+  tilt.addEventListener('touchstart',e=>{const t=e.touches[0];startDrag(t.clientX,t.clientY);},{passive:true});
+  tilt.addEventListener('touchmove',e=>{const t=e.touches[0];moveDrag(t.clientX,t.clientY);},{passive:true});
+  tilt.addEventListener('touchend',endDrag);
+  tilt.style.cursor='grab';
+
+  // Store tilt state for Task 10 shared rAF loop
+  window._frTilt={
+    get rotX(){return rotX;},get rotY(){return rotY;},
+    get velX(){return velX;},get velY(){return velY;},
+    get dragging(){return dragging;},
+    set rotX(v){rotX=v;},set rotY(v){rotY=v;},
+    set velX(v){velX=v;},set velY(v){velY=v;},
+    applyTilt,springBack:()=>{rafId=requestAnimationFrame(springBack);}
+  };
+
+  // One-time drag affordance hint
+  if(!sessionStorage.getItem('fr-hint-shown')){
+    sessionStorage.setItem('fr-hint-shown','1');
+    let hintAngle=0,hintDir=1;
+    const HINT_MAX=8;
+    function hintAnim(){
+      hintAngle+=hintDir*0.5;
+      if(hintAngle>=HINT_MAX)hintDir=-1;
+      if(hintAngle<=-HINT_MAX*0.5){hintAngle=0;tilt.style.transform='';return;}
+      tilt.style.transform=`rotateY(${hintAngle}deg)`;
+      requestAnimationFrame(hintAnim);
+    }
+    setTimeout(hintAnim,800);
+  }
+}
+
 function getDate(){const sim=localStorage.getItem('gc:sim_date');return sim||new Date().toISOString().split('T')[0];}
 function getHour(){return new Date().getHours();}
 function daysBack(n,ref){const d=ref?new Date(ref+'T12:00'):new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];}
