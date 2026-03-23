@@ -427,7 +427,7 @@ body { color: var(--ct); }
   background: var(--bloodb);
 }
 /* Sheet button animations — both use same timing for consistency */
-.sheet-tick.stamp-done { animation: stampFail .28s cubic-bezier(.34,1.56,.64,1); }
+.sheet-tick.stamp-done { animation: stampDone 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
 .sheet-fail.stamp-fail { animation: stampFail .28s cubic-bezier(.34,1.56,.64,1); }
 .sheet-empty {
   padding: 32px 22px;
@@ -1002,6 +1002,16 @@ body.dev-mode .dev-console-btn {
 .sc-lbl {
   color: var(--ctdd);
   margin-top: 4px;
+}
+
+/* ── Done card pulse animation ── */
+@keyframes donePulse {
+  0%   { transform: scale(1); box-shadow: var(--card-shadow); }
+  40%  { transform: scale(1.02); box-shadow: 0 0 16px rgba(212,170,80,0.25), var(--card-shadow); }
+  100% { transform: scale(1); box-shadow: var(--card-shadow); }
+}
+.hcard.done-anim {
+  animation: donePulse 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* ── v0.27 Done-state card differentiation ── */
