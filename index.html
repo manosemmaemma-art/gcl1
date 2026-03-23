@@ -85,12 +85,12 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
 .bni.on .bni-lbl{color:var(--gold);}
 .bni.tap{animation:navPop .25s cubic-bezier(.34,1.56,.64,1);}
 .bni-dot{display:none;}
-.bni.on{background:rgba(212,160,23,0.12);border:1px solid rgba(212,160,23,0.22);border-radius:12px;transition:background 0.3s ease,border-color 0.3s ease;}
-.content{flex:1;padding:0 0 calc(68px + env(safe-area-inset-bottom, 10px));}
+.bni.on{background:none;border:none;border-radius:0;transition:none;}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:0 0 calc(68px + env(safe-area-inset-bottom, 10px));}
 .card{background:var(--cs);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--cbor);border-radius:16px;box-shadow:var(--card-shadow);transition:background .6s,border-color .6s,box-shadow .6s;}
-.qcard{margin:20px 18px 0;padding:20px 18px;border-left:2px solid var(--heat-color,rgba(201,168,76,0.5));cursor:pointer;transition:opacity .3s;}
+.qcard{margin:20px 18px 0;padding:20px 18px;border-left:2px solid var(--heat-color,rgba(201,168,76,0.5));cursor:pointer;transition:opacity .3s;overflow:hidden;word-wrap:break-word;}
 .qcard:active{transform:scale(.99);}
-.qtext{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;line-height:1.5;color:var(--cthi);margin-bottom:10px;}
+.qtext{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;line-height:1.5;color:var(--cthi);margin-bottom:8px;overflow-wrap:break-word;}
 .qauth{font-family:'Josefin Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ctd);}
 .scrow{display:flex;gap:10px;padding:16px 18px 0;}
 .sc{flex:1;padding:16px 10px 14px;text-align:center;position:relative;overflow:hidden;}
@@ -138,7 +138,7 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
 .shdr-l{font-family:'Josefin Sans',sans-serif;font-weight:600;font-size:11px;letter-spacing:3.5px;color:var(--ct);text-transform:uppercase;text-shadow:var(--ts);}
 .hlist{padding:0 18px;display:flex;flex-direction:column;gap:9px;}
 @keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.hcard{padding:16px 14px;display:flex;align-items:center;gap:10px;transition:border-color .2s,transform .15s,background .6s;animation:cardIn 0.25s ease-out both;}
+.hcard{padding:16px 14px;display:flex;align-items:center;gap:10px;transition:border-color .2s,transform .15s,background .6s;}
 .hcard:active{transform:scale(.99);}
 .hcard.crack-anim{animation:crack .42s cubic-bezier(.36,.07,.19,.97) both;}
 .hcard.crack-anim::after{content:'';position:absolute;inset:0;border-radius:16px;background:linear-gradient(128deg,transparent 38%,rgba(110,16,16,.18) 50%,transparent 62%);animation:crackFlash .42s ease both;pointer-events:none;}
@@ -279,7 +279,7 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
 /* ── GOLD PREMIUM UI ── */
 body.premium .sbadge{border-color:var(--gold-glow);box-shadow:0 0 14px rgba(201,168,76,.2),var(--card-shadow);}
 body.premium .cbar-fill{background:linear-gradient(90deg,#c9a84c,#f0d080);}
-body.premium .bni.on{background:rgba(212,160,23,0.18);border-color:rgba(212,160,23,0.35);}
+body.premium .bni.on{background:none;border:none;}
 body.premium .qcard{border-left-color:rgba(201,168,76,0.9);}
 body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
 
@@ -303,6 +303,7 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
 .flex-fill{flex:1;}
 .shdr-m{margin:12px 18px 0;}
 @keyframes heatPulse{0%,100%{opacity:var(--veil-base,0)}50%{opacity:calc(var(--veil-base,0) + 0.04)}}
+#heat-veil{position:absolute;inset:0;pointer-events:none;z-index:0;background:linear-gradient(180deg,rgba(212,170,80,0.04) 0%,transparent 60%);opacity:var(--veil-base,0);transition:opacity 0.6s;}
 #heat-veil.pulsing{animation:heatPulse 3s ease-in-out infinite;}
 </style>
 <link rel="stylesheet" href="gritcore.css">
@@ -313,10 +314,9 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
   <div id="ambient-veil"></div>
   <div class="hdr" id="hdr">
     <div class="hdr-top">
-      <div class="hdr-left"><button class="settings-btn btn-reset" onclick="openSettings()" aria-label="Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ctd)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
+      <div class="hdr-left"><button class="settings-btn btn-reset" onclick="openSettings()" aria-label="Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ctd)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button><div id="hdr-date" class="hdr-date"></div></div>
       <div class="hdr-logo-wrap"><div class="logo"><span class="logo-d">◆</span><span class="logo-g">GRIT</span><span class="logo-c">CORE</span></div><div class="logo-sub" id="logo-tagline">Forge your discipline.</div></div>
       <div class="hdr-right">
-        <div id="hdr-date" class="hdr-date"></div>
         <span id="motivation-line"></span>
         <div class="sbadge" id="sbadge"><span class="sfire" id="sfire">🔥</span><span class="stxt" id="stxt">0</span></div>
       </div>
@@ -889,7 +889,8 @@ function swTo(v){view=v;document.querySelectorAll('.bni').forEach(b=>b.classList
 function nextQ(){const qc=document.getElementById('qcard');if(qc){qc.classList.add('flash');setTimeout(()=>qc.classList.remove('flash'),250);}qi=(qi+1)%QUOTES.length;const q2=document.getElementById('qcard');if(q2){q2.querySelector('.qtext').textContent=QUOTES[qi].t;q2.querySelector('.qauth').textContent='— '+QUOTES[qi].a;}}
 function getTodayQuote(){const d=Math.floor(Date.now()/86400000);return QUOTES[d%QUOTES.length];}
 function getTomorrowQuote(){const d=Math.floor(Date.now()/86400000)+1;return QUOTES[d%QUOTES.length];}
-function qPreview(el){if(QUOTES.length<=1)return;const q2=getTomorrowQuote();const txt=el.querySelector('.qtext');const auth=el.querySelector('.qauth');const orig=getTodayQuote();txt.textContent=q2.t;auth.textContent='— '+q2.a;el.style.opacity='0.7';clearTimeout(el._qt);el._qt=setTimeout(()=>{txt.textContent=orig.t;auth.textContent='— '+orig.a;el.style.opacity='';},3000);}
+let quoteIdx = -1;
+function qPreview(el){if(QUOTES.length<=1)return;const txt=el.querySelector('.qtext');const auth=el.querySelector('.qauth');if(quoteIdx===-1){const today=getTodayQuote();quoteIdx=QUOTES.findIndex(q=>q.t===today.t);}quoteIdx=(quoteIdx+1)%QUOTES.length;txt.textContent=QUOTES[quoteIdx].t;auth.textContent='— '+QUOTES[quoteIdx].a;}
 const STREAK_MILESTONES = [
   { days: 7,   msg: '7-Day Streak',   sub: 'One week of iron will.' },
   { days: 14,  msg: '14-Day Streak',  sub: 'Two weeks. Unshakeable.' },
@@ -930,6 +931,7 @@ function openSettings() {
   const backdrop = document.getElementById('settings-backdrop');
   const list = document.getElementById('settings-list');
   if (!el || !list) return;
+  if (el.classList.contains('open')) { closeSettings(); return; }
   const hh = effH();
   const totalLogs = Object.keys(effL()).length;
   list.innerHTML = `
@@ -945,7 +947,7 @@ function openSettings() {
       <div class="settings-row-left"><span class="settings-row-icon">◆</span><span class="settings-row-label">About GritCore</span></div>
       <span class="settings-row-value"></span>
     </div>
-    <div class="settings-version">GritCore v0.26</div>
+    <div class="settings-version">GritCore v0.27</div>
   `;
   backdrop.style.display = 'block';
   requestAnimationFrame(() => el.classList.add('open'));
