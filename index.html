@@ -1272,6 +1272,59 @@ function startAnimFrame(){
   if(!_frRafId)_frRafId=requestAnimationFrame(animFrame);
 }
 
+function jumpToMonth(idx){
+  if(idx<0||idx>=monthList.length)return;
+  currentMonthIdx=idx;
+  updateHeader();
+  drawRing(false);
+  // Rebuild terrain to shift active class (no bar re-animation needed — we just update classes)
+  const cols=document.querySelectorAll('.fr-t-col');
+  cols.forEach((col,i)=>{
+    const bar=col.querySelector('.fr-t-bar');
+    if(!bar)return;
+    bar.classList.remove('fr-t-bar--active','fr-t-bar--best','fr-t-bar--high','fr-t-bar--mid','fr-t-bar--low','fr-t-bar--empty');
+    const m=monthList[i];
+    if(i===currentMonthIdx){
+      bar.classList.add('fr-t-bar--active');
+    } else if(m.hasData){
+      if(m.pct>=80)bar.classList.add('fr-t-bar--best');
+      else if(m.pct>=60)bar.classList.add('fr-t-bar--high');
+      else if(m.pct>=40)bar.classList.add('fr-t-bar--mid');
+      else bar.classList.add('fr-t-bar--low');
+    } else {
+      bar.classList.add('fr-t-bar--empty');
+    }
+    const lbl=col.querySelector('.fr-t-lbl');
+    if(lbl)lbl.classList.toggle('fr-t-lbl--active',i===currentMonthIdx);
+  });
+  // Smooth scroll terrain to bring jumped column into view
+  requestAnimationFrame(()=>{
+    const inner=document.getElementById('fr-terrain-inner');
+    const stage=document.getElementById('fr-terrain-stage');
+    const activeCol=document.querySelector(`.fr-t-col[data-idx="${idx}"]`);
+    if(!inner||!stage||!activeCol)return;
+    const stageW=stage.offsetWidth;
+    const colLeft=activeCol.offsetLeft;
+    const colW=activeCol.offsetWidth;
+    const target=-(colLeft-(stageW/2-colW/2));
+    const innerW=inner.scrollWidth;
+    const min=Math.min(0,stageW-innerW);
+    const clamped=Math.max(min,Math.min(0,target));
+    // Animate offset to target
+    let current=inner._terrainOffset||0;
+    const diff=clamped-current;
+    if(Math.abs(diff)<2){return;}
+    function scrollStep(){
+      current+=(clamped-current)*0.18;
+      inner.style.transform=`translateX(${current}px)`;
+      inner._terrainOffset=current;
+      if(Math.abs(clamped-current)>1)requestAnimationFrame(scrollStep);
+      else{inner.style.transform=`translateX(${clamped}px)`;inner._terrainOffset=clamped;}
+    }
+    requestAnimationFrame(scrollStep);
+  });
+}
+
 function getDate(){const sim=localStorage.getItem('gc:sim_date');return sim||new Date().toISOString().split('T')[0];}
 function getHour(){return new Date().getHours();}
 function daysBack(n,ref){const d=ref?new Date(ref+'T12:00'):new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];}
@@ -1465,7 +1518,7 @@ function updateStreakBadge(){
 function sw(v,el){
   if(view===v)return;
   const prevView=view;
-  // recordMonthOffset removed — currentMonthIdx reset handled in renderForgeRing()
+  if(view==='record'&&v!=='record')currentMonthIdx=Math.max(0,monthList.length-1);
   view=v;
   document.querySelectorAll('.bni').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   if(el){el.classList.add('tap');setTimeout(()=>el.classList.remove('tap'),300);}
