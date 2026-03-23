@@ -938,7 +938,7 @@ function renderToday(){
   const d=new Date();
   const ds=d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
   let hhtml='';
-  if(!hh.length){hhtml=`<div class="empty-card card af" onclick="swTo('forge')"><div class="empty-title">Your disciplines await.</div><div class="empty-sub">Nothing is forged without a first strike.<br>Add your first discipline to begin.</div><div class="empty-cta">Open Forge →</div></div>`;}
+  if(!hh.length){hhtml=`<button class="empty-card card af btn-reset" onclick="swTo('forge')"><div class="empty-title">Your disciplines await.</div><div class="empty-sub">Nothing is forged without a first strike.<br>Add your first discipline to begin.</div><div class="empty-cta">Open Forge →</div></button>`;}
   else{
     hhtml=`<div id="hlist-wrap"><div class="hlist">`;
     hh.forEach((hb,i)=>{const s=tl[hb.id],dis=isPlaceholder?'style="opacity:.55;pointer-events:none"':'';
@@ -947,11 +947,11 @@ function renderToday(){
       hhtml+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${hb.name}</div><div class="hcard-cat">${getCatName(hb.cat)}${isPlaceholder?' · Sample':''}</div></div><div class="hcard-btns">${streakBadge}<button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
     });
     hhtml+='</div></div>';
-    if(isPlaceholder)hhtml+=`<div class="sample-banner" onclick="swTo('forge')"><span class="sample-banner-icon">⚒</span><div><div class="sample-banner-tag">Sample Data</div><div class="sample-banner-sub">Tap to forge your own →</div></div></div>`;
+    if(isPlaceholder)hhtml+=`<button class="sample-banner btn-reset" onclick="swTo('forge')"><span class="sample-banner-icon">⚒</span><div><div class="sample-banner-tag">Sample Data</div><div class="sample-banner-sub">Tap to forge your own →</div></div></button>`;
   }
   const q=getTodayQuote();
   return `
-  <div id="qcard" class="qcard card af" onclick="qPreview(this)"><div class="qtext">${q.t}</div><div class="qauth">— ${q.a}</div></div>
+  <button id="qcard" class="qcard card af btn-reset" onclick="qPreview(this)"><div class="qtext">${q.t}</div><div class="qauth">— ${q.a}</div></button>
   <div class="scrow af s1">
     <div class="sc card ${tp!==null&&tp>=70?'lit':tp!==null&&tp<40?'bad':tp!==null?'ok':''}" id="sc0"><div class="sc-num">${tp!==null?tp+'%':'—'}</div><div class="sc-word">${tp!==null?todayLabel(tp):''}</div><div class="sc-lbl">Today</div></div>
     <div class="sc card ${wp!==null&&wp>=70?'lit':wp!==null&&wp<40?'bad':wp!==null?'ok':''}" id="sc1"><div class="sc-num">${wp!==null?wp+'%':'—'}</div><div class="sc-word">${wp!==null?weekLabel(wp):''}</div><div class="sc-lbl">7 Day</div></div>
@@ -1017,7 +1017,7 @@ function renderRecord(monthOffset){
       const pct=dayPct(d,hh,ll);
       const cls=pct===null?'hm-empty':pct===100?'hm-full':pct>=80?'hm-hi':pct>=50?'hm-mid':'hm-lo';
       const isToday=d===getDate()?' hm-today':'';
-      cellsHtml+=`<div class="hm-cell ${cls}${isToday}" data-date="${d}" data-pct="${pct??''}" onclick="hmTap(this)"></div>`;
+      cellsHtml+=`<button class="hm-cell btn-reset ${cls}${isToday}" data-date="${d}" data-pct="${pct??''}" onclick="hmTap(this)"></button>`;
     });
   }
   const scRow=`<div class="scrow af s1">
