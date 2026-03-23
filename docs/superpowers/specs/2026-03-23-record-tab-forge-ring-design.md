@@ -46,7 +46,7 @@ Two vertically stacked zones, each interactive:
 - SVG-based radial ring, 256×256px, centered in a `flex:1` zone
 - Outer radius R=122, inner radius ri=82 → ring band width = 40px
 - 31 (or 28/30) path segments (wedges), one per day of the month
-- Ghost month name: positioned **above** the ring SVG (not behind it), `font-size: 96px`, Cormorant Garamond italic, `rgba(201,168,76,0.06)`, `pointer-events:none`. It sits in a `position:absolute` layer at the top of `.fr-ring-scene`, above the tilt wrapper — so the ring never covers it. On month navigate it slides ±30px + fades with `ghostSlide` keyframe.
+- Ghost month name: positioned **above** the ring SVG (not behind it), `font-size: 96px`, Cormorant Garamond italic, `rgba(201,168,76,0.10)`, `pointer-events:none`. It sits in a `position:absolute` layer at the top of `.fr-ring-scene`, above the tilt wrapper — so the ring never covers it. On month navigate it slides ±30px + fades with `ghostSlide` keyframe.
 
 ### Ring Center (default state)
 - `%` number: Cormorant Garamond 46px bold, `#c9a84c`
@@ -60,8 +60,8 @@ Two vertically stacked zones, each interactive:
 | 70–99% | `rgba(201,168,76,0.60)` | Rich gold |
 | 40–69% | `rgba(201,168,76,0.32)` | Mid amber |
 | 1–39% | `rgba(200,50,40,0.45)` | Crimson — failed |
-| 0% / no data | `rgba(255,255,255,0.025)` | Near invisible |
-| Future | `rgba(255,255,255,0.02)` | Ghosted, no interaction |
+| 0% / no data | `rgba(255,255,255,0.07)` | Faint — ring structure visible |
+| Future | `rgba(255,255,255,0.04)` | Ghosted — ring outline visible, no interaction |
 | Today | `#e8c84c` | Pulsing glow animation |
 | null (no habits) | `rgba(255,255,255,0.02)` | Empty spacer |
 
@@ -93,17 +93,32 @@ When user taps a past/logged wedge:
 
 Day detail data: look up `logs[dateStr]` for each habit in `effH()`.
 
-### Month Entry Animation
-On `drawRing()` with `animate=true`, each wedge gets:
+### Month Entry Animation (tab entry only)
+`drawRing()` accepts a mode parameter: `'assemble'` | `'transition'` | `false`
+
+**`'assemble'`** — used only on first render when the Record tab opens. Each wedge staggers in:
 ```css
 animation: wedgeIn 0.06s calc(i * 14ms) cubic-bezier(0.22,1,0.36,1) both
 ```
-All 31 wedges stagger in over ~450ms total — a ring that assembles itself.
+All wedges sequence over ~450ms — the ring assembles itself. Plays once per tab visit.
+
+**`'transition'`** — used on `‹ ›` month navigation. No re-stagger. Instead:
+1. The entire `.fr-ring-svg` fades to `opacity: 0` over 150ms (`ease-in`)
+2. Wedge fill data is swapped (new month's colors applied to the existing path elements — no DOM rebuild)
+3. `.fr-ring-svg` fades back to `opacity: 1` over 220ms (`cubic-bezier(0.22,1,0.36,1)`)
+
+This feels like flipping a page — smooth and intentional, not a full restart.
+
+**`false`** — instant, no animation (used internally by `jumpToMonth` when terrain tap jumps to a far month — the terrain handles its own visual feedback in that case).
 
 ### Month Navigation
 - `‹ ›` arrows in header
-- Tapping: ghost name fades + slides (`opacity:0`, `translateX(±30px)`) → ring redraws → ghost slides back in
-- `›` disabled (`.dim`) when on current month
+- Arrow tap → `changeMonth(±1)`:
+  1. Ghost name exits: `opacity:0` + `translateX(±24px)`, 180ms `ease-in`
+  2. Ring crossfades (mode `'transition'`, 370ms total)
+  3. Ghost name enters from opposite side: `opacity:1` + `translateX(0)`, 220ms `cubic-bezier(0.22,1,0.36,1)`
+  4. Terrain active bar class shifts to new column — **no bar re-animation**, just class swap
+- `›` disabled (`.dim`, `pointer-events:none`) when on current month
 - No future months allowed
 
 ---
@@ -174,7 +189,10 @@ function jumpToMonth(idx) {
   // ghost name animation fires inside drawRing/updateHeader same as changeMonth
 }
 ```
-This sets `currentMonthIdx` directly (no delta calculation) then redraws exactly the same way as `changeMonth`. The ghost name slide animation is triggered by `updateHeader()` in both paths.
+This sets `currentMonthIdx` directly then redraws. Key differences from `changeMonth`:
+- Ring uses mode `false` (instant, no crossfade) since the terrain tap is itself the visual feedback
+- Ghost name still animates via `updateHeader()`
+- Terrain does NOT re-animate bars — only the active class shifts. If the tapped column is offscreen, animate `offset` to bring it into view using a short `rAF` easing loop (same `×0.88` damping, terminates when column is centered ±20px)
 
 ---
 
