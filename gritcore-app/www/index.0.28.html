@@ -663,9 +663,8 @@ const PH=[{id:'ph1',name:'Cold Shower',cat:'Body'},{id:'ph2',name:'Meditation',c
 const PHL={};
 (()=>{for(let i=0;i<21;i++){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().split('T')[0];PHL[ds]={ph1:Math.random()>.2?'done':'failed',ph2:Math.random()>.3?'done':'failed',ph3:Math.random()>.35?'done':'failed',ph4:Math.random()>.25?'done':'failed'};}})();
 
-let habits=[],logs={},cats=[],view='today',qi=0,selCat='';
+let habits=[],logs={},cats=[],view='today',qi=0,selCat='',recordMonthOffset=0;
 let isPlaceholder=false,toastTimer=null;
-let monthList=[], currentMonthIdx=0;
 
 function getDate(){const sim=localStorage.getItem('gc:sim_date');return sim||new Date().toISOString().split('T')[0];}
 function getHour(){return new Date().getHours();}
@@ -860,7 +859,7 @@ function updateStreakBadge(){
 function sw(v,el){
   if(view===v)return;
   const prevView=view;
-  // recordMonthOffset removed — currentMonthIdx reset handled in renderForgeRing()
+  if(view==='record'&&v!=='record')recordMonthOffset=0;
   view=v;
   document.querySelectorAll('.bni').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   if(el){el.classList.add('tap');setTimeout(()=>el.classList.remove('tap'),300);}
@@ -1053,6 +1052,103 @@ function renderToday(){
   ${hhtml}
   ${q?`<div class="qcard card af s4" onclick="qPreview()"><div class="qtext">"${q.text}"</div><div class="qauth">— ${q.author}</div></div>`:''}
   <div class="ftr"><div class="ftr-logo">Gritcore</div><div class="ftr-sub">Discipline is freedom</div></div>`;
+}
+function renderRecord(monthOffset){
+  if(monthOffset===undefined)monthOffset=0;
+  const hh=effH(),ll=effL();
+  const now=new Date();
+  now.setDate(1);
+  now.setMonth(now.getMonth()+monthOffset);
+  const viewYear=now.getFullYear();
+  const viewMonth=now.getMonth();
+  const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const monthLabel=`${monthNames[viewMonth]} ${viewYear}`;
+  const navHtml=`<div class="rec-month-nav af s1">
+    <button class="rec-nav-btn" onclick="goRecordMonth(-1)">‹</button>
+    <span class="rec-month-label">${monthLabel}</span>
+    <button class="rec-nav-btn" onclick="goRecordMonth(1)" ${monthOffset>=0?'disabled':''}>›</button>
+  </div>`;
+  if(monthOffset<0){
+    const daysInMonth=new Date(viewYear,viewMonth+1,0).getDate();
+    let dayRows='';
+    for(let d=1;d<=daysInMonth;d++){
+      const dateStr=`${viewYear}-${String(viewMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const pct=dayPct(dateStr,hh,ll);
+      const dayShort=new Date(dateStr+'T12:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+      dayRows+=`<div class="rec-day-row">
+        <span class="rec-day-date">${dayShort}</span>
+        <div class="rec-day-bar-wrap"><div class="rec-day-bar" style="width:${pct??0}%"></div></div>
+        <span class="rec-day-pct">${pct!==null?pct+'%':'—'}</span>
+      </div>`;
+    }
+    return `${navHtml}<div class="shdr af s2" style="margin:0 18px;"><span class="shdr-l">Daily Log</span></div><div class="card rec-day-list af s3">${dayRows}</div>`;
+  }
+  const tp=todayPct(),wp=weekPct(),streak=calcStreak(),tier=getTier(streak);
+  const days=last365();
+  const firstDate=new Date(days[0]+'T12:00');
+  const startPad=(firstDate.getDay()+6)%7;
+  const cells=Array(startPad).fill(null).concat(days);
+  const weeks=[];
+  for(let i=0;i<cells.length;i+=7)weeks.push(cells.slice(i,i+7));
+  const hmMonthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let monthLabels='<div></div>';
+  let lastMonth=-1;
+  weeks.forEach(week=>{
+    const firstDay=week.find(d=>d!==null);
+    if(firstDay){const m=new Date(firstDay+'T12:00').getMonth();if(m!==lastMonth){monthLabels+=`<div class="hm-month">${hmMonthNames[m]}</div>`;lastMonth=m;}else monthLabels+='<div></div>';}
+    else monthLabels+='<div></div>';
+  });
+  const dayLabels=['M','','W','','F','',''];
+  let cellsHtml='';
+  for(let row=0;row<7;row++){
+    cellsHtml+=`<div class="hm-day-lbl">${dayLabels[row]}</div>`;
+    weeks.forEach(week=>{
+      const d=week[row];
+      if(!d){cellsHtml+='<div class="hm-cell hm-empty"></div>';return;}
+      const pct=dayPct(d,hh,ll);
+      const cls=pct===null?'hm-empty':pct===100?'hm-full':pct>=80?'hm-hi':pct>=50?'hm-mid':'hm-lo';
+      const isToday=d===getDate()?' hm-today':'';
+      cellsHtml+=`<button class="hm-cell btn-reset ${cls}${isToday}" data-date="${d}" data-pct="${pct??''}" onclick="hmTap(this)"></button>`;
+    });
+  }
+  const scRow=`<div class="scrow af s1">
+    <div class="sc card ${tp!==null&&tp>=70?'lit':tp!==null&&tp<40?'bad':tp!==null?'ok':''}" id="sc0"><div class="sc-num">${tp!==null?tp+'%':'—'}</div><div class="sc-word">${tp!==null?todayLabel(tp):''}</div><div class="sc-lbl">Today</div></div>
+    <div class="sc card ${wp!==null&&wp>=70?'lit':wp!==null&&wp<40?'bad':wp!==null?'ok':''}" id="sc1"><div class="sc-num">${wp!==null?wp+'%':'—'}</div><div class="sc-word">${wp!==null?weekLabel(wp):''}</div><div class="sc-lbl">7 Day</div></div>
+    <div class="sc card ${streak>=3?'lit':streak>0?'ok':'bad'}" id="sc2"><div class="sc-num">${streak>0?streak:'—'}</div><div class="sc-word">${streak>0?tier.name:'No Streak'}</div><div class="sc-lbl">Streak</div></div>
+  </div>`;
+  const existingHtml=`${scRow}
+  <div class="shdr af s1"><span class="shdr-l">52-Week Record</span></div>
+  <div class="card af s2" style="padding:14px 10px 10px;overflow:hidden;">
+    <div class="hm-wrap" id="hm-wrap">
+      <div class="hm-grid" style="grid-template-columns:18px repeat(${weeks.length},1fr);">
+        ${monthLabels}
+        ${cellsHtml}
+      </div>
+    </div>
+  </div>
+  <div class="hm-tooltip" id="hm-tooltip"></div>
+  <div class="ftr"><div class="ftr-logo">Gritcore</div><div class="ftr-sub">Every mark is proof</div></div>`;
+  return `${navHtml}${existingHtml}`;
+}
+function goRecordMonth(delta){
+  recordMonthOffset=Math.min(0,recordMonthOffset+delta);
+  document.getElementById('content').innerHTML=renderRecord(recordMonthOffset);
+  if(recordMonthOffset===0){
+    requestAnimationFrame(()=>{
+      const wrap=document.getElementById('hm-wrap');
+      if(wrap)wrap.scrollLeft=wrap.scrollWidth;
+    });
+  }
+}
+function hmTap(cell){
+  const d=cell.dataset.date;
+  const pct=cell.dataset.pct;
+  const tip=document.getElementById('hm-tooltip');
+  if(!tip)return;
+  tip.textContent=pct!==''?`${d} — ${pct}%`:`${d} — no data`;
+  tip.classList.add('show');
+  clearTimeout(tip._t);
+  tip._t=setTimeout(()=>tip.classList.remove('show'),2000);
 }
 function catStats(){const hh=effH(),ll=effL();return cats.filter(c=>hh.some(h=>h.cat===c.id)).map(c=>{let done=0,total=0;Object.values(ll).forEach(dayLog=>{hh.filter(h=>h.cat===c.id).forEach(h=>{if(dayLog[h.id]==='done'){done++;total++;}else if(dayLog[h.id]==='failed')total++;});});return{cat:c.name,pct:total>0?Math.round((done/total)*100):0};});}
 function renderReport() {
@@ -1342,7 +1438,7 @@ function onDragEnd(){
 function render(){
   const c=document.getElementById('content');
   if(view==='today')c.innerHTML=renderToday();
-  else if(view==='record'){renderForgeRing();}
+  else if(view==='record'){c.innerHTML=renderRecord(recordMonthOffset);requestAnimationFrame(()=>{const wrap=document.getElementById('hm-wrap');if(wrap)wrap.scrollLeft=wrap.scrollWidth;});}
   else if(view==='report')renderReport();
   else if(view==='forge')c.innerHTML=renderForge();
   if(view==='forge')setTimeout(initReorder,0);
