@@ -796,7 +796,36 @@ function drawRing(mode){
   function buildWedges(){
     const g=document.getElementById('fr-wedges');
     if(!g)return;
+    // Clear entire SVG children except <style>
+    const svg=document.getElementById('fr-ring-svg');
+    Array.from(svg.children).forEach(ch=>{if(ch.tagName!=='style'&&ch.id!=='fr-wedges')ch.remove();});
     g.innerHTML='';
+
+    // Forge glow defs
+    let defs=svg.querySelector('defs');
+    if(!defs){defs=document.createElementNS('http://www.w3.org/2000/svg','defs');svg.insertBefore(defs,svg.firstChild);}
+    defs.innerHTML=`
+      <radialGradient id="forgeGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="rgba(201,168,76,0.18)"/>
+        <stop offset="55%" stop-color="rgba(201,168,76,0.05)"/>
+        <stop offset="100%" stop-color="rgba(201,168,76,0)"/>
+      </radialGradient>`;
+
+    // Background forge glow circle
+    const glowBg=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    glowBg.setAttribute('cx','128');glowBg.setAttribute('cy','128');glowBg.setAttribute('r','128');
+    glowBg.setAttribute('fill','url(#forgeGlow)');glowBg.setAttribute('pointer-events','none');
+    svg.insertBefore(glowBg,g);
+
+    // Depth rings — concentric faint circles
+    const depthRings=[{r:76,o:.06},{r:105,o:.05},{r:132,o:.04}];
+    depthRings.forEach(({r,o})=>{
+      const dr=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dr.setAttribute('cx','128');dr.setAttribute('cy','128');dr.setAttribute('r',r);
+      dr.setAttribute('fill','none');dr.setAttribute('stroke',`rgba(201,168,76,${o})`);dr.setAttribute('stroke-width','1');
+      dr.setAttribute('pointer-events','none');
+      svg.insertBefore(dr,g);
+    });
     for(let d=1;d<=total;d++){
       const isToday=(isCurrentMonth&&d===todayDay);
       const info=isToday?{fill:'#e8c84c',interact:true,pct:dayPct(`${m.prefix}-${String(d).padStart(2,'0')}`,hh,ll)||0,ds:`${m.prefix}-${String(d).padStart(2,'0')}`,isToday:true}:wedgeColor(d);
@@ -830,6 +859,12 @@ function drawRing(mode){
       }
       g.appendChild(path);
     }
+    // Inner separator circle (rim between ring and center)
+    const innerRim=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    innerRim.setAttribute('cx','128');innerRim.setAttribute('cy','128');innerRim.setAttribute('r','82');
+    innerRim.setAttribute('fill','none');innerRim.setAttribute('stroke','rgba(201,168,76,0.12)');
+    innerRim.setAttribute('stroke-width','1');innerRim.setAttribute('pointer-events','none');
+    g.appendChild(innerRim);
   }
 
   // Update center info
