@@ -1078,6 +1078,79 @@ function changeMonth(delta){
   });
 }
 
+function buildTerrain(){
+  const inner=document.getElementById('fr-terrain-inner');
+  if(!inner)return;
+  inner.innerHTML='';
+  let lastYear=null;
+
+  monthList.forEach((m,i)=>{
+    // Year boundary marker
+    if(lastYear!==null&&m.year!==lastYear){
+      const ym=document.createElement('div');
+      ym.className='fr-t-year-mark';
+      ym.innerHTML=`<span class="fr-t-year-lbl">${m.year}</span>`;
+      inner.appendChild(ym);
+    }
+    lastYear=m.year;
+
+    const isActive=(i===currentMonthIdx);
+    const barH=Math.max(14,Math.round((m.pct/100)*(isActive?160:130)));
+    const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    // Determine bar state class
+    let stateClass='fr-t-bar--empty';
+    if(isActive){
+      stateClass='fr-t-bar--active';
+    } else if(m.hasData){
+      if(m.pct>=80)stateClass='fr-t-bar--best';
+      else if(m.pct>=60)stateClass='fr-t-bar--high';
+      else if(m.pct>=40)stateClass='fr-t-bar--mid';
+      else stateClass='fr-t-bar--low';
+    }
+
+    const col=document.createElement('div');
+    col.className='fr-t-col';
+    col.dataset.idx=i;
+    col.setAttribute('role','button');
+    col.setAttribute('tabindex','0');
+    col.setAttribute('aria-label',`${monthNames[m.month-1]} ${m.year}: ${m.hasData?m.pct+'%':'no data'}`);
+    col.addEventListener('click',()=>jumpToMonth(i));
+    col.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')jumpToMonth(i);});
+
+    const bar=document.createElement('div');
+    bar.className=`fr-t-bar ${stateClass}`;
+    bar.style.height=`${barH}px`;
+    bar.style.animationDelay=`${i*55}ms`;
+
+    const lbl=document.createElement('div');
+    lbl.className=`fr-t-lbl${isActive?' fr-t-lbl--active':''}`;
+    lbl.textContent=monthNames[m.month-1].slice(0,3);
+
+    col.appendChild(bar);
+    col.appendChild(lbl);
+    inner.appendChild(col);
+  });
+
+  // Auto-scroll to active column (current month visible)
+  requestAnimationFrame(()=>{
+    const activeCol=inner.querySelector(`[data-idx="${currentMonthIdx}"]`);
+    const stage=document.getElementById('fr-terrain-stage');
+    if(activeCol&&stage){
+      const colLeft=activeCol.offsetLeft;
+      const colW=activeCol.offsetWidth;
+      const stageW=stage.offsetWidth;
+      // Center active column in view
+      const targetOffset=-(colLeft-(stageW/2-colW/2));
+      const maxOffset=0;
+      const innerW=inner.scrollWidth;
+      const minOffset=Math.min(0,stageW-innerW);
+      inner.style.transform=`translateX(${Math.max(minOffset,Math.min(maxOffset,targetOffset))}px)`;
+      inner._terrainOffset=Math.max(minOffset,Math.min(maxOffset,targetOffset));
+    }
+  });
+}
+
 function getDate(){const sim=localStorage.getItem('gc:sim_date');return sim||new Date().toISOString().split('T')[0];}
 function getHour(){return new Date().getHours();}
 function daysBack(n,ref){const d=ref?new Date(ref+'T12:00'):new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];}
