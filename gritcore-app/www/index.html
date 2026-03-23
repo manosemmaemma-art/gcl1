@@ -700,6 +700,57 @@ function getMonthList(){
   return months;
 }
 
+function renderForgeRing(){
+  monthList=getMonthList();
+  currentMonthIdx=Math.max(0,monthList.length-1);
+  const c=document.getElementById('content');
+  c.innerHTML=`
+<div id="record-tab" style="display:flex;flex-direction:column;height:100%;overflow:hidden;">
+  <div class="fr-hdr">
+    <button class="fr-hdr-arrow" id="fr-prev" onclick="changeMonth(-1)" aria-label="Previous month">&#8249;</button>
+    <span class="fr-month-title" id="fr-month-title"></span>
+    <button class="fr-hdr-arrow" id="fr-next" onclick="changeMonth(1)" aria-label="Next month">&#8250;</button>
+  </div>
+  <div class="fr-ring-scene" id="fr-ring-scene">
+    <div class="fr-ghost-name" id="fr-ghost-name"></div>
+    <div class="fr-ring-tilt" id="fr-ring-tilt">
+      <svg id="fr-ring-svg" viewBox="0 0 256 256" width="256" height="256" aria-label="Discipline ring">
+        <style>
+          @keyframes todayWedgePulse{0%,100%{filter:drop-shadow(0 0 6px rgba(255,220,70,0.9))}50%{filter:drop-shadow(0 0 16px rgba(255,220,70,1))}}
+          .fr-wedge-today{animation:todayWedgePulse 2.5s ease-in-out infinite}
+        </style>
+        <g id="fr-wedges"></g>
+      </svg>
+      <div class="fr-ring-center" id="fr-ring-center">
+        <div class="fr-rc-pct" id="fr-rc-pct"></div>
+        <div class="fr-rc-word" id="fr-rc-word"></div>
+        <div class="fr-rc-days" id="fr-rc-days"></div>
+      </div>
+      <div class="fr-day-detail" id="fr-day-detail" style="display:none;opacity:0;">
+        <div class="fr-dd-date" id="fr-dd-date"></div>
+        <div class="fr-dd-pct" id="fr-dd-pct"></div>
+        <div class="fr-dd-habits" id="fr-dd-habits"></div>
+        <button class="fr-dd-close btn-reset" onclick="closeDetail()" aria-label="Close day detail">&#10005; close</button>
+      </div>
+    </div>
+  </div>
+  <div class="fr-terrain-section" id="fr-terrain-section">
+    <div class="fr-terrain-stage" id="fr-terrain-stage">
+      <div class="fr-terrain-floor">
+        <div class="fr-terrain-inner" id="fr-terrain-inner"></div>
+      </div>
+    </div>
+  </div>
+</div>`;
+  requestAnimationFrame(()=>{
+    updateHeader();
+    drawRing('assemble');
+    buildTerrain();
+    initRingTilt();
+    initTerrainDrag();
+  });
+}
+
 function getDate(){const sim=localStorage.getItem('gc:sim_date');return sim||new Date().toISOString().split('T')[0];}
 function getHour(){return new Date().getHours();}
 function daysBack(n,ref){const d=ref?new Date(ref+'T12:00'):new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];}
