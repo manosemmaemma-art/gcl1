@@ -1016,6 +1016,68 @@ function closeDetail(){
   },140);
 }
 
+function updateHeader(direction){
+  const m=monthList[currentMonthIdx];
+  if(!m)return;
+  const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const name=monthNames[m.month-1];
+  const year=m.year;
+
+  // Month title
+  const titleEl=document.getElementById('fr-month-title');
+  if(titleEl)titleEl.textContent=`${name.slice(0,3).toUpperCase()} ${year}`;
+
+  // Ghost name animation
+  const ghost=document.getElementById('fr-ghost-name');
+  if(ghost){
+    const dx=direction==='next'?30:(direction==='prev'?-30:0);
+    if(dx!==0){
+      // Slide out
+      ghost.style.transition='opacity 180ms ease-in, transform 180ms ease-in';
+      ghost.style.opacity='0';
+      ghost.style.transform=`translateX(${dx}px)`;
+      setTimeout(()=>{
+        ghost.textContent=name;
+        ghost.style.transition='none';
+        ghost.style.transform=`translateX(${-dx}px)`;
+        ghost.style.opacity='0';
+        requestAnimationFrame(()=>{
+          ghost.style.transition='opacity 220ms cubic-bezier(0.22,1,0.36,1), transform 220ms cubic-bezier(0.22,1,0.36,1)';
+          ghost.style.opacity='1';
+          ghost.style.transform='translateX(0)';
+        });
+      },190);
+    } else {
+      ghost.textContent=name;
+      ghost.style.opacity='1';
+      ghost.style.transform='translateX(0)';
+    }
+  }
+
+  // Disable/enable arrows
+  const prev=document.getElementById('fr-prev');
+  const next=document.getElementById('fr-next');
+  if(prev)prev.classList.toggle('dim',currentMonthIdx===0);
+  if(next)next.classList.toggle('dim',currentMonthIdx===monthList.length-1);
+}
+
+function changeMonth(delta){
+  const next=currentMonthIdx+delta;
+  if(next<0||next>=monthList.length)return;
+  currentMonthIdx=next;
+  const dir=delta>0?'next':'prev';
+  updateHeader(dir);
+  drawRing('transition');
+  // Terrain: just shift active class, no re-animation
+  const cols=document.querySelectorAll('.fr-t-col');
+  cols.forEach((col,i)=>{
+    const bar=col.querySelector('.fr-t-bar');
+    if(!bar)return;
+    bar.classList.remove('fr-t-bar--active');
+    if(i===currentMonthIdx)bar.classList.add('fr-t-bar--active');
+  });
+}
+
 function getDate(){const sim=localStorage.getItem('gc:sim_date');return sim||new Date().toISOString().split('T')[0];}
 function getHour(){return new Date().getHours();}
 function daysBack(n,ref){const d=ref?new Date(ref+'T12:00'):new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];}
