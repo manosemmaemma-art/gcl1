@@ -298,6 +298,9 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
 .cat-pill-edit:active{color:var(--cthi);}
 .cat-pill-del:active{color:#f57a7a;}
 #ambient-veil{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 110% 60% at 10% 90%, rgba(201,168,76,.055) 0%, transparent 55%),radial-gradient(ellipse 70% 90% at 90% 10%, rgba(201,168,76,.04) 0%, transparent 50%);animation:ambientPulse 28s ease-in-out infinite alternate;}
+.btn-reset{background:none;border:none;cursor:pointer;padding:0;color:inherit;font:inherit;text-align:inherit;width:100%;}
+.flex-fill{flex:1;}
+.shdr-m{margin:12px 18px 0;}
 </style>
 <link rel="stylesheet" href="gritcore.css">
 </head>
@@ -317,7 +320,7 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
     </div>
   </div>
   <div class="content" id="content"></div>
-  <div class="sheet-backdrop" id="fab-backdrop" onclick="closeFabSheet()"></div>
+  <div class="sheet-backdrop" id="fab-backdrop" role="button" tabindex="0" aria-label="Close" onclick="closeFabSheet()"></div>
   <div class="fab-sheet" id="fab-sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-header">
@@ -325,10 +328,10 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
       <button class="sheet-done-btn" id="sheet-done" onclick="closeFabSheet()">Done</button>
     </div>
     <div class="sheet-list" id="sheet-list"></div>
-    <div class="sheet-add" onclick="closeFabSheet();sw('forge',document.querySelector('[data-v=forge]'))">
+    <button class="sheet-add" onclick="closeFabSheet();sw('forge',document.querySelector('[data-v=forge]'))">
       <div class="sheet-add-icon">+</div>
       <span class="sheet-add-label">Forge New Discipline</span>
-    </div>
+    </button>
   </div>
   <button class="fab" onclick="openFabSheet()">+</button>
   <nav class="bnav">
@@ -1093,7 +1096,7 @@ function renderReport() {
 
   const weekBars = getWeeklyBars();
   const weekHtml = `
-  <div class="shdr af s3" style="margin:12px 18px 0;"><span class="shdr-l">Last 7 Days</span></div>
+  <div class="shdr shdr-m af s3"><span class="shdr-l">Last 7 Days</span></div>
   <div class="rpt-week-wrap af s4">
     <div class="rpt-week-bars">
       ${weekBars.map(d => `
@@ -1109,7 +1112,7 @@ function renderReport() {
 
   const mom = getMonthOverMonth();
   const momHtml = `
-  <div class="shdr af s4" style="margin:12px 18px 0;"><span class="shdr-l">Month Over Month</span></div>
+  <div class="shdr shdr-m af s4"><span class="shdr-l">Month Over Month</span></div>
   <div class="rpt-month-row af s5">
     <div class="rpt-month-card current">
       <div class="rpt-month-name">${mom.current.name}</div>
@@ -1141,7 +1144,7 @@ function renderReport() {
         <div class="rpt-stat-hint" style="margin-top:auto">Best: ${bestName}</div>
       </div>
     </div>
-    ${(()=>{const bests=getPersonalBests();return`<div class="shdr af s2" style="margin:12px 18px 0;"><span class="shdr-l">Personal Bests</span></div><div class="rpt-bests-grid af s3"><div class="rpt-best-card"><div class="rpt-best-val">${bests.bestStreak>0?bests.bestStreak:'—'}</div><div class="rpt-best-lbl">Best Streak</div></div><div class="rpt-best-card"><div class="rpt-best-val">${bests.bestMonth!==null?bests.bestMonth+'%':'—'}</div><div class="rpt-best-lbl">Best Month</div></div><div class="rpt-best-card"><div class="rpt-best-val">${bests.bestWeek!==null?bests.bestWeek+'%':'—'}</div><div class="rpt-best-lbl">Best Week</div></div><div class="rpt-best-card"><div class="rpt-best-val">${perfectDays}</div><div class="rpt-best-lbl">Perfect Days</div></div></div>`;})()}
+    ${(()=>{const bests=getPersonalBests();return`<div class="shdr shdr-m af s2"><span class="shdr-l">Personal Bests</span></div><div class="rpt-bests-grid af s3"><div class="rpt-best-card"><div class="rpt-best-val">${bests.bestStreak>0?bests.bestStreak:'—'}</div><div class="rpt-best-lbl">Best Streak</div></div><div class="rpt-best-card"><div class="rpt-best-val">${bests.bestMonth!==null?bests.bestMonth+'%':'—'}</div><div class="rpt-best-lbl">Best Month</div></div><div class="rpt-best-card"><div class="rpt-best-val">${bests.bestWeek!==null?bests.bestWeek+'%':'—'}</div><div class="rpt-best-lbl">Best Week</div></div><div class="rpt-best-card"><div class="rpt-best-val">${perfectDays}</div><div class="rpt-best-lbl">Perfect Days</div></div></div>`;})()}
     ${weekHtml}
     ${momHtml}
 
@@ -1165,7 +1168,7 @@ function renderReport() {
       </button>
     </div>
 
-    <div id="rpt-sheet-backdrop" class="sheet-backdrop" onclick="closeRptSheet()" style="display:none"></div>
+    <div id="rpt-sheet-backdrop" class="sheet-backdrop" role="button" tabindex="0" aria-label="Close" onclick="closeRptSheet()" style="display:none"></div>
     <div class="fab-sheet" id="rpt-sheet">
       <div class="sheet-handle"></div>
       <div id="rpt-sheet-content"></div>
@@ -1501,7 +1504,7 @@ function devResetAll() {
 
 <!-- Dev Console -->
 <button class="dev-console-btn" id="dev-console-btn" onclick="toggleDevConsole()">⚙</button>
-<div class="sheet-backdrop dev-console-backdrop" id="dev-console-backdrop" onclick="closeDevConsole()"></div>
+<div class="sheet-backdrop dev-console-backdrop" id="dev-console-backdrop" role="button" tabindex="0" aria-label="Close" onclick="closeDevConsole()"></div>
 <div class="dev-console-drawer" id="dev-console-drawer">
   <div class="sheet-handle"></div>
   <div class="dev-console-title">Dev Console</div>
