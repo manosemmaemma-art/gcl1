@@ -313,7 +313,7 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
   <div id="ambient-veil"></div>
   <div class="hdr">
     <div class="hdr-top">
-      <div></div>
+      <div class="hdr-left"><button class="settings-btn btn-reset" onclick="openSettings()" aria-label="Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ctd)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
       <div class="hdr-logo-wrap"><div class="logo"><span class="logo-d">◆</span><span class="logo-g">GRIT</span><span class="logo-c">CORE</span></div><div class="logo-sub" id="logo-tagline">Forge your discipline.</div></div>
       <div class="hdr-right">
         <div id="hdr-date" class="hdr-date"></div>
@@ -382,6 +382,16 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
   <div class="pd-title">Perfect Day</div>
   <div class="pd-sub">Every discipline. No exceptions.</div>
   <button class="pd-btn" onclick="closePerfectDay()">Continue</button>
+</div>
+
+<div id="settings-backdrop" class="sheet-backdrop" role="button" tabindex="0" aria-label="Close" onclick="closeSettings()" style="display:none"></div>
+<div class="fab-sheet" id="settings-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Settings</span>
+    <button class="sheet-done-btn" onclick="closeSettings()">Done</button>
+  </div>
+  <div class="settings-list" id="settings-list"></div>
 </div>
 
 <script>
@@ -913,6 +923,37 @@ function closePerfectDay() {
   const m = document.getElementById('pd-modal');
   if (o) o.classList.remove('show');
   if (m) m.classList.remove('show');
+}
+function openSettings() {
+  const el = document.getElementById('settings-sheet');
+  const backdrop = document.getElementById('settings-backdrop');
+  const list = document.getElementById('settings-list');
+  if (!el || !list) return;
+  const hh = effH();
+  const totalLogs = Object.keys(effL()).length;
+  list.innerHTML = `
+    <div class="settings-row" onclick="exportData();closeSettings();">
+      <div class="settings-row-left"><span class="settings-row-icon">↓</span><span class="settings-row-label">Export Record</span></div>
+      <span class="settings-row-value">${totalLogs} day${totalLogs!==1?'s':''} logged</span>
+    </div>
+    <div class="settings-row" onclick="if(confirm('Reset streak milestone celebrations? Your streak is not affected.')){localStorage.removeItem('gc1:milestones');closeSettings();showToast('Milestones reset');}">
+      <div class="settings-row-left"><span class="settings-row-icon">↻</span><span class="settings-row-label">Reset Milestones</span></div>
+      <span class="settings-row-value">Celebrations only</span>
+    </div>
+    <div class="settings-row" onclick="rptSheet('about');closeSettings();">
+      <div class="settings-row-left"><span class="settings-row-icon">◆</span><span class="settings-row-label">About GritCore</span></div>
+      <span class="settings-row-value"></span>
+    </div>
+    <div class="settings-version">GritCore v0.26</div>
+  `;
+  backdrop.style.display = 'block';
+  requestAnimationFrame(() => el.classList.add('open'));
+}
+function closeSettings() {
+  const el = document.getElementById('settings-sheet');
+  const backdrop = document.getElementById('settings-backdrop');
+  if (el) el.classList.remove('open');
+  if (backdrop) backdrop.style.display = 'none';
 }
 function markH(id,status,btnEl,evt){
   if(isPlaceholder)return;

@@ -889,3 +889,64 @@ body.dev-mode .dev-console-btn {
   transition: background 0.2s, border-color 0.2s;
 }
 .pd-btn:active { background: rgba(212,170,80,0.12); }
+
+/* ── Settings ── */
+.hdr-left {
+  display: flex;
+  align-items: flex-start;
+  justify-self: start;
+}
+.settings-btn {
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.settings-btn:active { background: rgba(255,255,255,0.06); }
+
+.settings-list {
+  padding: 8px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--cborl);
+  cursor: pointer;
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row:active { background: rgba(255,255,255,0.03); border-radius: 8px; }
+.settings-row-label {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 13px;
+  color: var(--ct);
+  letter-spacing: 0.5px;
+}
+.settings-row-value {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 11px;
+  color: var(--ctd);
+  letter-spacing: 0.5px;
+}
+.settings-row-icon {
+  font-size: 15px;
+  margin-right: 12px;
+}
+.settings-row-left {
+  display: flex;
+  align-items: center;
+}
+.settings-version {
+  text-align: center;
+  padding: 16px;
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 11px;
+  color: var(--ctdd);
+  letter-spacing: 2px;
+}
