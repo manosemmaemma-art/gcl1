@@ -70,14 +70,12 @@ html, body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  overflow-x: hidden;
 }
 
 /* Scrollable content area — nav always stays fixed above */
 .content {
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   padding-bottom: calc(72px + env(safe-area-inset-bottom, 16px));
 }
@@ -205,7 +203,7 @@ body, #app {
   margin-top: 3px;
   background: rgba(201,168,76,.12);
   border: 1px solid rgba(201,168,76,.3);
-  color: var(--gold-true);
+  color: #c9a84c;
   font-family: 'Josefin Sans', sans-serif;
   font-size: 11px;
   letter-spacing: 1.5px;
@@ -312,7 +310,7 @@ body { color: var(--ct); }
   transition: transform 0.28s ease-out;
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
 }
-.fab-sheet.open { transform: translateX(-50%) translateY(0); transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1); }
+.fab-sheet.open { transform: translateX(-50%) translateY(0); transition: transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
 .sheet-handle {
   width: 32px;
@@ -523,7 +521,7 @@ body.dev-mode .dev-console-btn {
 
 .dev-console-title {
   font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
-  color: var(--gold-true); margin-bottom: 12px; text-align: center;
+  color: #c9a84c; margin-bottom: 12px; text-align: center;
 }
 .dev-console-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
@@ -578,11 +576,11 @@ body.dev-mode .dev-console-btn {
 .hm-lo     { background: rgba(201,168,76,0.25); }
 .hm-mid    { background: rgba(201,168,76,0.55); }
 .hm-hi     { background: rgba(201,168,76,0.85); }
-.hm-full   { background: var(--gold-true); box-shadow: 0 0 4px rgba(201,168,76,0.6); }
+.hm-full   { background: #c9a84c; box-shadow: 0 0 4px rgba(201,168,76,0.6); }
 .hm-today  { outline: 1px solid rgba(255,255,255,0.4); outline-offset: 1px; }
 .hm-tooltip {
   font-size: 11px; letter-spacing: .8px;
-  color: var(--gold-true); text-align: center;
+  color: #c9a84c; text-align: center;
   padding: 6px 0 0;
   opacity: 0; transition: opacity .2s;
   pointer-events: none;
@@ -777,7 +775,7 @@ body.dev-mode .dev-console-btn {
 .rpt-cat-row { display: flex; align-items: center; gap: var(--sp-sm); margin-bottom: var(--sp-sm); }
 .rpt-cat-name { font-size: 11px; letter-spacing: 1px; color: var(--ctd); width: 44px; flex-shrink: 0; text-transform: uppercase; }
 .rpt-cat-bar-wrap { flex: 1; height: 3px; background: rgba(255,255,255,.06); border-radius: 2px; }
-.rpt-cat-bar { height: 100%; border-radius: 2px; background: linear-gradient(90deg, rgba(201,168,76,.5), var(--gold-true)); transition: width .6s ease; }
+.rpt-cat-bar { height: 100%; border-radius: 2px; background: linear-gradient(90deg, rgba(201,168,76,.5), #c9a84c); transition: width .6s ease; }
 .rpt-cat-pct { font-size: 11px; color: var(--ctdd); width: 26px; text-align: right; }
 .rpt-empty { font-size: 11px; color: var(--ctdd); text-align: center; padding: 8px 0; }
 .rpt-icon-row {
@@ -895,9 +893,8 @@ body.dev-mode .dev-console-btn {
 /* ── Settings ── */
 .hdr-left {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-self: start;
-  gap: 8px;
 }
 .settings-btn {
   padding: 6px;
@@ -986,127 +983,4 @@ body.dev-mode .dev-console-btn {
   display: flex;
   align-items: center;
   padding: 10px 12px;
-}
-
-/* ── v0.27 Score card typography polish ── */
-.sc { padding: 20px 10px 18px; }
-.sc-num {
-  font-size: 26px;
-  font-weight: 700;
-}
-.sc-word {
-  font-size: 10px;
-  color: var(--ctdd);
-  margin-top: 3px;
-}
-.sc-lbl {
-  color: var(--ctdd);
-  margin-top: 4px;
-}
-
-/* ── v0.27 Done-state card differentiation ── */
-.hcard.done {
-  border-color: rgba(212,170,80,0.38);
-  position: relative;
-}
-.hcard.done::before {
-  content: '✓';
-  position: absolute;
-  top: 6px;
-  right: 8px;
-  font-size: 10px;
-  color: var(--gold);
-  opacity: 0.6;
-  font-family: 'Josefin Sans', sans-serif;
-  letter-spacing: 0;
-  z-index: 1;
-}
-/* Graduated gold wash — later cards get richer tint */
-.hcard.done:nth-child(1) { background: rgba(212,170,80,0.08); }
-.hcard.done:nth-child(2) { background: rgba(212,170,80,0.10); }
-.hcard.done:nth-child(3) { background: rgba(212,170,80,0.12); }
-.hcard.done:nth-child(4) { background: rgba(212,170,80,0.14); }
-.hcard.done:nth-child(5) { background: rgba(212,170,80,0.16); }
-.hcard.done:nth-child(n+6) { background: rgba(212,170,80,0.18); }
-
-/* ── v0.27 Streak pill below card name ── */
-.hcard-streak {
-  display: inline-block;
-  margin-top: 3px;
-  font-size: 10px;
-}
-
-/* ── v0.27 Alive animations — header + nav bar ── */
-@keyframes logoBreath {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.72; }
-}
-@keyframes navGlow {
-  0%, 100% { box-shadow: inset 0 1px 0 rgba(212,170,80,0.09); }
-  50% { box-shadow: inset 0 1px 0 rgba(212,170,80,0.38); }
-}
-@keyframes badgeBreath {
-  0%, 100% { box-shadow: var(--card-shadow); }
-  50% { box-shadow: 0 0 16px rgba(212,170,80,0.18), var(--card-shadow); }
-}
-
-/* Gold GRIT text slow breathe (6s, never syncs with nav 8s) */
-.logo-g { animation: logoBreath 6s ease-in-out infinite; }
-
-/* Nav bar gold top-edge glow (8s) */
-.bnav { animation: navGlow 8s ease-in-out infinite; }
-
-/* Streak badge ambient glow when active (5s, drifts out of phase) */
-.sbadge:not(.bad) { animation: badgeBreath 5s ease-in-out infinite; }
-
-/* ── Focus styles for keyboard/VoiceOver navigation ── */
-:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-button:focus-visible, .btn-reset:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 3px;
-}
-
-/* ── v0.27 Critique fixes ── */
-/* Streak card is the soul of the app — give it more visual weight */
-#sc2 { flex: 1.3; }
-#sc2 .sc-num { font-size: 28px; }
-
-/* Logo tagline: reduce after first impression, stop competing with GRITCORE */
-.logo-sub { opacity: 0.45; }
-
-/* Nav label: lift to 10px (tighter space constraint, up from 9px) */
-.bni-lbl { font-size: 10px; }
-
-/* ── v0.27 Delight touches ── */
-/* High-completion score card: gold number + warm inner glow */
-.sc.lit .sc-num {
-  color: var(--gold);
-  text-shadow: 0 0 10px rgba(212,170,80,0.28);
-  transition: color .4s, text-shadow .4s;
-}
-.sc.lit {
-  box-shadow: inset 0 0 18px rgba(212,170,80,0.07), var(--card-shadow);
-}
-
-/* Done button checkmark gets a gold glow */
-.hbtn.don {
-  box-shadow: 0 0 8px rgba(212,170,80,0.22);
-}
-
-/* Quote card hover lift — feels interactive */
-.qcard {
-  transition: opacity .3s, transform .3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow .3s;
-}
-.qcard:hover {
-  transform: scale(1.01);
-  box-shadow: 0 4px 20px rgba(212,170,80,0.1), var(--card-shadow);
-}
-
-/* Respect reduced-motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  .logo-g, .bnav, .sbadge { animation: none !important; }
 }
