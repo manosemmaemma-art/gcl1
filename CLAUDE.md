@@ -129,7 +129,35 @@ Only skip if the user explicitly says "just do it."
 **New inline CSS in v0.26** (in `index.html <style>`):
 - `@keyframes heatPulse` + `#heat-veil.pulsing` — heat veil ambient pulse at ≥70% completion
 
-**Versioning:** Backup before every change set. v0.24–v0.26 backups exist. v0.27 backups: `index.0.27.html`, `gritcore.0.27.css`. Next version: 0.28.
+**Versioning:** Backup before every change set. v0.24–v0.27 backups exist. v0.28 backups: `index.0.28.html`, `gritcore.0.28.css`. Next version: 0.29.
+
+**New APIs added in v0.28 (Forge Ring — branch `feature/forge-ring-v028`):**
+- `renderForgeRing()` — renders full Record tab DOM, initialises all interactions
+- `drawRing(mode)` — builds SVG wedge ring; mode: `'assemble'` | `'transition'` | `false`
+- `buildTerrain()` — builds 3D perspective terrain history strip
+- `changeMonth(delta)` — smooth crossfade month navigation
+- `jumpToMonth(idx)` — direct month jump from terrain tap, smooth scroll
+- `updateHeader()` — updates month title + ghost name slide animation
+- `tapWedge(day, dateStr, pct, isToday)` — shows day detail overlay in ring center
+- `closeDetail()` — hides day detail, restores ring center
+- `initRingTilt()` — 3D drag interaction on ring (mouse + touch, spring-back physics)
+- `initTerrainDrag()` — momentum drag scroll on terrain
+- `animFrame()` / `startAnimFrame()` — shared rAF loop for ring + terrain physics
+- `scoreWord(pct)` — returns Forged/Holding/Wavering/Broken
+- `getMonthList()` — builds all-time month array with `hasData` flag
+- `monthList` / `currentMonthIdx` — module-level vars replacing `recordMonthOffset`
+
+**New CSS classes added in v0.28** (in `gritcore.css`):
+- `.fr-hdr`, `.fr-month-title`, `.fr-hdr-arrow`, `.fr-hdr-arrow.dim` — header
+- `.fr-ring-scene`, `.fr-ghost-name`, `.fr-ring-tilt` — ring zone
+- `.fr-ring-center`, `.fr-rc-pct`, `.fr-rc-word`, `.fr-rc-days`, `.fr-rc-cta` — center info
+- `.fr-day-detail`, `.fr-dd-date`, `.fr-dd-pct`, `.fr-dd-habits`, `.fr-dd-row`, `.fr-dd-icon`, `.fr-dd-name`, `.fr-dd-done`, `.fr-dd-fail`, `.fr-dd-skip`, `.fr-dd-close` — day detail
+- `.fr-terrain-section`, `.fr-terrain-stage`, `.fr-terrain-floor`, `.fr-terrain-inner` — terrain
+- `.fr-t-col`, `.fr-t-bar`, `.fr-t-bar--active/best/high/mid/low/empty`, `.fr-t-lbl`, `.fr-t-lbl--active` — terrain columns
+- `.fr-t-year-mark`, `.fr-t-year-lbl` — year boundary markers
+
+**New keyframes added in v0.28** (inline `<style>` in `index.html`):
+- `@keyframes wedgeIn`, `barRise`, `activeGlow`, `ghostSlide` — Forge Ring animations
 
 **Dev console:** Purged (dormant stub). Will be rebuilt later.
 **marble-interpolator.js:** Preserved untouched for future time-of-day marble (v2 feature).
