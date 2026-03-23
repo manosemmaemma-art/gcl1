@@ -1151,6 +1151,79 @@ function buildTerrain(){
   });
 }
 
+function initTerrainDrag(){
+  const stage=document.getElementById('fr-terrain-stage');
+  const inner=document.getElementById('fr-terrain-inner');
+  if(!stage||!inner)return;
+
+  let dragging=false,startX=0,velocity=0,offset=inner._terrainOffset||0,rafId=null;
+
+  function clampOffset(v){
+    const innerW=inner.scrollWidth;
+    const stageW=stage.offsetWidth;
+    const min=Math.min(0,stageW-innerW);
+    return Math.max(min,Math.min(0,v));
+  }
+
+  function applyOffset(){
+    inner.style.transform=`translateX(${offset}px)`;
+    inner._terrainOffset=offset;
+  }
+
+  function momentum(){
+    velocity*=0.88;
+    offset=clampOffset(offset+velocity);
+    applyOffset();
+    if(Math.abs(velocity)>0.5){
+      rafId=requestAnimationFrame(momentum);
+    } else {
+      rafId=null;
+    }
+  }
+
+  function startDrag(x){
+    dragging=true;
+    startX=x;
+    velocity=0;
+    if(rafId){cancelAnimationFrame(rafId);rafId=null;}
+    stage.style.cursor='grabbing';
+  }
+
+  function moveDrag(x){
+    if(!dragging)return;
+    const dx=x-startX;
+    startX=x;
+    velocity=dx;
+    offset=clampOffset(offset+dx);
+    applyOffset();
+  }
+
+  function endDrag(){
+    if(!dragging)return;
+    dragging=false;
+    stage.style.cursor='grab';
+    if(Math.abs(velocity)>0.5){
+      rafId=requestAnimationFrame(momentum);
+    }
+  }
+
+  stage.addEventListener('mousedown',e=>{startDrag(e.clientX);e.preventDefault();});
+  window.addEventListener('mousemove',e=>{if(dragging)moveDrag(e.clientX);});
+  window.addEventListener('mouseup',endDrag);
+  stage.addEventListener('touchstart',e=>{startDrag(e.touches[0].clientX);},{passive:true});
+  stage.addEventListener('touchmove',e=>{moveDrag(e.touches[0].clientX);},{passive:true});
+  stage.addEventListener('touchend',endDrag);
+  stage.style.cursor='grab';
+
+  // Expose state for Task 10 shared rAF loop
+  window._frTerrain={
+    get velocity(){return velocity;},
+    get dragging(){return dragging;},
+    set velocity(v){velocity=v;},
+    momentum:()=>{rafId=requestAnimationFrame(momentum);}
+  };
+}
+
 function getDate(){const sim=localStorage.getItem('gc:sim_date');return sim||new Date().toISOString().split('T')[0];}
 function getHour(){return new Date().getHours();}
 function daysBack(n,ref){const d=ref?new Date(ref+'T12:00'):new Date();d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];}
