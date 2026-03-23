@@ -36,17 +36,17 @@ Two vertically stacked zones, each interactive:
 │  Today │ Forge │ Record │ Report│  ← existing nav (unchanged)
 ```
 
-**Total height used:** 52 (header) + 360 (ring zone) + 8 (sep) + 16 (label) + 190 (terrain) + 66 (nav) = 692px — fills a 690–750px phone perfectly.
+**Total height used:** 52 (header) + flex ring zone + 8 (sep) + 240 (terrain) + 66 (nav). Ring zone fills remaining space — on a 667px (iPhone SE) screen the ring zone gets ~301px; on 812px it gets ~446px. No overflow on any device.
 
 ---
 
 ## 3. Zone A — The Iron Ring
 
 ### Layout
-- SVG-based radial ring, 256×256px, centered in a 360px-tall zone
+- SVG-based radial ring, 256×256px, centered in a `flex:1` zone
 - Outer radius R=122, inner radius ri=82 → ring band width = 40px
 - 31 (or 28/30) path segments (wedges), one per day of the month
-- Ghost month name behind ring: `font-size: 96px`, Cormorant Garamond italic, `rgba(201,168,76,0.045)`, `translateZ(-20px)` — parallax depth layer
+- Ghost month name: positioned **above** the ring SVG (not behind it), `font-size: 96px`, Cormorant Garamond italic, `rgba(201,168,76,0.06)`, `pointer-events:none`. It sits in a `position:absolute` layer at the top of `.fr-ring-scene`, above the tilt wrapper — so the ring never covers it. On month navigate it slides ±30px + fades with `ghostSlide` keyframe.
 
 ### Ring Center (default state)
 - `%` number: Cormorant Garamond 46px bold, `#c9a84c`
@@ -74,13 +74,14 @@ Two vertically stacked zones, each interactive:
 ```
 Applied as SVG `<style>` inline, 2.5s ease-in-out infinite.
 
-### 3D Tilt Interaction
-- The ring lives inside `.ring-tilt-wrap` with `transform-style: preserve-3d`
-- On `mousedown`/`touchstart`: capture pointer
-- On `move`: compute `dx`/`dy` delta → apply `rotateX(-dy*factor) rotateY(dx*factor)`, clamped ±22°/±18°
-- On `release`: exponential damping via `requestAnimationFrame` (`velocity *= 0.88` per frame) until `|v| < 0.05`
-- Ghost name also tilts (same container) creating parallax depth
-- Parent `perspective: 700px` on `.ring-scene`
+### 3D Tilt Interaction — FULLY INTERACTIVE
+The ring is a real draggable 3D object, not a decorative effect. Both mouse and touch work.
+- The ring lives inside `.fr-ring-tilt` with `transform-style: preserve-3d`
+- `mousedown`/`touchstart`: start capture, record pointer position
+- `mousemove`/`touchmove`: compute `dx`/`dy` delta from last position → apply `rotateX(-dy*0.4) rotateY(dx*0.4)` transform, clamped ±22° (X) / ±18° (Y). Updated every frame — feels live under the finger.
+- `mouseup`/`touchend`/`mouseleave`: launch spring-back via `requestAnimationFrame`. `velocityX *= 0.88; velocityY *= 0.88` per frame, applied to current tilt angles until `|v| < 0.05°` — then snaps to flat with `transition: transform 0.15s ease-out`
+- `cursor: grab` while idle, `cursor: grabbing` while dragging
+- Parent `perspective: 700px` on `.fr-ring-scene`
 
 ### Wedge Tap — Day Detail
 When user taps a past/logged wedge:
@@ -110,27 +111,39 @@ All 31 wedges stagger in over ~450ms total — a ring that assembles itself.
 ## 4. Zone B — The Forge Terrain
 
 ### Layout
-- Fixed-height strip: ~190px total, 150px for the 3D floor
-- `perspective: 450px`, `perspective-origin: 50% 50%`
+- Fixed-height strip: **240px total**, 180px for the 3D floor (taller than before for richer history)
+- `perspective: 500px`, `perspective-origin: 50% 40%`
 - Inner floor: `rotateX(46deg)`, `transform-origin: 50% 100%`
-- One column per month, `min-width: 34px`, `gap: 7px`
-- Left/right fog gradients mask edges (40px each)
+- One column per month, `min-width: 38px`, `gap: 8px`
+- Left/right fog gradients mask edges (50px each)
 - Bottom fog masks the vanishing point
+- **Starts scrolled to the rightmost (current) month** on render — `offset` initialised so the active column is visible without scrolling
 
 ### Column Heights
 ```js
-const barH = Math.max(12, Math.round((month.pct / 100) * (isActive ? 140 : 115)));
+const barH = Math.max(14, Math.round((month.pct / 100) * (isActive ? 160 : 130)));
+// hasData === false → barH = 14 (stub bar, near-invisible)
 ```
-Active (current selected) month: taller max height for visual prominence.
+Active (current selected) month: taller max for visual prominence.
+
+### Year Boundary Markers
+When a column's year differs from the previous column's year, render a vertical year label between them:
+```html
+<div class="fr-t-year-mark">2025</div>
+```
+- Positioned as a thin gold vertical divider (`1px solid rgba(201,168,76,0.2)`) with the year number rotated 90° above it
+- `font-size: 8px`, Josefin Sans, `rgba(201,168,76,0.45)`
+- This makes long histories legible — users can see which year each cluster of bars belongs to
 
 ### Column States
 | State | Class | Notes |
 |-------|-------|-------|
-| Active month | `.tb-active` | Bright gold, `activeGlow` pulse animation |
-| ≥80% | `.tb-best` | Full gold gradient + glow shadow |
-| 60–79% | `.tb-high` | Rich amber gradient |
-| 40–59% | `.tb-mid` | Muted amber |
-| <40% | `.tb-low` | Crimson gradient |
+| Active month | `.fr-t-bar--active` | Bright gold, `activeGlow` pulse animation |
+| ≥80% + hasData | `.fr-t-bar--best` | Full gold gradient + glow shadow |
+| 60–79% + hasData | `.fr-t-bar--high` | Rich amber gradient |
+| 40–59% + hasData | `.fr-t-bar--mid` | Muted amber |
+| <40% + hasData | `.fr-t-bar--low` | Crimson gradient |
+| hasData === false | `.fr-t-bar--empty` | `rgba(255,255,255,0.025)`, no colour, min height 14px |
 
 ### Rise Animation
 Each bar animates in on render:
@@ -142,11 +155,13 @@ Each bar animates in on render:
 ```
 Staggered: `animation-delay: index * 55ms`
 
-### Drag-to-Scroll (Horizontal, with Momentum)
-- `touchstart`/`mousedown` → capture `startX`, record `velocity`
-- `move` → `offset += dx`, clamped `[-(total_cols * col_width - viewport), 0]`
-- `release` → momentum loop: `velocity *= 0.88` per `rAF` frame until `|v| < 0.5`
-- `terrain-inner` uses `transform: translateX(offset)` — no `scrollLeft`, no layout reflow
+### Drag-to-Scroll (Horizontal, with Momentum) — FULLY INTERACTIVE
+The terrain is a real draggable track. Both mouse and touch work.
+- `touchstart`/`mousedown` → capture `startX`, reset `velocity = 0`
+- `touchmove`/`mousemove` → `offset += dx`; `velocity = dx`; clamp offset to `[-(totalW - viewportW), 0]`; apply `transform: translateX(offset)` immediately — no layout reflow, 60fps
+- `touchend`/`mouseup` → momentum loop: `velocity *= 0.88` per `rAF` frame, `offset += velocity` (clamped), until `|velocity| < 0.5`
+- `cursor: grab` while idle, `cursor: grabbing` while dragging
+- `terrain-inner` uses `transform: translateX(offset)` exclusively — never `scrollLeft`
 
 ### Tap to Jump Month
 Tapping any terrain column calls `jumpToMonth(idx)`:
@@ -274,9 +289,9 @@ function getMonthList() {
 - `.fr-terrain-inner` — scrollable flex row of columns
 - `.fr-t-col` — month column
 - `.fr-t-bar` — bar element
-- `.fr-t-bar--active`, `--best`, `--high`, `--mid`, `--low` — BEM modifier states
-- `.fr-t-bar--empty` — month with no logged data (near-invisible, `rgba(255,255,255,0.025)`; applied when `hasData === false`)
-- `.fr-t-lbl`, `.fr-t-lbl--active` — month label
+- `.fr-t-bar--active`, `--best`, `--high`, `--mid`, `--low`, `--empty` — BEM modifier states
+- `.fr-t-lbl`, `.fr-t-lbl--active` — month label (e.g. "Mar", "Sep")
+- `.fr-t-year-mark` — year boundary divider + rotated year label
 
 ### Keyframes (inline `<style>` in index.html)
 ```css
@@ -328,7 +343,7 @@ function getMonthList() {
 
 - Max-width: 430px (matches existing `#app` constraint)
 - **Ring zone: `flex: 1` (not fixed height)** — grows to fill remaining space between header and terrain, so it adapts to iPhone SE (667px), standard (812px), and Face ID devices with `env(safe-area-inset-top)` without overflowing
-- Terrain: `190px` fixed with `overflow: hidden` — never grows, never clips nav
+- Terrain: `240px` fixed with `overflow: hidden` — never grows, never clips nav
 - Layout structure: `#record-tab` uses `display: flex; flex-direction: column; height: 100%` so ring zone absorbs all available space naturally
 - `env(safe-area-inset-top)` absorbed by the existing header `padding: max(14px, env(safe-area-inset-top) + 8px)` pattern — no change needed
 
