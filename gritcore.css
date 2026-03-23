@@ -1030,17 +1030,17 @@ button:focus-visible, .btn-reset:focus-visible {
 
 /* ── Forge Ring v0.28 ─────────────────────────── */
 .fr-hdr{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 18px;flex-shrink:0;}
-.fr-month-title{font-family:'Josefin Sans',sans-serif;font-size:11px;letter-spacing:.15em;color:rgba(201,168,76,0.55);text-transform:uppercase;font-weight:300;}
+.fr-month-title{font-family:'Josefin Sans',sans-serif;font-size:11px;letter-spacing:.15em;color:rgba(201,168,76,0.80);text-transform:uppercase;font-weight:300;}
 .fr-hdr-arrow{background:none;border:none;color:rgba(201,168,76,0.6);font-size:26px;line-height:1;cursor:pointer;padding:4px 8px;opacity:.7;transition:opacity .15s,color .15s;-webkit-tap-highlight-color:transparent;}
 .fr-hdr-arrow:hover{opacity:1;color:var(--gold);}
 .fr-hdr-arrow.dim{opacity:.3;pointer-events:none;cursor:default;}
-.fr-ring-scene{flex:1;position:relative;display:flex;align-items:center;justify-content:center;perspective:700px;overflow:hidden;background:radial-gradient(ellipse 60% 55% at 50% 48%, rgba(201,168,76,0.07) 0%, rgba(201,168,76,0.03) 45%, transparent 70%);}
-.fr-ghost-name{position:absolute;top:8px;left:0;right:0;text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(52px,20vw,96px);color:rgba(201,168,76,.16);pointer-events:none;white-space:nowrap;overflow:hidden;z-index:0;line-height:1;text-shadow:0 0 60px rgba(201,168,76,0.12);}
+.fr-ring-scene{flex:1;position:relative;display:flex;align-items:center;justify-content:center;perspective:700px;overflow:hidden;background:radial-gradient(ellipse 60% 55% at 50% 48%, rgba(201,168,76,0.12) 0%, rgba(201,168,76,0.05) 45%, transparent 70%);}
+.fr-ghost-name{position:absolute;top:8px;left:0;right:0;text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(52px,20vw,96px);color:rgba(201,168,76,.22);pointer-events:none;white-space:nowrap;overflow:hidden;z-index:0;line-height:1;text-shadow:0 0 80px rgba(201,168,76,0.28), 0 0 30px rgba(201,168,76,0.14);}
 .fr-ring-tilt{position:relative;transform-style:preserve-3d;cursor:grab;z-index:1;user-select:none;-webkit-user-select:none;}
 .fr-ring-tilt:active{cursor:grabbing;}
-#fr-ring-svg{display:block;overflow:visible;filter:drop-shadow(0 0 24px rgba(201,168,76,0.12));}
+#fr-ring-svg{display:block;overflow:visible;filter:drop-shadow(0 4px 20px rgba(201,168,76,0.22)) drop-shadow(0 0 44px rgba(201,168,76,0.10));}
 .fr-ring-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:140px;text-align:center;pointer-events:none;}
-.fr-rc-pct{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:700;color:var(--gold);line-height:1;text-shadow:0 0 20px rgba(201,168,76,0.3);}
+.fr-rc-pct{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:700;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(201,168,76,0.65), 0 0 60px rgba(201,168,76,0.25);}
 .fr-rc-word{font-family:'Josefin Sans',sans-serif;font-size:9px;letter-spacing:.12em;color:var(--ctdd);text-transform:uppercase;margin-top:2px;}
 .fr-rc-days{font-family:'Josefin Sans',sans-serif;font-size:8px;color:var(--ctdd);margin-top:4px;}
 .fr-rc-cta{font-family:'Josefin Sans',sans-serif;font-size:9px;color:var(--gold);text-decoration:none;cursor:pointer;pointer-events:all;}
@@ -1056,7 +1056,7 @@ button:focus-visible, .btn-reset:focus-visible {
 .fr-dd-skip{color:var(--ctdd);}
 .fr-dd-close{font-family:'Josefin Sans',sans-serif;font-size:8px;color:var(--ctd);cursor:pointer;margin-top:2px;letter-spacing:.08em;background:none;border:none;}
 .fr-dd-close:hover{color:var(--ct);}
-.fr-terrain-section{height:240px;flex-shrink:0;position:relative;overflow:hidden;background:linear-gradient(to top, rgba(201,168,76,0.03) 0%, transparent 40%);}
+.fr-terrain-section{height:240px;flex-shrink:0;position:relative;overflow:hidden;background:linear-gradient(to top, rgba(201,168,76,0.06) 0%, rgba(201,168,76,0.02) 50%, transparent 80%);}
 .fr-terrain-section::before,.fr-terrain-section::after{content:'';position:absolute;top:0;bottom:0;width:50px;pointer-events:none;z-index:2;}
 .fr-terrain-section::before{left:0;background:linear-gradient(to right,var(--bg),transparent);}
 .fr-terrain-section::after{right:0;background:linear-gradient(to left,var(--bg),transparent);}

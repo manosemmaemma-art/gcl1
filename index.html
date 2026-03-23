@@ -307,10 +307,12 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
 #heat-veil{position:absolute;inset:0;pointer-events:none;z-index:0;background:linear-gradient(180deg,rgba(212,170,80,0.04) 0%,transparent 60%);opacity:var(--veil-base,0);transition:opacity 0.6s;}
 #heat-veil.pulsing{animation:heatPulse 3s ease-in-out infinite;}
 @media(prefers-reduced-motion:reduce){.logo-g,.bnav,.sbadge,#ambient-veil,#heat-veil.pulsing{animation:none!important;}}
-@keyframes wedgeIn{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
+@keyframes wedgeIn{from{opacity:0;transform:scale(.84) translateY(3px)}to{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes barRise{from{transform:scaleY(0);opacity:0;transform-origin:bottom}to{transform:scaleY(1);opacity:1;transform-origin:bottom}}
-@keyframes activeGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(201,168,76,.5))}50%{filter:drop-shadow(0 0 12px rgba(201,168,76,.95))}}
+@keyframes activeGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(201,168,76,.55)) drop-shadow(0 -2px 6px rgba(201,168,76,.3))}50%{filter:drop-shadow(0 0 14px rgba(201,168,76,1)) drop-shadow(0 -4px 12px rgba(201,168,76,.6))}}
+@keyframes todayPulse{0%,100%{filter:drop-shadow(0 0 3px rgba(232,200,76,.65))}50%{filter:drop-shadow(0 0 10px rgba(232,200,76,1)) drop-shadow(0 0 22px rgba(232,200,76,.45))}}
 @keyframes ghostSlide{from{opacity:0;transform:translateX(var(--ghost-dx,30px))}to{opacity:1;transform:translateX(0)}}
+.fr-wedge-today{animation:todayPulse 2.4s ease-in-out infinite;}
 @media(prefers-reduced-motion:reduce){.fr-wedge-today,.fr-t-bar--active{animation:none!important;}.fr-t-bar{animation:none!important;opacity:1!important;transform:scaleY(1)!important;}#fr-wedges path{animation:none!important;opacity:1!important;}}
 </style>
 <link rel="stylesheet" href="gritcore.css">
@@ -806,8 +808,8 @@ function drawRing(mode){
     if(!defs){defs=document.createElementNS('http://www.w3.org/2000/svg','defs');svg.insertBefore(defs,svg.firstChild);}
     defs.innerHTML=`
       <radialGradient id="forgeGlow" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="rgba(201,168,76,0.18)"/>
-        <stop offset="55%" stop-color="rgba(201,168,76,0.05)"/>
+        <stop offset="0%" stop-color="rgba(201,168,76,0.28)"/>
+        <stop offset="50%" stop-color="rgba(201,168,76,0.08)"/>
         <stop offset="100%" stop-color="rgba(201,168,76,0)"/>
       </radialGradient>`;
 
@@ -818,11 +820,11 @@ function drawRing(mode){
     svg.insertBefore(glowBg,g);
 
     // Depth rings — concentric faint circles
-    const depthRings=[{r:76,o:.06},{r:105,o:.05},{r:132,o:.04}];
+    const depthRings=[{r:76,o:.14},{r:105,o:.10},{r:132,o:.07}];
     depthRings.forEach(({r,o})=>{
       const dr=document.createElementNS('http://www.w3.org/2000/svg','circle');
       dr.setAttribute('cx','128');dr.setAttribute('cy','128');dr.setAttribute('r',r);
-      dr.setAttribute('fill','none');dr.setAttribute('stroke',`rgba(201,168,76,${o})`);dr.setAttribute('stroke-width','1');
+      dr.setAttribute('fill','none');dr.setAttribute('stroke',`rgba(201,168,76,${o})`);dr.setAttribute('stroke-width','1.5');
       dr.setAttribute('pointer-events','none');
       svg.insertBefore(dr,g);
     });
@@ -859,12 +861,18 @@ function drawRing(mode){
       }
       g.appendChild(path);
     }
-    // Inner separator circle (rim between ring and center)
+    // Inner separator rim (between ring and center)
     const innerRim=document.createElementNS('http://www.w3.org/2000/svg','circle');
     innerRim.setAttribute('cx','128');innerRim.setAttribute('cy','128');innerRim.setAttribute('r','82');
-    innerRim.setAttribute('fill','none');innerRim.setAttribute('stroke','rgba(201,168,76,0.12)');
-    innerRim.setAttribute('stroke-width','1');innerRim.setAttribute('pointer-events','none');
+    innerRim.setAttribute('fill','none');innerRim.setAttribute('stroke','rgba(201,168,76,0.22)');
+    innerRim.setAttribute('stroke-width','1.5');innerRim.setAttribute('pointer-events','none');
     g.appendChild(innerRim);
+    // Outer track rim (just outside wedges)
+    const outerRim=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    outerRim.setAttribute('cx','128');outerRim.setAttribute('cy','128');outerRim.setAttribute('r','122');
+    outerRim.setAttribute('fill','none');outerRim.setAttribute('stroke','rgba(201,168,76,0.10)');
+    outerRim.setAttribute('stroke-width','1');outerRim.setAttribute('pointer-events','none');
+    g.appendChild(outerRim);
   }
 
   // Update center info
