@@ -1228,6 +1228,8 @@ function updateRingHeader(direction){
 }
 
 function changeMonth(delta){
+  const wrap=document.getElementById('fr-wheel-wrap');
+  if(wrap&&wrap._resetRotation)wrap._resetRotation();
   const next=currentMonthIdx+delta;
   if(next<0||next>=monthList.length)return;
   currentMonthIdx=next;
@@ -1424,6 +1426,8 @@ function startAnimFrame(){
 }
 
 function jumpToMonth(idx){
+  const wrap=document.getElementById('fr-wheel-wrap');
+  if(wrap&&wrap._resetRotation)wrap._resetRotation();
   if(idx<0||idx>=monthList.length)return;
   currentMonthIdx=idx;
   updateRingHeader();
