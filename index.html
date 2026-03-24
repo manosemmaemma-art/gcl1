@@ -1263,7 +1263,7 @@ function buildTerrain(){
     lastYear=m.year;
 
     const isActive=(i===currentMonthIdx);
-    const barH=Math.max(14,Math.round((m.pct/100)*(isActive?160:130)));
+    const barH=Math.max(14,Math.round((m.pct/100)*200));
     const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
     // Determine bar state class
