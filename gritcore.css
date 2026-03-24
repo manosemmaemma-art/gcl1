@@ -1026,8 +1026,6 @@ button:focus-visible, .btn-reset:focus-visible {
 /* Respect reduced-motion preferences */
 @media (prefers-reduced-motion: reduce) {
   .logo-g, .bnav, .sbadge { animation: none !important; }
-  .fr-wedge-today { animation: none; }
-  .fr-t-bar--active { animation: none; }
   .fr-ghost-name { transition: none; }
 }
 
