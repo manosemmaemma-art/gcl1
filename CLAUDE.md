@@ -129,7 +129,7 @@ Only skip if the user explicitly says "just do it."
 **New inline CSS in v0.26** (in `index.html <style>`):
 - `@keyframes heatPulse` + `#heat-veil.pulsing` — heat veil ambient pulse at ≥70% completion
 
-**Versioning:** Backup before every change set. v0.24–v0.28 backups exist. v0.29 backups: `index.0.29.html`, `gritcore.0.29.css`. Next version: 0.30.
+**Versioning:** Backup before every change set. v0.24–v0.29 backups exist. v0.30 backups: `index.0.30.html`, `gritcore.0.30.css`. Next version: 0.31.
 
 **New APIs added in v0.28 (Forge Ring — branch `feature/forge-ring-v028`):**
 - `renderForgeRing()` — renders full Record tab DOM, initialises all interactions
@@ -158,6 +158,26 @@ Only skip if the user explicitly says "just do it."
 
 **New keyframes added in v0.28** (inline `<style>` in `index.html`):
 - `@keyframes wedgeIn`, `barRise`, `activeGlow`, `ghostSlide` — Forge Ring animations
+
+**New APIs added in v0.30 (Swipeable Pie Wheel):**
+- `initWheelSwipe()` — flat swipe rotation on Record tab ring (replaces `initRingTilt()`)
+- `showDayInfo(day, dateStr, pct, isToday)` — crossfade center to selected day info
+- `showMonthSummary()` — crossfade center back to month summary
+- `selectDay(day)` / `deselectDay()` — exposed via `wrap._deselectDay` and `wrap._resetRotation` on `#fr-wheel-wrap`
+
+**Removed in v0.30:**
+- `initRingTilt()` — replaced by `initWheelSwipe()`
+- 3D perspective on ring scene and terrain
+- `wedgeIn`, `activeGlow`, `ghostSlide` keyframes (unused, removed)
+
+**CSS changes in v0.30:**
+- `.fr-ring-tilt` → `.fr-wheel-wrap` (flat, `touch-action:none`)
+- `.fr-wheel-wrap.scaled` — `transform:scale(1.12)` on selection
+- `.fr-wedge--selected`, `.fr-wedge--dimmed` — wedge state classes
+- `.fr-day-num` — SVG text for day numbers in wedges
+- `.fr-swipe-hint` — "swipe around the ring" hint text
+- `.fr-terrain-section` — `height:300px` (was 220px)
+- Terrain floor: flat (no `rotateX`)
 
 **Dev console:** Purged (dormant stub). Will be rebuilt later.
 **marble-interpolator.js:** Preserved untouched for future time-of-day marble (v2 feature).
