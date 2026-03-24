@@ -139,7 +139,7 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
 .shdr-l{font-family:'Josefin Sans',sans-serif;font-weight:600;font-size:11px;letter-spacing:3.5px;color:var(--ct);text-transform:uppercase;text-shadow:var(--ts);}
 .hlist{padding:0 18px;display:flex;flex-direction:column;gap:9px;}
 @keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.hcard{padding:16px 14px;display:flex;align-items:center;gap:10px;background:rgba(28,24,18,0.52);transition:border-color .2s,transform .15s,background .6s;}
+.hcard{padding:16px 14px;display:flex;align-items:center;gap:10px;background:rgba(28,24,18,0.52);transition:border-color .2s,transform .15s,background .6s;overflow:hidden;}
 .hcard:active{transform:scale(.99);}
 .hcard.crack-anim{animation:crack .42s cubic-bezier(.36,.07,.19,.97) both;}
 .hcard.crack-anim::after{content:'';position:absolute;inset:0;border-radius:16px;background:linear-gradient(128deg,transparent 38%,rgba(110,16,16,.18) 50%,transparent 62%);animation:crackFlash .42s ease both;pointer-events:none;}
@@ -341,7 +341,7 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
     <div class="sheet-list" id="sheet-list"></div>
     <button class="sheet-add" onclick="closeFabSheet();sw('forge',document.querySelector('[data-v=forge]'))">
       <div class="sheet-add-icon">+</div>
-      <span class="sheet-add-label">Forge New Discipline</span>
+      <span class="sheet-add-label">Add a Discipline</span>
     </button>
   </div>
   <button class="fab" onclick="openFabSheet()">+</button>
@@ -712,7 +712,7 @@ function renderForgeRing(){
   currentMonthIdx=Math.max(0,monthList.length-1);
   const c=document.getElementById('content');
   c.innerHTML=`
-<div id="record-tab" style="display:flex;flex-direction:column;height:100%;overflow:hidden;">
+<div id="record-tab" style="display:flex;flex-direction:column;min-height:100%;overflow:hidden;margin-bottom:calc(-72px - env(safe-area-inset-bottom, 16px));">
   <div class="fr-hdr">
     <button class="fr-hdr-arrow" id="fr-prev" onclick="changeMonth(-1)" aria-label="Previous month">&#8249;</button>
     <span class="fr-month-title" id="fr-month-title"></span>
@@ -720,13 +720,13 @@ function renderForgeRing(){
   </div>
   <div class="fr-ring-scene" id="fr-ring-scene">
     <div class="fr-ghost-name" id="fr-ghost-name"></div>
-    <div class="fr-ring-tilt" id="fr-ring-tilt">
+    <div class="fr-wheel-wrap" id="fr-wheel-wrap">
       <svg id="fr-ring-svg" viewBox="0 0 256 256" width="256" height="256" aria-label="Discipline ring">
-        <style>
-          @keyframes todayWedgePulse{0%,100%{filter:drop-shadow(0 0 6px rgba(255,220,70,0.9))}50%{filter:drop-shadow(0 0 16px rgba(255,220,70,1))}}
-          .fr-wedge-today{animation:todayWedgePulse 2.5s ease-in-out infinite}
-        </style>
-        <g id="fr-wedges"></g>
+        <defs>
+          <filter id="wedge-glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="rgba(201,168,76,0.6)"/>
+          </filter>
+        </defs>
       </svg>
       <div class="fr-ring-center" id="fr-ring-center">
         <div class="fr-rc-pct" id="fr-rc-pct"></div>
@@ -741,6 +741,7 @@ function renderForgeRing(){
         <button class="fr-dd-close btn-reset" onclick="closeDetail()" aria-label="Close day detail">&#10005; close</button>
       </div>
     </div>
+    <div class="fr-swipe-hint" id="fr-swipe-hint">swipe around the ring</div>
   </div>
   <div class="fr-terrain-section" id="fr-terrain-section">
     <div class="fr-terrain-hdr">ALL TIME &nbsp;·&nbsp; TAP TO JUMP</div>
@@ -755,7 +756,7 @@ function renderForgeRing(){
     updateRingHeader();
     drawRing('assemble');
     buildTerrain();
-    initRingTilt();
+    initWheelSwipe();
     initTerrainDrag();
   });
 }
@@ -770,114 +771,111 @@ function drawRing(mode){
   const todayDay=isCurrentMonth?parseInt(today.slice(8)):0;
 
   const CX=128,CY=128,R=122,RI=82;
-  const PAD=1.5*(Math.PI/180); // 1.5 degree padding in radians
-  const total=m.daysInMonth;
-  const slice=(2*Math.PI/total);
+  const GAP=1.5*Math.PI/180;
+  const daysInMonth=m.daysInMonth;
+  const sliceAngle=(2*Math.PI)/daysInMonth;
 
   function wedgePath(i){
-    const start=-Math.PI/2+i*slice+PAD/2;
-    const end=start+slice-PAD;
-    const x1=CX+R*Math.cos(start),y1=CY+R*Math.sin(start);
-    const x2=CX+R*Math.cos(end),y2=CY+R*Math.sin(end);
-    const x3=CX+RI*Math.cos(end),y3=CY+RI*Math.sin(end);
-    const x4=CX+RI*Math.cos(start),y4=CY+RI*Math.sin(start);
-    return`M${x1},${y1} A${R},${R} 0 0,1 ${x2},${y2} L${x3},${y3} A${RI},${RI} 0 0,0 ${x4},${y4}Z`;
+    const a1=i*sliceAngle+GAP/2;
+    const a2=(i+1)*sliceAngle-GAP/2;
+    const ox1=CX+R*Math.cos(a1),oy1=CY+R*Math.sin(a1);
+    const ox2=CX+R*Math.cos(a2),oy2=CY+R*Math.sin(a2);
+    const ix1=CX+RI*Math.cos(a2),iy1=CY+RI*Math.sin(a2);
+    const ix2=CX+RI*Math.cos(a1),iy2=CY+RI*Math.sin(a1);
+    const large=(a2-a1>Math.PI)?1:0;
+    return`M${ox1},${oy1} A${R},${R} 0 ${large} 1 ${ox2},${oy2} L${ix1},${iy1} A${RI},${RI} 0 ${large} 0 ${ix2},${iy2} Z`;
   }
 
-  function wedgeColor(day){
-    const ds=`${m.prefix}-${String(day).padStart(2,'0')}`;
-    const isFuture=(isCurrentMonth&&day>todayDay)||(m.year>parseInt(today.slice(0,4)))||(m.year===parseInt(today.slice(0,4))&&m.month>parseInt(today.slice(5,7)));
-    if(isFuture)return{fill:'rgba(255,255,255,0.04)',interact:false};
-    const p=dayPct(ds,hh,ll);
-    if(p===null)return{fill:'rgba(255,255,255,0.07)',interact:false};
-    if(p===0)return{fill:'rgba(255,255,255,0.07)',interact:true,pct:0,ds};
-    if(p<40)return{fill:'rgba(200,50,40,0.45)',interact:true,pct:p,ds,failed:true};
-    if(p<70)return{fill:'rgba(201,168,76,0.32)',interact:true,pct:p,ds};
-    if(p<100)return{fill:'rgba(201,168,76,0.60)',interact:true,pct:p,ds};
-    return{fill:'rgba(201,168,76,0.93)',interact:true,pct:p,ds};
+  function wedgeFill(pct){
+    if(pct===100)return'rgba(201,168,76,0.50)';
+    if(pct>=80)return'rgba(201,168,76,0.40)';
+    if(pct>=60)return'rgba(201,168,76,0.30)';
+    if(pct>=40)return'rgba(201,168,76,0.20)';
+    if(pct>=20)return'rgba(201,168,76,0.12)';
+    return'rgba(201,168,76,0.05)';
   }
 
-  function buildWedges(){
-    const g=document.getElementById('fr-wedges');
-    if(!g)return;
-    // Clear entire SVG children except <style>
-    const svg=document.getElementById('fr-ring-svg');
-    Array.from(svg.children).forEach(ch=>{if(ch.tagName!=='style'&&ch.id!=='fr-wedges')ch.remove();});
-    g.innerHTML='';
+  const svg=document.getElementById('fr-ring-svg');
+  if(!svg)return;
+  // Preserve <defs>, remove everything else
+  const defs=svg.querySelector('defs');
+  while(svg.lastChild){svg.removeChild(svg.lastChild);}
+  if(defs)svg.appendChild(defs);
 
-    // Forge glow defs
-    let defs=svg.querySelector('defs');
-    if(!defs){defs=document.createElementNS('http://www.w3.org/2000/svg','defs');svg.insertBefore(defs,svg.firstChild);}
-    defs.innerHTML=`
-      <radialGradient id="forgeGlow" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="rgba(201,168,76,0.28)"/>
-        <stop offset="50%" stop-color="rgba(201,168,76,0.08)"/>
-        <stop offset="100%" stop-color="rgba(201,168,76,0)"/>
-      </radialGradient>`;
+  const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.id='fr-wedges';
 
-    // Background forge glow circle
-    const glowBg=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    glowBg.setAttribute('cx','128');glowBg.setAttribute('cy','128');glowBg.setAttribute('r','128');
-    glowBg.setAttribute('fill','url(#forgeGlow)');glowBg.setAttribute('pointer-events','none');
-    svg.insertBefore(glowBg,g);
+  let daysWithData=0;
 
-    // Depth rings — concentric faint circles
-    const depthRings=[{r:76,o:.14},{r:105,o:.10},{r:132,o:.07}];
-    depthRings.forEach(({r,o})=>{
-      const dr=document.createElementNS('http://www.w3.org/2000/svg','circle');
-      dr.setAttribute('cx','128');dr.setAttribute('cy','128');dr.setAttribute('r',r);
-      dr.setAttribute('fill','none');dr.setAttribute('stroke',`rgba(201,168,76,${o})`);dr.setAttribute('stroke-width','1.5');
-      dr.setAttribute('pointer-events','none');
-      svg.insertBefore(dr,g);
-    });
-    for(let d=1;d<=total;d++){
-      const isToday=(isCurrentMonth&&d===todayDay);
-      const info=isToday?{fill:'#e8c84c',interact:true,pct:dayPct(`${m.prefix}-${String(d).padStart(2,'0')}`,hh,ll)||0,ds:`${m.prefix}-${String(d).padStart(2,'0')}`,isToday:true}:wedgeColor(d);
-      const path=document.createElementNS('http://www.w3.org/2000/svg','path');
-      path.setAttribute('d',wedgePath(d-1));
-      path.setAttribute('fill',info.fill);
+  for(let d=1;d<=daysInMonth;d++){
+    const i=d-1;
+    const dateStr=`${m.prefix}-${String(d).padStart(2,'0')}`;
+    const isToday=(isCurrentMonth&&d===todayDay);
+    const isFuture=(isCurrentMonth&&d>todayDay)||(m.year>parseInt(today.slice(0,4)))||(m.year===parseInt(today.slice(0,4))&&m.month>parseInt(today.slice(5,7)));
+    const pct=dayPct(dateStr,hh,ll);
+    if(pct!==null)daysWithData++;
+
+    // Build wedge path
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',wedgePath(i));
+    path.setAttribute('data-day',String(d));
+
+    if(isFuture){
+      path.setAttribute('fill','rgba(201,168,76,0.02)');
       path.setAttribute('stroke','none');
-      if(isToday)path.classList.add('fr-wedge-today');
-      if(info.interact){
-        const label=isToday?`Today, in progress`:`Day ${d}: ${info.pct}% — ${scoreWord(info.pct||0)}`;
-        path.setAttribute('role','button');
-        path.setAttribute('tabindex','0');
-        path.setAttribute('aria-label',label);
-        path.style.cursor='pointer';
-        path.addEventListener('click',()=>tapWedge(d,info.ds,info.pct,info.isToday));
-        path.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')tapWedge(d,info.ds,info.pct,info.isToday);});
-        // Add small X for failed days
-        if(info.failed){
-          const ang=-Math.PI/2+(d-1)*slice+slice/2;
-          const mr=(R+RI)/2;
-          const tx=CX+mr*Math.cos(ang),ty=CY+mr*Math.sin(ang);
-          const txt=document.createElementNS('http://www.w3.org/2000/svg','text');
-          txt.setAttribute('x',tx);txt.setAttribute('y',ty);
-          txt.setAttribute('text-anchor','middle');txt.setAttribute('dominant-baseline','central');
-          txt.setAttribute('font-size','7');txt.setAttribute('fill','rgba(255,255,255,0.7)');
-          txt.setAttribute('pointer-events','none');txt.textContent='✕';
-          g.appendChild(path);g.appendChild(txt);continue;
-        }
-      } else {
-        path.setAttribute('aria-hidden','true');
-      }
+      path.setAttribute('aria-hidden','true');
+      path.style.transition='opacity 0.3s ease';
       g.appendChild(path);
+      continue;
     }
-    // Inner separator rim (between ring and center)
-    const innerRim=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    innerRim.setAttribute('cx','128');innerRim.setAttribute('cy','128');innerRim.setAttribute('r','82');
-    innerRim.setAttribute('fill','none');innerRim.setAttribute('stroke','rgba(201,168,76,0.22)');
-    innerRim.setAttribute('stroke-width','1.5');innerRim.setAttribute('pointer-events','none');
-    g.appendChild(innerRim);
-    // Outer track rim (just outside wedges)
-    const outerRim=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    outerRim.setAttribute('cx','128');outerRim.setAttribute('cy','128');outerRim.setAttribute('r','122');
-    outerRim.setAttribute('fill','none');outerRim.setAttribute('stroke','rgba(201,168,76,0.10)');
-    outerRim.setAttribute('stroke-width','1');outerRim.setAttribute('pointer-events','none');
-    g.appendChild(outerRim);
+
+    const fillPct=(pct!==null)?pct:0;
+    const fill=(pct===null)?'rgba(201,168,76,0.05)':wedgeFill(fillPct);
+    path.setAttribute('fill',fill);
+
+    if(isToday){
+      path.setAttribute('stroke','rgba(201,168,76,0.4)');
+      path.setAttribute('stroke-dasharray','4 2');
+      path.setAttribute('stroke-width','1.5');
+    } else {
+      path.setAttribute('stroke','none');
+    }
+
+    const label=isToday?'Today, in progress':`Day ${d}: ${fillPct}% — ${scoreWord(fillPct)}`;
+    path.setAttribute('role','button');
+    path.setAttribute('tabindex','0');
+    path.setAttribute('aria-label',label);
+    path.style.cursor='pointer';
+    path.style.transition='opacity 0.3s ease';
+    path.addEventListener('click',()=>tapWedge(d,dateStr,pct!==null?pct:0,isToday));
+    path.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')tapWedge(d,dateStr,pct!==null?pct:0,isToday);});
+    g.appendChild(path);
+
+    // Day number text (skip future days)
+    const midAngle=i*sliceAngle+sliceAngle/2;
+    const textR=(RI+R)/2;
+    const tx=CX+textR*Math.cos(midAngle);
+    const ty=CY+textR*Math.sin(midAngle);
+    const txt=document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('x',tx.toFixed(1));
+    txt.setAttribute('y',ty.toFixed(1));
+    txt.setAttribute('class','fr-day-num');
+    txt.setAttribute('text-anchor','middle');
+    txt.setAttribute('dominant-baseline','central');
+    txt.setAttribute('pointer-events','none');
+    txt.textContent=String(d);
+    g.appendChild(txt);
   }
 
-  // Update center info
+  // Center circle
+  const centerCircle=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  centerCircle.setAttribute('cx','128');centerCircle.setAttribute('cy','128');centerCircle.setAttribute('r','80');
+  centerCircle.setAttribute('fill','rgba(10,8,6,0.92)');centerCircle.setAttribute('pointer-events','none');
+
+  svg.appendChild(g);
+  svg.appendChild(centerCircle);
+
+  // Update center content
   const pctEl=document.getElementById('fr-rc-pct');
   const wordEl=document.getElementById('fr-rc-word');
   const daysEl=document.getElementById('fr-rc-days');
@@ -887,37 +885,39 @@ function drawRing(mode){
       wordEl.textContent='Start forging';
       daysEl.innerHTML='<a class="fr-rc-cta" style="cursor:pointer;color:var(--gold);text-decoration:none;font-size:9px;" onclick="sw(\'forge\',document.querySelector(\'.bni[data-v=forge]\'))">Set up your first discipline →</a>';
     } else {
-      pctEl.textContent=m.hasData?`${m.pct}%`:'—';
-      wordEl.textContent=m.hasData?m.word:'No data';
-      const forgedDays=m.hasData?
-        (()=>{let n=0;for(let d=1;d<=m.daysInMonth;d++){const ds=`${m.prefix}-${String(d).padStart(2,'0')}`;const p=dayPct(ds,hh,ll);if(p!==null&&p>=50)n++;}return n;})()
-        :0;
-      daysEl.textContent=`${forgedDays} day${forgedDays!==1?'s':''} forged`;
+      pctEl.textContent=(m.hasData&&m.pct!=null)?m.pct+'%':'—';
+      wordEl.textContent=(m.hasData&&m.word)?m.word:'No data';
+      daysEl.textContent=(m.hasData&&daysWithData!=null)?daysWithData+' of '+daysInMonth+' days':'';
     }
   }
 
-  const svg=document.getElementById('fr-ring-svg');
-  if(!svg)return;
+  // Update arrow dim states
+  const prevBtn=document.getElementById('fr-prev');
+  const nextBtn=document.getElementById('fr-next');
+  if(prevBtn)prevBtn.classList.toggle('dim',currentMonthIdx<=0);
+  if(nextBtn)nextBtn.classList.toggle('dim',currentMonthIdx>=monthList.length-1);
 
-  if(mode==='transition'){
+  // Animation modes
+  if(mode==='assemble'){
+    const paths=g.querySelectorAll('path');
+    paths.forEach((p,i)=>{
+      p.style.opacity='0';
+    });
+    requestAnimationFrame(()=>{
+      paths.forEach((p,i)=>{
+        p.style.transitionDelay=`${i*20}ms`;
+        p.style.opacity='1';
+      });
+    });
+  } else if(mode==='transition'){
     svg.style.transition='opacity 150ms ease-in';
     svg.style.opacity='0';
     setTimeout(()=>{
-      buildWedges();
       svg.style.transition='opacity 220ms cubic-bezier(0.22,1,0.36,1)';
       svg.style.opacity='1';
     },160);
-  } else if(mode==='assemble'){
-    buildWedges();
-    // Stagger animation on each wedge
-    const paths=svg.querySelectorAll('path');
-    paths.forEach((p,i)=>{
-      p.style.animation=`wedgeIn 0.06s ${i*14}ms cubic-bezier(0.22,1,0.36,1) both`;
-    });
-  } else {
-    // mode === false: instant
-    buildWedges();
   }
+  // mode === false: instant, no animation needed
 }
 
 function initRingTilt(){
@@ -925,25 +925,46 @@ function initRingTilt(){
   if(!tilt)return;
   let rotX=0,rotY=0,velX=0,velY=0;
   let dragging=false,lastX=0,lastY=0,rafId=null;
+  const CLAMP_X=30,CLAMP_Y=26;
+  const DRAG_SENS=0.55;
+  const DAMPING=0.94;
+  const SPRING=0.02;
+  const THRESH=0.15;
 
+  const svg=document.getElementById('fr-ring-svg');
   function applyTilt(){
-    tilt.style.transform=`rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    const tiltAmt=Math.sqrt(rotX*rotX+rotY*rotY);
+    const sc=1+tiltAmt*0.003;
+    tilt.style.transform=`rotateX(${rotX}deg) rotateY(${rotY}deg) scale(${sc.toFixed(4)})`;
+    // Dynamic shadow — layered for depth
+    const sx=(-rotY*1.0).toFixed(1);
+    const sy=(rotX*1.0+5).toFixed(1);
+    const blur=(8+tiltAmt*0.8).toFixed(1);
+    const alpha=(0.35+tiltAmt*0.015).toFixed(3);
+    // Second layer — soft wide spread
+    const sx2=(-rotY*1.8).toFixed(1);
+    const sy2=(rotX*1.8+10).toFixed(1);
+    const blur2=(20+tiltAmt*1.2).toFixed(1);
+    const alpha2=(0.15+tiltAmt*0.008).toFixed(3);
+    if(svg){
+      svg.style.filter=`drop-shadow(${sx}px ${sy}px ${blur}px rgba(0,0,0,${alpha})) drop-shadow(${sx2}px ${sy2}px ${blur2}px rgba(0,0,0,${alpha2}))`;
+    }
   }
 
   function springBack(){
     if(!dragging){
-      velX*=0.88;velY*=0.88;
+      // Spring toward center + damping
+      velX=velX*DAMPING-rotX*SPRING;
+      velY=velY*DAMPING-rotY*SPRING;
       rotX+=velX;rotY+=velY;
-      // clamp
-      rotX=Math.max(-22,Math.min(22,rotX));
-      rotY=Math.max(-18,Math.min(18,rotY));
+      rotX=Math.max(-CLAMP_X,Math.min(CLAMP_X,rotX));
+      rotY=Math.max(-CLAMP_Y,Math.min(CLAMP_Y,rotY));
       applyTilt();
-      if(Math.abs(velX)>0.3||Math.abs(velY)>0.3){
+      if(Math.abs(velX)>THRESH||Math.abs(velY)>THRESH||Math.abs(rotX)>0.3||Math.abs(rotY)>0.3){
         rafId=requestAnimationFrame(springBack);
       } else {
-        tilt.style.transition='transform 0.15s ease-out';
-        rotX=0;rotY=0;applyTilt();
-        setTimeout(()=>tilt.style.transition='',160);
+        rotX=0;rotY=0;velX=0;velY=0;
+        applyTilt();
         rafId=null;
       }
     }
@@ -962,10 +983,10 @@ function initRingTilt(){
     if(!dragging)return;
     const dx=x-lastX,dy=y-lastY;
     lastX=x;lastY=y;
-    velX=dx*0.4;velY=dy*0.4;
-    rotY+=dx*0.4;rotX-=dy*0.4;
-    rotX=Math.max(-22,Math.min(22,rotX));
-    rotY=Math.max(-18,Math.min(18,rotY));
+    velX=dx*DRAG_SENS;velY=dy*DRAG_SENS;
+    rotY+=dx*DRAG_SENS;rotX-=dy*DRAG_SENS;
+    rotX=Math.max(-CLAMP_X,Math.min(CLAMP_X,rotX));
+    rotY=Math.max(-CLAMP_Y,Math.min(CLAMP_Y,rotY));
     applyTilt();
   }
 
@@ -979,12 +1000,11 @@ function initRingTilt(){
   tilt.addEventListener('mousedown',e=>{startDrag(e.clientX,e.clientY);e.preventDefault();});
   window.addEventListener('mousemove',e=>{if(dragging)moveDrag(e.clientX,e.clientY);});
   window.addEventListener('mouseup',endDrag);
-  tilt.addEventListener('touchstart',e=>{const t=e.touches[0];startDrag(t.clientX,t.clientY);},{passive:true});
-  tilt.addEventListener('touchmove',e=>{const t=e.touches[0];moveDrag(t.clientX,t.clientY);},{passive:true});
+  tilt.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];startDrag(t.clientX,t.clientY);},{passive:false});
+  tilt.addEventListener('touchmove',e=>{e.preventDefault();const t=e.touches[0];moveDrag(t.clientX,t.clientY);},{passive:false});
   tilt.addEventListener('touchend',endDrag);
   tilt.style.cursor='grab';
 
-  // Store tilt state for Task 10 shared rAF loop
   window._frTilt={
     get rotX(){return rotX;},get rotY(){return rotY;},
     get velX(){return velX;},get velY(){return velY;},
@@ -998,11 +1018,11 @@ function initRingTilt(){
   if(!sessionStorage.getItem('fr-hint-shown')){
     sessionStorage.setItem('fr-hint-shown','1');
     let hintAngle=0,hintDir=1;
-    const HINT_MAX=8;
+    const HINT_MAX=10;
     function hintAnim(){
-      hintAngle+=hintDir*0.5;
+      hintAngle+=hintDir*0.6;
       if(hintAngle>=HINT_MAX)hintDir=-1;
-      if(hintAngle<=-HINT_MAX*0.5){hintAngle=0;tilt.style.transform='';return;}
+      if(hintAngle<=-HINT_MAX*0.4){hintAngle=0;tilt.style.transform='';return;}
       tilt.style.transform=`rotateY(${hintAngle}deg)`;
       requestAnimationFrame(hintAnim);
     }
@@ -1260,8 +1280,8 @@ function initTerrainDrag(){
   stage.addEventListener('mousedown',e=>{startDrag(e.clientX);e.preventDefault();});
   window.addEventListener('mousemove',e=>{if(dragging)moveDrag(e.clientX);});
   window.addEventListener('mouseup',endDrag);
-  stage.addEventListener('touchstart',e=>{startDrag(e.touches[0].clientX);},{passive:true});
-  stage.addEventListener('touchmove',e=>{moveDrag(e.touches[0].clientX);},{passive:true});
+  stage.addEventListener('touchstart',e=>{e.preventDefault();startDrag(e.touches[0].clientX);},{passive:false});
+  stage.addEventListener('touchmove',e=>{e.preventDefault();moveDrag(e.touches[0].clientX);},{passive:false});
   stage.addEventListener('touchend',endDrag);
   stage.style.cursor='grab';
 
@@ -1281,15 +1301,15 @@ function animFrame(){
   const tilt=window._frTilt;
   const terrain=window._frTerrain;
 
-  // Ring spring-back
-  if(tilt&&!tilt.dragging&&(Math.abs(tilt.velX)>0.3||Math.abs(tilt.velY)>0.3)){
-    tilt.velX*=0.88;tilt.velY*=0.88;
-    tilt.rotX=Math.max(-22,Math.min(22,tilt.rotX+tilt.velX));
-    tilt.rotY=Math.max(-18,Math.min(18,tilt.rotY+tilt.velY));
+  // Ring spring-back (spring toward center + damping)
+  if(tilt&&!tilt.dragging&&(Math.abs(tilt.velX)>0.15||Math.abs(tilt.velY)>0.15||Math.abs(tilt.rotX)>0.3||Math.abs(tilt.rotY)>0.3)){
+    tilt.velX=tilt.velX*0.94-tilt.rotX*0.02;
+    tilt.velY=tilt.velY*0.94-tilt.rotY*0.02;
+    tilt.rotX=Math.max(-30,Math.min(30,tilt.rotX+tilt.velX));
+    tilt.rotY=Math.max(-26,Math.min(26,tilt.rotY+tilt.velY));
     tilt.applyTilt();
     active=true;
-  } else if(tilt&&!tilt.dragging&&(Math.abs(tilt.velX)<=0.3&&Math.abs(tilt.velY)<=0.3)&&(Math.abs(tilt.rotX)>0.5||Math.abs(tilt.rotY)>0.5)){
-    // Final snap to flat
+  } else if(tilt&&!tilt.dragging&&(Math.abs(tilt.rotX)>0||Math.abs(tilt.rotY)>0)){
     tilt.velX=0;tilt.velY=0;
     tilt.rotX=0;tilt.rotY=0;
     tilt.applyTilt();
@@ -1643,7 +1663,15 @@ function openSettings() {
       <div class="settings-row-left"><span class="settings-row-icon">◆</span><span class="settings-row-label">About GritCore</span></div>
       <span class="settings-row-value"></span>
     </div>
-    <div class="settings-version">GritCore v0.27</div>
+    <div class="settings-row" style="border-top:1px solid rgba(255,255,255,0.08);margin-top:8px;" onclick="if(confirm('Generate 1 year of sample data? This will overwrite existing logs.')){devGenYear();closeSettings();}">
+      <div class="settings-row-left"><span class="settings-row-icon">⚙</span><span class="settings-row-label">Generate 1 Year Data</span></div>
+      <span class="settings-row-value" style="color:rgba(251,191,36,0.6);">Dev</span>
+    </div>
+    <div class="settings-row" onclick="if(confirm('Reset ALL data? Habits, logs, milestones — everything goes back to day zero. This cannot be undone.')){devResetAll();closeSettings();}">
+      <div class="settings-row-left"><span class="settings-row-icon" style="color:rgba(220,80,80,0.8);">⊘</span><span class="settings-row-label" style="color:rgba(220,80,80,0.8);">Reset All Data</span></div>
+      <span class="settings-row-value" style="color:rgba(220,80,80,0.5);">Dev</span>
+    </div>
+    <div class="settings-version">GritCore v0.29</div>
   `;
   backdrop.style.display = 'block';
   requestAnimationFrame(() => el.classList.add('open'));
@@ -1654,6 +1682,24 @@ function closeSettings() {
   if (!el) return;
   el.classList.remove('open');
   if (bd) { bd.classList.remove('open'); setTimeout(() => { bd.style.display = 'none'; }, 380); }
+}
+/* ── Dev Tools ── */
+function devGenYear(){
+  if(!habits.length){showToast('Add at least one discipline first');return;}
+  const today=new Date();
+  for(let i=365;i>=0;i--){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const ds=d.toISOString().split('T')[0];
+    if(!logs[ds])logs[ds]={};
+    habits.forEach(h=>{
+      const r=Math.random();
+      if(r<0.72)logs[ds][h.id]='done';
+      else if(r<0.88)logs[ds][h.id]='failed';
+      // else skip (no entry) ~12%
+    });
+  }
+  saveL();render();
+  showToast('1 year generated','366 days of sample logs');
 }
 function markH(id,status,btnEl,evt){
   if(isPlaceholder)return;
@@ -1759,7 +1805,7 @@ function renderToday(){
   <div id="streak-panel"></div>
   <div class="shdr af s2"><span class="shdr-l">Today's Disciplines</span></div>
   ${hhtml}
-  ${q?`<div class="qcard card af s4" onclick="qPreview()"><div class="qtext">"${q.text}"</div><div class="qauth">— ${q.author}</div></div>`:''}
+  ${q?`<div class="qcard card af s4" onclick="qPreview(this)"><div class="qtext">"${q.t}"</div><div class="qauth">— ${q.a}</div></div>`:''}
   <div class="ftr"><div class="ftr-logo">Gritcore</div><div class="ftr-sub">Discipline is freedom</div></div>`;
 }
 function catStats(){const hh=effH(),ll=effL();return cats.filter(c=>hh.some(h=>h.cat===c.id)).map(c=>{let done=0,total=0;Object.values(ll).forEach(dayLog=>{hh.filter(h=>h.cat===c.id).forEach(h=>{if(dayLog[h.id]==='done'){done++;total++;}else if(dayLog[h.id]==='failed')total++;});});return{cat:c.name,pct:total>0?Math.round((done/total)*100):0};});}
@@ -2263,9 +2309,15 @@ function devResetDate() {
   closeDevConsole(); render(); updateHeader();
 }
 function devResetAll() {
-  if (!confirm('Reset ALL data? This cannot be undone.')) return;
-  localStorage.clear();
-  location.reload();
+  habits=[];logs={};
+  localStorage.removeItem('gc:gc1:habits');
+  localStorage.removeItem('gc:gc1:logs');
+  localStorage.removeItem('gc1:milestones');
+  localStorage.removeItem('gc1:achievements');
+  localStorage.removeItem('gc:sim_date');
+  isPlaceholder=true;
+  saveH();saveL();render();
+  showToast('All data reset','Back to day zero');
 }
 </script>
 
