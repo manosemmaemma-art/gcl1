@@ -129,7 +129,7 @@ Only skip if the user explicitly says "just do it."
 **New inline CSS in v0.26** (in `index.html <style>`):
 - `@keyframes heatPulse` + `#heat-veil.pulsing` — heat veil ambient pulse at ≥70% completion
 
-**Versioning:** Backup before every change set. v0.24–v0.27 backups exist. v0.28 backups: `index.0.28.html`, `gritcore.0.28.css`. Next version: 0.29.
+**Versioning:** Backup before every change set. v0.24–v0.28 backups exist. v0.29 backups: `index.0.29.html`, `gritcore.0.29.css`. Next version: 0.30.
 
 **New APIs added in v0.28 (Forge Ring — branch `feature/forge-ring-v028`):**
 - `renderForgeRing()` — renders full Record tab DOM, initialises all interactions
