@@ -863,6 +863,7 @@ function drawRing(mode){
     txt.setAttribute('text-anchor','middle');
     txt.setAttribute('dominant-baseline','central');
     txt.setAttribute('pointer-events','none');
+    txt.setAttribute('data-day',String(d));
     txt.textContent=String(d);
     g.appendChild(txt);
   }
@@ -920,114 +921,207 @@ function drawRing(mode){
   // mode === false: instant, no animation needed
 }
 
-function initRingTilt(){
-  const tilt=document.getElementById('fr-ring-tilt');
-  if(!tilt)return;
-  let rotX=0,rotY=0,velX=0,velY=0;
-  let dragging=false,lastX=0,lastY=0,rafId=null;
-  const CLAMP_X=30,CLAMP_Y=26;
-  const DRAG_SENS=0.55;
-  const DAMPING=0.94;
-  const SPRING=0.02;
-  const THRESH=0.15;
+function initWheelSwipe() {
+  const wrap = document.getElementById('fr-wheel-wrap');
+  const svg = document.getElementById('fr-ring-svg');
+  if (!wrap || !svg) return;
 
-  const svg=document.getElementById('fr-ring-svg');
-  function applyTilt(){
-    const tiltAmt=Math.sqrt(rotX*rotX+rotY*rotY);
-    const sc=1+tiltAmt*0.003;
-    tilt.style.transform=`rotateX(${rotX}deg) rotateY(${rotY}deg) scale(${sc.toFixed(4)})`;
-    // Dynamic shadow — layered for depth
-    const sx=(-rotY*1.0).toFixed(1);
-    const sy=(rotX*1.0+5).toFixed(1);
-    const blur=(8+tiltAmt*0.8).toFixed(1);
-    const alpha=(0.35+tiltAmt*0.015).toFixed(3);
-    // Second layer — soft wide spread
-    const sx2=(-rotY*1.8).toFixed(1);
-    const sy2=(rotX*1.8+10).toFixed(1);
-    const blur2=(20+tiltAmt*1.2).toFixed(1);
-    const alpha2=(0.15+tiltAmt*0.008).toFixed(3);
-    if(svg){
-      svg.style.filter=`drop-shadow(${sx}px ${sy}px ${blur}px rgba(0,0,0,${alpha})) drop-shadow(${sx2}px ${sy2}px ${blur2}px rgba(0,0,0,${alpha2}))`;
-    }
+  let activePointerId = null;
+  let startAngle = 0;
+  let currentRotation = 0;
+  let selectedDay = null;
+
+  // Compute initial rotation: today (or last data day) at 12 o'clock
+  const m = monthList[currentMonthIdx];
+  const sliceAngle = 360 / m.daysInMonth;
+  const today = getDate();
+  const isCurrentMonth = (m.prefix === today.slice(0, 7));
+  const targetDay = isCurrentMonth ? parseInt(today.slice(8)) : m.daysInMonth;
+  currentRotation = -90 - (targetDay - 1) * sliceAngle - sliceAngle / 2;
+  svg.style.transform = `rotate(${currentRotation}deg)`;
+
+  function getAngle(e) {
+    const rect = wrap.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    return Math.atan2(e.clientY - cy, e.clientX - cx) * (180 / Math.PI);
   }
 
-  function springBack(){
-    if(!dragging){
-      // Spring toward center + damping
-      velX=velX*DAMPING-rotX*SPRING;
-      velY=velY*DAMPING-rotY*SPRING;
-      rotX+=velX;rotY+=velY;
-      rotX=Math.max(-CLAMP_X,Math.min(CLAMP_X,rotX));
-      rotY=Math.max(-CLAMP_Y,Math.min(CLAMP_Y,rotY));
-      applyTilt();
-      if(Math.abs(velX)>THRESH||Math.abs(velY)>THRESH||Math.abs(rotX)>0.3||Math.abs(rotY)>0.3){
-        rafId=requestAnimationFrame(springBack);
+  function snapToNearest() {
+    const daysInMonth = monthList[currentMonthIdx].daysInMonth;
+    const sliceDeg = 360 / daysInMonth;
+    const offset = ((-90 - currentRotation) % 360 + 360) % 360;
+    const dayIdx = Math.round(offset / sliceDeg) % daysInMonth;
+    let targetRotation = -90 - dayIdx * sliceDeg - sliceDeg / 2;
+    while (targetRotation - currentRotation > 180) targetRotation -= 360;
+    while (targetRotation - currentRotation < -180) targetRotation += 360;
+    svg.style.transition = 'transform 280ms cubic-bezier(0.25,1,0.5,1)';
+    svg.style.transform = `rotate(${targetRotation}deg)`;
+    currentRotation = targetRotation;
+    selectDay(dayIdx + 1);
+    setTimeout(() => { svg.style.transition = ''; }, 300);
+  }
+
+  function selectDay(day) {
+    if (selectedDay === day) {
+      // Second tap on same day -> open full detail
+      const mo = monthList[currentMonthIdx];
+      const ds = `${mo.prefix}-${String(day).padStart(2,'0')}`;
+      const pct = dayPct(ds, effH(), effL());
+      const isToday = (ds === getDate());
+      tapWedge(day, ds, pct, isToday);
+      return;
+    }
+    selectedDay = day;
+    const paths = svg.querySelectorAll('path[data-day]');
+    const daysInMonth = monthList[currentMonthIdx].daysInMonth;
+    const sliceDeg = 360 / daysInMonth;
+    paths.forEach(p => {
+      const d = parseInt(p.dataset.day);
+      if (d === day) {
+        const midAngle = ((d - 1) * sliceDeg + sliceDeg / 2) * Math.PI / 180;
+        const dx = Math.cos(midAngle) * 8;
+        const dy = Math.sin(midAngle) * 8;
+        p.setAttribute('transform', `translate(${dx},${dy})`);
+        p.style.filter = 'url(#wedge-glow)';
+        p.classList.add('fr-wedge--selected');
+        p.classList.remove('fr-wedge--dimmed');
       } else {
-        rotX=0;rotY=0;velX=0;velY=0;
-        applyTilt();
-        rafId=null;
+        p.removeAttribute('transform');
+        p.style.filter = '';
+        p.classList.remove('fr-wedge--selected');
+        p.classList.add('fr-wedge--dimmed');
       }
-    }
+    });
+    // Also move the corresponding day number text
+    const texts = svg.querySelectorAll('text[data-day]');
+    texts.forEach(t => {
+      const d = parseInt(t.dataset.day);
+      if (d === day) {
+        const midAngle = ((d - 1) * sliceDeg + sliceDeg / 2) * Math.PI / 180;
+        const dx = Math.cos(midAngle) * 8;
+        const dy = Math.sin(midAngle) * 8;
+        t.setAttribute('transform', `translate(${dx},${dy})`);
+      } else {
+        t.removeAttribute('transform');
+      }
+    });
+    wrap.classList.add('scaled');
+    const hint = document.getElementById('fr-swipe-hint');
+    if (hint) hint.style.opacity = '0';
+    const mo = monthList[currentMonthIdx];
+    const ds = `${mo.prefix}-${String(day).padStart(2,'0')}`;
+    const pct = dayPct(ds, effH(), effL());
+    const isToday = (ds === getDate());
+    showDayInfo(day, ds, pct, isToday);
   }
 
-  function startDrag(x,y){
-    dragging=true;
-    lastX=x;lastY=y;
-    velX=0;velY=0;
-    if(rafId){cancelAnimationFrame(rafId);rafId=null;}
-    tilt.style.transition='';
-    tilt.style.cursor='grabbing';
+  function deselectDay() {
+    selectedDay = null;
+    const paths = svg.querySelectorAll('path[data-day]');
+    paths.forEach(p => {
+      p.removeAttribute('transform');
+      p.style.filter = '';
+      p.classList.remove('fr-wedge--dimmed');
+      p.classList.remove('fr-wedge--selected');
+    });
+    const texts = svg.querySelectorAll('text[data-day]');
+    texts.forEach(t => t.removeAttribute('transform'));
+    wrap.classList.remove('scaled');
+    const hint = document.getElementById('fr-swipe-hint');
+    if (hint) hint.style.opacity = '';
+    showMonthSummary();
   }
 
-  function moveDrag(x,y){
-    if(!dragging)return;
-    const dx=x-lastX,dy=y-lastY;
-    lastX=x;lastY=y;
-    velX=dx*DRAG_SENS;velY=dy*DRAG_SENS;
-    rotY+=dx*DRAG_SENS;rotX-=dy*DRAG_SENS;
-    rotX=Math.max(-CLAMP_X,Math.min(CLAMP_X,rotX));
-    rotY=Math.max(-CLAMP_Y,Math.min(CLAMP_Y,rotY));
-    applyTilt();
-  }
+  // Pointer events
+  wrap.addEventListener('pointerdown', (e) => {
+    if (activePointerId !== null) return;
+    activePointerId = e.pointerId;
+    wrap.setPointerCapture(e.pointerId);
+    startAngle = getAngle(e) - currentRotation;
+    svg.style.transition = '';
+  });
 
-  function endDrag(){
-    if(!dragging)return;
-    dragging=false;
-    tilt.style.cursor='grab';
-    startAnimFrame();
-  }
+  wrap.addEventListener('pointermove', (e) => {
+    if (e.pointerId !== activePointerId) return;
+    currentRotation = getAngle(e) - startAngle;
+    svg.style.transform = `rotate(${currentRotation}deg)`;
+  });
 
-  tilt.addEventListener('mousedown',e=>{startDrag(e.clientX,e.clientY);e.preventDefault();});
-  window.addEventListener('mousemove',e=>{if(dragging)moveDrag(e.clientX,e.clientY);});
-  window.addEventListener('mouseup',endDrag);
-  tilt.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];startDrag(t.clientX,t.clientY);},{passive:false});
-  tilt.addEventListener('touchmove',e=>{e.preventDefault();const t=e.touches[0];moveDrag(t.clientX,t.clientY);},{passive:false});
-  tilt.addEventListener('touchend',endDrag);
-  tilt.style.cursor='grab';
+  wrap.addEventListener('pointerup', (e) => {
+    if (e.pointerId !== activePointerId) return;
+    wrap.releasePointerCapture(e.pointerId);
+    activePointerId = null;
+    snapToNearest();
+  });
 
-  window._frTilt={
-    get rotX(){return rotX;},get rotY(){return rotY;},
-    get velX(){return velX;},get velY(){return velY;},
-    get dragging(){return dragging;},
-    set rotX(v){rotX=v;},set rotY(v){rotY=v;},
-    set velX(v){velX=v;},set velY(v){velY=v;},
-    applyTilt,springBack:()=>{rafId=requestAnimationFrame(springBack);}
+  wrap.addEventListener('pointercancel', (e) => {
+    if (e.pointerId !== activePointerId) return;
+    activePointerId = null;
+    snapToNearest();
+  });
+
+  // Expose for external access (month changes, closeDetail)
+  wrap._resetRotation = function() {
+    selectedDay = null;
+    deselectDay();
+    const nm = monthList[currentMonthIdx];
+    const sd = 360 / nm.daysInMonth;
+    const td = nm.prefix === getDate().slice(0,7) ? parseInt(getDate().slice(8)) : nm.daysInMonth;
+    currentRotation = -90 - (td - 1) * sd - sd / 2;
+    svg.style.transition = 'transform 280ms cubic-bezier(0.25,1,0.5,1)';
+    svg.style.transform = `rotate(${currentRotation}deg)`;
+    setTimeout(() => { svg.style.transition = ''; }, 300);
   };
+  wrap._deselectDay = deselectDay;
+}
 
-  // One-time drag affordance hint
-  if(!sessionStorage.getItem('fr-hint-shown')){
-    sessionStorage.setItem('fr-hint-shown','1');
-    let hintAngle=0,hintDir=1;
-    const HINT_MAX=10;
-    function hintAnim(){
-      hintAngle+=hintDir*0.6;
-      if(hintAngle>=HINT_MAX)hintDir=-1;
-      if(hintAngle<=-HINT_MAX*0.4){hintAngle=0;tilt.style.transform='';return;}
-      tilt.style.transform=`rotateY(${hintAngle}deg)`;
-      requestAnimationFrame(hintAnim);
+function showDayInfo(day, dateStr, pct, isToday) {
+  const center = document.getElementById('fr-ring-center');
+  if (!center) return;
+  const d = new Date(dateStr + 'T00:00:00');
+  const mn = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dateText = `${mn[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  const word = isToday ? 'In progress\u2026' : scoreWord(pct || 0);
+  const hh = effH(), ll = effL();
+  const dayLog = ll[dateStr] || {};
+  const doneCount = hh.filter(h => dayLog[h.id] === 'done').length;
+
+  center.style.transition = 'opacity 130ms ease-in';
+  center.style.opacity = '0';
+  setTimeout(() => {
+    document.getElementById('fr-rc-pct').textContent = `${pct || 0}%`;
+    document.getElementById('fr-rc-word').textContent = word;
+    document.getElementById('fr-rc-days').textContent = `${doneCount} of ${hh.length} done`;
+    let dateEl = document.getElementById('fr-rc-date');
+    if (!dateEl) {
+      dateEl = document.createElement('div');
+      dateEl.id = 'fr-rc-date';
+      dateEl.style.cssText = 'font-family:"Josefin Sans",sans-serif;font-size:8px;letter-spacing:0.12em;opacity:0.35;text-transform:uppercase;margin-bottom:2px;';
+      center.insertBefore(dateEl, center.firstChild);
     }
-    setTimeout(hintAnim,800);
-  }
+    dateEl.textContent = dateText;
+    dateEl.style.display = '';
+    center.style.transition = 'opacity 220ms cubic-bezier(0.25,1,0.5,1)';
+    requestAnimationFrame(() => center.style.opacity = '1');
+  }, 140);
+}
+
+function showMonthSummary() {
+  const center = document.getElementById('fr-ring-center');
+  if (!center) return;
+  const m = monthList[currentMonthIdx];
+  center.style.transition = 'opacity 130ms ease-in';
+  center.style.opacity = '0';
+  setTimeout(() => {
+    const dateEl = document.getElementById('fr-rc-date');
+    if (dateEl) dateEl.style.display = 'none';
+    document.getElementById('fr-rc-pct').textContent = (m.hasData && m.pct != null) ? `${m.pct}%` : '\u2014';
+    document.getElementById('fr-rc-word').textContent = (m.hasData && m.word) ? m.word : 'No data';
+    document.getElementById('fr-rc-days').textContent = (m.hasData && m.daysWithData != null) ? `${m.daysWithData} of ${m.daysInMonth} days` : '';
+    center.style.transition = 'opacity 220ms cubic-bezier(0.25,1,0.5,1)';
+    requestAnimationFrame(() => center.style.opacity = '1');
+  }, 140);
 }
 
 function tapWedge(day,dateStr,pct,isToday){
