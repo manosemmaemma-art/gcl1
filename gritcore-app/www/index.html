@@ -1178,6 +1178,8 @@ function closeDetail(){
     center.style.transition='opacity 180ms cubic-bezier(0.22,1,0.36,1)';
     requestAnimationFrame(()=>center.style.opacity='1');
   },140);
+  const wrap=document.getElementById('fr-wheel-wrap');
+  if(wrap&&wrap._deselectDay)wrap._deselectDay();
 }
 
 function updateRingHeader(direction){
