@@ -313,7 +313,7 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
 @keyframes todayPulse{0%,100%{filter:drop-shadow(0 0 3px rgba(232,200,76,.65))}50%{filter:drop-shadow(0 0 10px rgba(232,200,76,1)) drop-shadow(0 0 22px rgba(232,200,76,.45))}}
 @keyframes ghostSlide{from{opacity:0;transform:translateX(var(--ghost-dx,30px))}to{opacity:1;transform:translateX(0)}}
 .fr-wedge-today{animation:todayPulse 2.4s ease-in-out infinite;}
-@media(prefers-reduced-motion:reduce){.fr-wedge-today,.fr-t-bar--active{animation:none!important;}.fr-t-bar{animation:none!important;opacity:1!important;transform:scaleY(1)!important;}#fr-wedges path{animation:none!important;opacity:1!important;}}
+@media(prefers-reduced-motion:reduce){.fr-wedge-today,.fr-t-bar--active{animation:none!important;}.fr-t-bar{animation:none!important;opacity:1!important;transform:scaleY(1)!important;}#fr-wedges path{animation:none!important;opacity:1!important;}.fr-wheel-wrap,#fr-ring-svg,.fr-wedge--dimmed,.fr-wedge--selected{transition-duration:0ms!important;}}
 </style>
 <link rel="stylesheet" href="gritcore.css">
 </head>
@@ -1074,6 +1074,39 @@ function initWheelSwipe() {
     setTimeout(() => { svg.style.transition = ''; }, 300);
   };
   wrap._deselectDay = deselectDay;
+
+  wrap.addEventListener('keydown', (e) => {
+    const daysInMonth = monthList[currentMonthIdx].daysInMonth;
+    const sliceDeg = 360 / daysInMonth;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      const offset = ((-90 - currentRotation) % 360 + 360) % 360;
+      const curIdx = Math.round(offset / sliceDeg) % daysInMonth;
+      const nextIdx = (curIdx + 1) % daysInMonth;
+      currentRotation = -90 - nextIdx * sliceDeg - sliceDeg / 2;
+      svg.style.transition = 'transform 280ms cubic-bezier(0.25,1,0.5,1)';
+      svg.style.transform = `rotate(${currentRotation}deg)`;
+      selectDay(nextIdx + 1);
+      setTimeout(() => { svg.style.transition = ''; }, 300);
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const offset = ((-90 - currentRotation) % 360 + 360) % 360;
+      const curIdx = Math.round(offset / sliceDeg) % daysInMonth;
+      const prevIdx = (curIdx - 1 + daysInMonth) % daysInMonth;
+      currentRotation = -90 - prevIdx * sliceDeg - sliceDeg / 2;
+      svg.style.transition = 'transform 280ms cubic-bezier(0.25,1,0.5,1)';
+      svg.style.transform = `rotate(${currentRotation}deg)`;
+      selectDay(prevIdx + 1);
+      setTimeout(() => { svg.style.transition = ''; }, 300);
+    }
+    if (e.key === 'Escape') {
+      deselectDay();
+    }
+  });
+  wrap.setAttribute('tabindex', '0');
+  wrap.setAttribute('role', 'group');
+  wrap.setAttribute('aria-label', 'Monthly discipline wheel — use arrow keys to navigate days');
 }
 
 function showDayInfo(day, dateStr, pct, isToday) {
