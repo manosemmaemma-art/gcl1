@@ -1030,7 +1030,7 @@ button:focus-visible, .btn-reset:focus-visible {
 
 /* ── Forge Ring v0.28 ─────────────────────────── */
 .fr-hdr{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 18px;flex-shrink:0;}
-.fr-month-title{font-family:'Josefin Sans',sans-serif;font-size:11px;letter-spacing:.15em;color:rgba(201,168,76,0.80);text-transform:uppercase;font-weight:300;}
+.fr-month-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;letter-spacing:.06em;color:var(--gold);text-transform:uppercase;text-shadow:0 0 20px rgba(201,168,76,0.35);line-height:1;}
 .fr-hdr-arrow{background:none;border:none;color:rgba(201,168,76,0.6);font-size:26px;line-height:1;cursor:pointer;padding:4px 8px;opacity:.7;transition:opacity .15s,color .15s;-webkit-tap-highlight-color:transparent;}
 .fr-hdr-arrow:hover{opacity:1;color:var(--gold);}
 .fr-hdr-arrow.dim{opacity:.3;pointer-events:none;cursor:default;}
