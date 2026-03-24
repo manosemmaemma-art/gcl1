@@ -752,7 +752,7 @@ function renderForgeRing(){
   </div>
 </div>`;
   requestAnimationFrame(()=>{
-    updateHeader();
+    updateRingHeader();
     drawRing('assemble');
     buildTerrain();
     initRingTilt();
@@ -1066,7 +1066,7 @@ function closeDetail(){
   },140);
 }
 
-function updateHeader(direction){
+function updateRingHeader(direction){
   const m=monthList[currentMonthIdx];
   if(!m)return;
   const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -1116,7 +1116,7 @@ function changeMonth(delta){
   if(next<0||next>=monthList.length)return;
   currentMonthIdx=next;
   const dir=delta>0?'next':'prev';
-  updateHeader(dir);
+  updateRingHeader(dir);
   drawRing('transition');
   // Terrain: just shift active class, no re-animation
   const cols=document.querySelectorAll('.fr-t-col');
@@ -1325,7 +1325,7 @@ function startAnimFrame(){
 function jumpToMonth(idx){
   if(idx<0||idx>=monthList.length)return;
   currentMonthIdx=idx;
-  updateHeader();
+  updateRingHeader();
   drawRing(false);
   // Rebuild terrain to shift active class (no bar re-animation needed — we just update classes)
   const cols=document.querySelectorAll('.fr-t-col');
