@@ -307,11 +307,8 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
 #heat-veil{position:absolute;inset:0;pointer-events:none;z-index:0;background:linear-gradient(180deg,rgba(212,170,80,0.04) 0%,transparent 60%);opacity:var(--veil-base,0);transition:opacity 0.6s;}
 #heat-veil.pulsing{animation:heatPulse 3s ease-in-out infinite;}
 @media(prefers-reduced-motion:reduce){.logo-g,.bnav,.sbadge,#ambient-veil,#heat-veil.pulsing{animation:none!important;}}
-@keyframes wedgeIn{from{opacity:0;transform:scale(.84) translateY(3px)}to{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes barRise{from{transform:scaleY(0);opacity:0;transform-origin:bottom}to{transform:scaleY(1);opacity:1;transform-origin:bottom}}
-@keyframes activeGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(201,168,76,.55)) drop-shadow(0 -2px 6px rgba(201,168,76,.3))}50%{filter:drop-shadow(0 0 14px rgba(201,168,76,1)) drop-shadow(0 -4px 12px rgba(201,168,76,.6))}}
 @keyframes todayPulse{0%,100%{filter:drop-shadow(0 0 3px rgba(232,200,76,.65))}50%{filter:drop-shadow(0 0 10px rgba(232,200,76,1)) drop-shadow(0 0 22px rgba(232,200,76,.45))}}
-@keyframes ghostSlide{from{opacity:0;transform:translateX(var(--ghost-dx,30px))}to{opacity:1;transform:translateX(0)}}
 .fr-wedge-today{animation:todayPulse 2.4s ease-in-out infinite;}
 @media(prefers-reduced-motion:reduce){.fr-wedge-today,.fr-t-bar--active{animation:none!important;}.fr-t-bar{animation:none!important;opacity:1!important;transform:scaleY(1)!important;}#fr-wedges path{animation:none!important;opacity:1!important;}.fr-wheel-wrap,#fr-ring-svg,.fr-wedge--dimmed,.fr-wedge--selected{transition-duration:0ms!important;}}
 </style>
