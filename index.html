@@ -383,10 +383,10 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
   </div>
 </div>
 
-<div id="pd-overlay" class="pd-overlay" onclick="closePerfectDay()"></div>
-<div id="pd-modal" class="pd-modal">
+<div id="pd-overlay" class="pd-overlay" onclick="closePerfectDay()" role="presentation"></div>
+<div id="pd-modal" class="pd-modal" role="dialog" aria-modal="true" aria-labelledby="pd-title" tabindex="-1">
   <div class="pd-icon">✦</div>
-  <div class="pd-title">Perfect Day</div>
+  <div class="pd-title" id="pd-title">Perfect Day</div>
   <div class="pd-sub">Every discipline. No exceptions.</div>
   <button class="pd-btn" onclick="closePerfectDay()">Continue</button>
 </div>
@@ -2026,12 +2026,18 @@ function showPerfectDay() {
   if (o) o.classList.add('show');
   if (m) { m.classList.remove('pd-exit'); m.classList.add('show'); }
   comboVibrate(5);
+  window._pdPrevFocus = document.activeElement;
+  setTimeout(() => document.getElementById('pd-modal').focus(), 50);
+  document.addEventListener('keydown', function pdEsc(e) {
+    if (e.key === 'Escape') { closePerfectDay(); document.removeEventListener('keydown', pdEsc); }
+  });
 }
 function closePerfectDay() {
   const o = document.getElementById('pd-overlay');
   const m = document.getElementById('pd-modal');
   if (o) { o.classList.add('pd-fade-out'); setTimeout(()=>{o.classList.remove('show','pd-fade-out');},350); }
   if (m) { m.classList.add('pd-exit'); setTimeout(()=>{m.classList.remove('show','pd-exit');},350); }
+  if (window._pdPrevFocus) { window._pdPrevFocus.focus(); window._pdPrevFocus = null; }
 }
 function openSettings() {
   const el = document.getElementById('settings-sheet');
