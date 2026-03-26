@@ -239,6 +239,7 @@ body { color: var(--ct); }
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  min-height: 44px;
 }
 .bni.on { opacity: 1; }
 
