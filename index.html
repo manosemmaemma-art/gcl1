@@ -2200,12 +2200,12 @@ function renderToday(){
   <div class="scrow af s1">
     <div class="sc card ${tp!==null&&tp>=70?'lit':tp!==null&&tp<40?'bad':tp!==null?'ok':''}" id="sc0"><div class="sc-num">${tp!==null?tp+'%':'—'}</div><div class="sc-word">${tp!==null?todayLabel(tp):''}</div><div class="sc-lbl">Today</div></div>
     <div class="sc card ${wp!==null&&wp>=70?'lit':wp!==null&&wp<40?'bad':wp!==null?'ok':''}" id="sc1"><div class="sc-num">${wp!==null?wp+'%':'—'}</div><div class="sc-word">${wp!==null?weekLabel(wp):''}</div><div class="sc-lbl">7 Day</div></div>
-    <div class="sc card ${streak>=3?'lit':streak>0?'ok':'bad'}" id="sc2" onclick="toggleStreakPanel()" style="cursor:pointer;">${streak>0?`<span class="sc-fire" id="sc2-fire">${pixelFlameHTML(flameData(streak).compactSize)}</span>`:'<span class="sc-fire" id="sc2-fire"></span>'}<div class="sc-num">${streak>0?streak:'—'}</div><div class="sc-word">${streak>0?getTier(streak).name:'No Streak'}</div><div class="sc-lbl">Streak</div></div>
+    <div class="sc card ${streak>=3?'lit':streak>0?'ok':'bad'}" id="sc2" role="button" tabindex="0" onclick="toggleStreakPanel()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleStreakPanel()}" style="cursor:pointer;">${streak>0?`<span class="sc-fire" id="sc2-fire">${pixelFlameHTML(flameData(streak).compactSize)}</span>`:'<span class="sc-fire" id="sc2-fire"></span>'}<div class="sc-num">${streak>0?streak:'—'}</div><div class="sc-word">${streak>0?getTier(streak).name:'No Streak'}</div><div class="sc-lbl">Streak</div></div>
   </div>
   <div id="streak-panel"></div>
   <div class="shdr af s2"><span class="shdr-l">Today's Disciplines</span></div>
   ${hhtml}
-  ${q?`<div class="qcard card af s4" onclick="qPreview(this)"><div class="qtext">"${q.t}"</div><div class="qauth">— ${q.a}</div></div>`:''}
+  ${q?`<div class="qcard card af s4" role="button" tabindex="0" onclick="qPreview(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();qPreview(this)}"><div class="qtext">"${q.t}"</div><div class="qauth">— ${q.a}</div></div>`:''}
   <div class="ftr"><div class="ftr-logo">Gritcore</div><div class="ftr-sub">Discipline is freedom</div></div>`;
 }
 function catStats(){const hh=effH(),ll=effL();return cats.filter(c=>hh.some(h=>h.cat===c.id)).map(c=>{let done=0,total=0;Object.values(ll).forEach(dayLog=>{hh.filter(h=>h.cat===c.id).forEach(h=>{if(dayLog[h.id]==='done'){done++;total++;}else if(dayLog[h.id]==='failed')total++;});});return{cat:c.name,pct:total>0?Math.round((done/total)*100):0};});}
