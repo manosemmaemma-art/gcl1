@@ -2048,23 +2048,23 @@ function openSettings() {
   const hh = effH();
   const totalLogs = Object.keys(effL()).length;
   list.innerHTML = `
-    <div class="settings-row" onclick="exportData();closeSettings();">
+    <div class="settings-row" role="button" tabindex="0" onclick="exportData();closeSettings();" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
       <div class="settings-row-left"><span class="settings-row-icon">↓</span><span class="settings-row-label">Export Record</span></div>
       <span class="settings-row-value">${totalLogs} day${totalLogs!==1?'s':''} logged</span>
     </div>
-    <div class="settings-row" onclick="if(confirm('Reset streak milestone celebrations? Your streak is not affected.')){localStorage.removeItem('gc1:milestones');closeSettings();showToast('Milestones reset');}">
+    <div class="settings-row" role="button" tabindex="0" onclick="if(confirm('Reset streak milestone celebrations? Your streak is not affected.')){localStorage.removeItem('gc1:milestones');closeSettings();showToast('Milestones reset');}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
       <div class="settings-row-left"><span class="settings-row-icon">↻</span><span class="settings-row-label">Reset Milestones</span></div>
       <span class="settings-row-value">Celebrations only</span>
     </div>
-    <div class="settings-row" onclick="rptSheet('about');closeSettings();">
+    <div class="settings-row" role="button" tabindex="0" onclick="rptSheet('about');closeSettings();" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
       <div class="settings-row-left"><span class="settings-row-icon">◆</span><span class="settings-row-label">About GritCore</span></div>
       <span class="settings-row-value"></span>
     </div>
-    <div class="settings-row" style="border-top:1px solid rgba(255,255,255,0.08);margin-top:8px;" onclick="if(confirm('Generate 1 year of sample data? This will overwrite existing logs.')){devGenYear();closeSettings();}">
+    <div class="settings-row" role="button" tabindex="0" style="border-top:1px solid rgba(255,255,255,0.08);margin-top:8px;" onclick="if(confirm('Generate 1 year of sample data? This will overwrite existing logs.')){devGenYear();closeSettings();}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
       <div class="settings-row-left"><span class="settings-row-icon">⚙</span><span class="settings-row-label">Generate 1 Year Data</span></div>
       <span class="settings-row-value" style="color:rgba(251,191,36,0.6);">Dev</span>
     </div>
-    <div class="settings-row" onclick="if(confirm('Reset ALL data? Habits, logs, milestones — everything goes back to day zero. This cannot be undone.')){devResetAll();closeSettings();}">
+    <div class="settings-row" role="button" tabindex="0" onclick="if(confirm('Reset ALL data? Habits, logs, milestones — everything goes back to day zero. This cannot be undone.')){devResetAll();closeSettings();}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
       <div class="settings-row-left"><span class="settings-row-icon" style="color:rgba(220,80,80,0.8);">⊘</span><span class="settings-row-label" style="color:rgba(220,80,80,0.8);">Reset All Data</span></div>
       <span class="settings-row-value" style="color:rgba(220,80,80,0.5);">Dev</span>
     </div>
