@@ -1980,7 +1980,7 @@ function sw(v,el){
   const prevView=view;
   if(view==='record'&&v!=='record')currentMonthIdx=Math.max(0,monthList.length-1);
   view=v;
-  document.querySelectorAll('.bni').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  document.querySelectorAll('.bni').forEach(b=>{b.classList.toggle('on',b.dataset.v===v);if(b.dataset.v===v)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
   if(el){el.classList.add('tap');setTimeout(()=>el.classList.remove('tap'),300);}
   const c=document.getElementById('content');
   if(c)c.classList.add('tab-fade-out');
@@ -1991,7 +1991,7 @@ function sw(v,el){
     if(v==='today'||prevView==='today')setTimeout(updateStreakPanel,0);
   },150);
 }
-function swTo(v){view=v;document.querySelectorAll('.bni').forEach(b=>b.classList.toggle('on',b.dataset.v===v));render();}
+function swTo(v){view=v;document.querySelectorAll('.bni').forEach(b=>{b.classList.toggle('on',b.dataset.v===v);if(b.dataset.v===v)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});render();}
 function nextQ(){const qc=document.getElementById('qcard');if(qc){qc.classList.add('flash');setTimeout(()=>qc.classList.remove('flash'),250);}qi=(qi+1)%QUOTES.length;const q2=document.getElementById('qcard');if(q2){q2.querySelector('.qtext').textContent=QUOTES[qi].t;q2.querySelector('.qauth').textContent='— '+QUOTES[qi].a;}}
 function getTodayQuote(){const d=Math.floor(Date.now()/86400000);return QUOTES[d%QUOTES.length];}
 function getTomorrowQuote(){const d=Math.floor(Date.now()/86400000)+1;return QUOTES[d%QUOTES.length];}
