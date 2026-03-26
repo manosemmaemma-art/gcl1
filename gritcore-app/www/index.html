@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
-html,body{min-height:100dvh;overscroll-behavior:none;}
+html,body{min-height:100dvh;overscroll-behavior:none;overflow:hidden;width:100%;max-width:100%;}
 body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);transition:background .6s;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;}
 :root{
   --gold:#D4AA50;--goldb:rgba(212,170,80,.12);--goldbor:rgba(212,170,80,.3);
@@ -63,7 +63,7 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
 @keyframes ambientPulse{0%{opacity:.55;transform:scale(1) translate(0,0);}50%{opacity:1;transform:scale(1.06) translate(1%,-1%);}100%{opacity:.65;transform:scale(1.02) translate(-1%,1%);}}
 .af{animation:fadeUp .2s ease both}
 .s1{animation-delay:.04s}.s2{animation-delay:.08s}.s3{animation-delay:.12s}.s4{animation-delay:.16s}.s5{animation-delay:.2s}.s6{animation-delay:.24s}
-#app{max-width:430px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;}
+#app{max-width:430px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden;}
 .hdr{padding:max(14px, calc(env(safe-area-inset-top) + 8px)) 18px 0;position:sticky;top:0;z-index:30;background:var(--chdr);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--cbor);transition:background .6s,border-color .6s;-webkit-user-select:none;user-select:none;}
 .hdr-top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding-bottom:10px;}
 .logo{font-family:'Cormorant Garamond',serif;font-size:26px;letter-spacing:7px;line-height:1;font-weight:700;text-transform:uppercase;text-shadow:var(--ts);}
@@ -104,10 +104,10 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
 .sc.bad .sc-num{color:var(--blood);}
 .sc.ok .sc-num{color:var(--cts);}
 .sc-word{font-family:'Josefin Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--ctdd);margin-top:1px;}
-#streak-panel{display:none;border-radius:14px;overflow:hidden;border:1px solid var(--cbor);margin:8px 0 4px;position:relative;background:rgba(10,8,6,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:var(--card-shadow);transition:border-color .5s;}
-#streak-panel.open{display:block;animation:spIn .28s ease;}
-@keyframes spIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
-.sp-inner{position:relative;z-index:1;padding:14px 14px 16px;}
+#streak-panel{border-radius:16px;overflow:hidden;border:1px solid var(--cbor);margin:0 18px;position:relative;background:rgba(10,8,6,.65);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:var(--card-shadow), 0 0 20px rgba(0,0,0,0.3);transition:border-color .5s,max-height .35s cubic-bezier(0.22,1,0.36,1),opacity .25s ease,margin .35s ease;max-height:0;opacity:0;margin-top:0;margin-bottom:0;will-change:max-height,opacity;}
+#streak-panel.open{max-height:400px;opacity:1;margin-top:10px;margin-bottom:6px;}
+#streak-panel.closing{max-height:0;opacity:0;margin-top:0;margin-bottom:0;transition:max-height .25s cubic-bezier(0.4,0,0.2,1),opacity .2s ease,margin .25s ease;}
+.sp-inner{position:relative;z-index:1;padding:16px 16px 18px;}
 .sp-top{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
 .sp-flame-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
 .sp-flame{line-height:1;display:block;animation:bigFlicker 2s ease-in-out infinite;transform-origin:bottom center;}
@@ -119,11 +119,11 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
 .sp-tier{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:600;margin-top:2px;transition:color .6s;}
 .sp-sub{font-size:11px;letter-spacing:.8px;color:var(--ctd);margin-top:4px;font-style:italic;opacity:.75;}
 .sp-next{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ctdd);margin-bottom:4px;}
-.sp-pbar-wrap{height:2px;background:rgba(255,255,255,.06);border-radius:2px;margin-bottom:12px;}
+.sp-pbar-wrap{height:3px;background:rgba(255,255,255,.06);border-radius:3px;margin-bottom:14px;}
 .sp-pbar-fill{height:100%;border-radius:2px;transition:width .6s ease,background .6s ease;}
 .sp-tiers{display:flex;flex-direction:column;gap:2px;}
-.sp-trow{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;transition:opacity .3s;}
-.sp-trow.sp-current{background:rgba(255,255,255,.055);}
+.sp-trow{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;transition:opacity .3s;}
+.sp-trow.sp-current{background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,0.12);}
 .sp-trow.sp-past{opacity:.4;}
 .sp-trow.sp-locked{filter:blur(2px) grayscale(.75);opacity:.16;}
 .sp-ticon{width:24px;text-align:center;line-height:1;flex-shrink:0;transition:font-size .4s,filter .4s;}
@@ -303,14 +303,16 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
 .btn-reset{background:none;border:none;cursor:pointer;padding:0;color:inherit;font:inherit;text-align:inherit;width:100%;}
 .flex-fill{flex:1;}
 .shdr-m{margin:12px 18px 0;}
-@keyframes heatPulse{0%,100%{opacity:var(--veil-base,0)}50%{opacity:calc(var(--veil-base,0) + 0.04)}}
-#heat-veil{position:absolute;inset:0;pointer-events:none;z-index:0;background:linear-gradient(180deg,rgba(212,170,80,0.04) 0%,transparent 60%);opacity:var(--veil-base,0);transition:opacity 0.6s;}
+@keyframes heatPulse{0%,100%{opacity:var(--veil-base,0)}50%{opacity:calc(var(--veil-base,0) + 0.06)}}
+@keyframes heatFlash{0%{opacity:calc(var(--veil-base,0) + 0.18)}100%{opacity:var(--veil-base,0)}}
+#heat-veil{position:absolute;inset:0;pointer-events:none;z-index:0;background:linear-gradient(180deg,rgba(212,170,80,0.08) 0%,rgba(201,168,76,0.03) 40%,transparent 75%);opacity:var(--veil-base,0);transition:opacity 0.6s;}
 #heat-veil.pulsing{animation:heatPulse 3s ease-in-out infinite;}
-@media(prefers-reduced-motion:reduce){.logo-g,.bnav,.sbadge,#ambient-veil,#heat-veil.pulsing{animation:none!important;}}
+#heat-veil.flash{animation:heatFlash 0.5s ease-out 1;}
+@media(prefers-reduced-motion:reduce){.logo-g,.bnav,.sbadge,#ambient-veil,#heat-veil.pulsing,#heat-veil.flash{animation:none!important;}}
 @keyframes barRise{from{transform:scaleY(0);opacity:0;transform-origin:bottom}to{transform:scaleY(1);opacity:1;transform-origin:bottom}}
 @keyframes todayPulse{0%,100%{filter:drop-shadow(0 0 3px rgba(232,200,76,.65))}50%{filter:drop-shadow(0 0 10px rgba(232,200,76,1)) drop-shadow(0 0 22px rgba(232,200,76,.45))}}
 .fr-wedge-today{animation:todayPulse 2.4s ease-in-out infinite;}
-@media(prefers-reduced-motion:reduce){.fr-wedge-today,.fr-t-bar--active{animation:none!important;}.fr-t-bar{animation:none!important;opacity:1!important;transform:scaleY(1)!important;}#fr-wedges path{animation:none!important;opacity:1!important;}.fr-wheel-wrap,#fr-ring-svg,.fr-wedge--dimmed,.fr-wedge--selected{transition-duration:0ms!important;}}
+@media(prefers-reduced-motion:reduce){.fr-wedge-today,.fr-t-bar--active{animation:none!important;}.fr-t-bar{animation:none!important;opacity:1!important;transform:scaleY(1)!important;}#fr-wedges path{animation:none!important;opacity:1!important;}.fr-wheel-wrap,#fr-ring-svg,.fr-wedge--selected{transition-duration:0ms!important;}}
 </style>
 <link rel="stylesheet" href="gritcore.css">
 </head>
@@ -323,7 +325,7 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
       <div class="hdr-left"><button class="settings-btn btn-reset" onclick="openSettings()" aria-label="Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ctd)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button><div id="hdr-date" class="hdr-date"></div></div>
       <div class="hdr-logo-wrap"><div class="logo"><span class="logo-d">◆</span><span class="logo-g">GRIT</span><span class="logo-c">CORE</span></div><div class="logo-sub" id="logo-tagline">Forge your discipline.</div></div>
       <div class="hdr-right">
-        <div class="sbadge" id="sbadge"><span class="sfire" id="sfire">🔥</span><span class="stxt" id="stxt">0</span></div>
+        <div class="sbadge" id="sbadge"><span class="sfire" id="sfire"><span class="pf-slot" data-pf-size="11"></span></span><span class="stxt" id="stxt">0</span></div>
       </div>
     </div>
   </div>
@@ -365,7 +367,7 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
     </button>
   </nav>
 </div>
-<div class="toast" id="toast">
+<div class="toast" id="toast" role="alert" aria-live="assertive" aria-atomic="true">
   <span class="toast-icon">✦</span>
   <div class="toast-body">
     <span class="toast-msg" id="toast-msg"></span>
@@ -414,17 +416,203 @@ function updateHeat(completed,total){
   const b=Math.round(232+(23-232)*pct);
   const root=document.documentElement;
   root.style.setProperty('--heat',`rgb(${r},${g},${b})`);
-  const overlayAlpha=(completed===total&&total>0)?'0.180':(pct*0.16).toFixed(3);
+  // Accelerating curve: barely visible at low %, dramatic at high %
+  const curve = pct * pct; // quadratic acceleration
+  const overlayAlpha=(completed===total&&total>0)?'0.220':(curve*0.20).toFixed(3);
   root.style.setProperty('--heat-overlay-alpha',overlayAlpha);
   root.style.setProperty('--heat-color',`rgba(201,168,76,${(0.3+pct*0.7).toFixed(3)})`);
+  root.style.setProperty('--heat-pct',pct.toFixed(3));
+  root.style.setProperty('--heat-glow-a',(curve*0.35).toFixed(3));
   const veil=document.getElementById('heat-veil');
   if(veil){
     document.documentElement.style.setProperty('--veil-base',overlayAlpha);
-    veil.classList.toggle('pulsing',pct>=0.7&&total>0);
+    veil.classList.toggle('pulsing',pct>=0.5&&total>0);
   }
   updateMotivation();
 }
+function heatFlash(){
+  const veil=document.getElementById('heat-veil');
+  if(!veil)return;
+  veil.classList.add('flash');
+  setTimeout(()=>veil.classList.remove('flash'),500);
+}
 function updateMotivation(){ return; }
+
+/* ── Pixel Flame Renderer (60fps, 9×14 grid, 8 colors) ── */
+const FW=9,FH=14;
+const FC=['#fffbe6','#fff176','#ffcc00','#ffab00','#ff6d00','#e64a19','#bf360c','#7f1b0a'];
+// 8 frames, each a flat string: chars 0-7=color index, '.'=empty, row by row top→bottom
+const FF=[
+  '....0....'+'.....0...'+'.....1...'+
+  '...010...'+
+  '...121...'+
+  '..1232...'+'..23432..'+'..34543..'+'.345654.'+'..45654..'+'..56765..'+'..67676..'+'...777...'+'.........'+
+  '',
+  '.........'+
+  '....0....'+
+  '...01....'+
+  '...101...'+
+  '...121...'+
+  '..2232...'+'..23432..'+'..34543..'+'.345654.'+'..45654..'+'..56765..'+'..67676..'+'...777...'+'.........'+
+  '',
+  '.........'+
+  '...0.....'+
+  '...10....'+
+  '...110...'+
+  '..1121...'+
+  '..2232...'+'..23432..'+'..34543..'+'.345654.'+'..45654..'+'..56765..'+'..67676..'+'...777...'+'.........'+
+  '',
+  '.........'+'.........'+
+  '....0....'+
+  '...010...'+
+  '..1121...'+
+  '..1232...'+'..23432..'+'..34543..'+'.345654.'+'..45654..'+'..56765..'+'..67676..'+'...777...'+'.........'+
+  '',
+  '.........'+'.........'+
+  '...0.....'+
+  '...100...'+
+  '..1121...'+
+  '..2232...'+'..23432..'+'..34543..'+'.345654.'+'..45654..'+'..56765..'+'..67676..'+'...777...'+'.........'+
+  '',
+  '.........'+
+  '....0....'+
+  '....10...'+
+  '...011...'+
+  '...1210..'+
+  '..2232...'+'..23432..'+'..34543..'+'.345654.'+'..45654..'+'..56765..'+'..67676..'+'...777...'+'.........'+
+  '',
+  '.........'+
+  '.........'+
+  '....0....'+
+  '...010...'+
+  '...1210..'+
+  '..12321..'+'..23432..'+'..34543..'+'.345654.'+'..45654..'+'..56765..'+'..67676..'+'...777...'+'.........'+
+  '',
+  '....0....'+
+  '.........'+
+  '...0.....'+
+  '...100...'+
+  '...121...'+
+  '..1232...'+'..23432..'+'..34543..'+'.345654.'+'..45654..'+'..56765..'+'..67676..'+'...777...'+'.........'+
+  ''
+];
+// Pre-parse frames into pixel arrays
+const FLAME_FRAMES=FF.map(s=>{
+  const px=[];
+  for(let i=0;i<FW*FH&&i<s.length;i++){
+    if(s[i]!=='.'){px.push([i%FW,Math.floor(i/FW),parseInt(s[i])]);}
+  }
+  return px;
+});
+let _flameCanvases=[];
+let _flameRafId=null,_flameFrame=0,_flameTick=0;
+const FLAME_FPF=2; // frames per animation frame (60fps / 2 = 30fps animation, smooth)
+function createPixelFlame(size){
+  const c=document.createElement('canvas');
+  c.width=FW;c.height=FH;
+  c.className='pixel-flame';
+  c.style.width=size+'px';
+  c.style.height=Math.round(size*FH/FW)+'px';
+  c.style.imageRendering='pixelated';
+  _flameCanvases.push(c);
+  if(!_flameRafId) _flameRafId=requestAnimationFrame(flameLoop);
+  return c;
+}
+function drawFlameFrame(c,frameIdx){
+  const ctx=c.getContext('2d');
+  ctx.clearRect(0,0,FW,FH);
+  const f=FLAME_FRAMES[frameIdx%FLAME_FRAMES.length];
+  f.forEach(([x,y,ci])=>{ctx.fillStyle=FC[ci];ctx.fillRect(x,y,1,1);});
+}
+function flameLoop(){
+  _flameTick++;
+  if(_flameTick>=FLAME_FPF){
+    _flameTick=0;
+    _flameFrame=(_flameFrame+1)%FLAME_FRAMES.length;
+    _flameCanvases.forEach(c=>{if(c.isConnected)drawFlameFrame(c,_flameFrame);});
+    _flameCanvases=_flameCanvases.filter(c=>c.isConnected);
+  }
+  if(_flameCanvases.length>0) _flameRafId=requestAnimationFrame(flameLoop);
+  else _flameRafId=null;
+}
+function pixelFlameHTML(size,id){
+  return `<span class="pf-slot" data-pf-size="${size}" ${id?'id="'+id+'"':''}></span>`;
+}
+function initPixelFlames(){
+  document.querySelectorAll('.pf-slot').forEach(el=>{
+    if(el._pfDone)return;
+    el._pfDone=true;
+    const size=parseInt(el.dataset.pfSize)||16;
+    const c=createPixelFlame(size);
+    drawFlameFrame(c,_flameFrame);
+    el.appendChild(c);
+  });
+}
+
+/* ── Combo Streak System ── */
+let comboCount=0, comboTimer=null, comboFadeTimer=null;
+const COMBO_WINDOW=4000; // ms between marks to keep combo alive
+const COMBO_LINGER=2000; // ms to show after last hit before fading
+function comboEnabled(){ try{ return localStorage.getItem('gc1:comboOff')!=='1'; }catch{return true;} }
+function hapticEnabled(){ try{ return localStorage.getItem('gc1:hapticOff')!=='1'; }catch{return true;} }
+function comboVibrate(count){
+  if(!hapticEnabled()||!navigator.vibrate)return;
+  // Accelerating: short pulses that get stronger with combo
+  const ms=Math.min(8+count*4,40);
+  navigator.vibrate(ms);
+}
+function comboHit(evt){
+  if(!comboEnabled())return;
+  comboCount++;
+  if(comboCount<2){ comboVibrate(1); return; } // vibrate on first hit but no badge
+  clearTimeout(comboTimer);
+  clearTimeout(comboFadeTimer);
+  const badge=document.getElementById('combo-badge');
+  const num=document.getElementById('combo-num');
+  if(!badge||!num)return;
+  // Position at finger press
+  if(evt){
+    const x=evt.clientX||evt.pageX||0;
+    const y=evt.clientY||evt.pageY||0;
+    badge.style.left=x+'px';
+    badge.style.top=Math.max(y-30,60)+'px'; // offset up so it's above finger
+    badge.style.transform='translate(-50%,-50%) scale(0)';
+  }
+  num.textContent='x'+comboCount;
+  // Escalation tiers
+  badge.className='combo-badge visible';
+  if(comboCount>=8) badge.classList.add('x8');
+  else if(comboCount>=5) badge.classList.add('x5');
+  // Glow on number at x3+
+  num.classList.toggle('glow',comboCount>=3);
+  // Pop animation — re-trigger
+  void badge.offsetWidth;
+  badge.classList.add('pop');
+  // Shake at x4+
+  if(comboCount>=4){
+    setTimeout(()=>{ badge.classList.remove('pop'); badge.classList.add('shake'); },400);
+    setTimeout(()=>badge.classList.remove('shake'),750);
+  }
+  // Haptic — accelerates with combo
+  comboVibrate(comboCount);
+  // Stay visible, then fade after COMBO_WINDOW of no hits
+  comboTimer=setTimeout(()=>{
+    // Linger visible briefly then fade
+    comboFadeTimer=setTimeout(comboFade,COMBO_LINGER);
+  },COMBO_WINDOW-COMBO_LINGER);
+}
+function comboFade(){
+  comboCount=0;
+  const badge=document.getElementById('combo-badge');
+  if(badge){ badge.classList.remove('visible'); setTimeout(()=>{badge.className='combo-badge';badge.style.left='';badge.style.top='';badge.style.transform='';},300); }
+}
+function comboReset(){
+  clearTimeout(comboTimer);
+  clearTimeout(comboFadeTimer);
+  comboCount=0;
+  const badge=document.getElementById('combo-badge');
+  if(badge){badge.className='combo-badge';badge.style.left='';badge.style.top='';badge.style.transform='';}
+}
 
 /* STREAK TIERS */
 const TIERS=[
@@ -571,10 +759,10 @@ function renderStreakCard(days){
     const iconFilter=`saturate(${(0.5+realIdx*0.09).toFixed(2)}) hue-rotate(${Math.round(-realIdx*2.2)}deg)`;
     const nameColor=isCurrent?tier.color:isPast?'var(--ctdd)':'inherit';
     const rangeStr=t.max>=9999?`Day ${t.min}+`:(t.min===t.max?`Day ${t.min}`:`Day ${t.min}–${t.max}`);
-    return `<div class="${cls}" ${lockedStyle}><span class="sp-ticon" style="font-size:${iconPx}px;filter:${iconFilter};">🔥</span><div class="sp-tname" style="color:${nameColor};">${t.name}${isCurrent?' ← you':''}</div><div class="sp-trange">${rangeStr}</div>${isPast?'<span class="sp-check">✓</span>':''}</div>`;
+    return `<div class="${cls}" ${lockedStyle}><span class="sp-ticon">${pixelFlameHTML(iconPx)}</span><div class="sp-tname" style="color:${nameColor};">${t.name}${isCurrent?' ← you':''}</div><div class="sp-trange">${rangeStr}</div>${isPast?'<span class="sp-check">✓</span>':''}</div>`;
   }).join('');
   const nextStr=nextTier?`Next: ${nextTier.name} — ${nextTier.min-days} day${nextTier.min-days===1?'':'s'} away`:'Legend. You are the standard.';
-  return `<div class="sp-inner"><div class="sp-top"><div class="sp-flame-wrap"><div class="sp-blood" style="--blood-op:${fd.bloodOp};"></div><span class="sp-flame" style="font-size:${fd.bigSize}px;filter:saturate(${fd.sat}) hue-rotate(${fd.hue}deg);animation-duration:${fd.flickerSpd}s;">🔥</span></div><div class="sp-info"><div class="sp-num" style="font-size:${Math.round(36+fd.bloodOp*14)}px;color:${tier.color};">${days}</div><div class="sp-tier" style="color:${tier.color};">${tier.name}</div><div class="sp-sub">"${tier.sub}"</div></div></div><div class="sp-next">${nextStr}</div><div class="sp-pbar-wrap"><div class="sp-pbar-fill" style="width:${pct}%;background:linear-gradient(90deg,${tier.color},${nextTier?nextTier.color:tier.color});"></div></div><div class="sp-tiers">${rows}</div></div>`;
+  return `<div class="sp-inner"><div class="sp-top"><div class="sp-flame-wrap"><div class="sp-blood" style="--blood-op:${fd.bloodOp};"></div>${pixelFlameHTML(fd.bigSize)}</div><div class="sp-info"><div class="sp-num" style="font-size:${Math.round(36+fd.bloodOp*14)}px;color:${tier.color};">${days}</div><div class="sp-tier" style="color:${tier.color};">${tier.name}</div><div class="sp-sub">"${tier.sub}"</div></div></div><div class="sp-next">${nextStr}</div><div class="sp-pbar-wrap"><div class="sp-pbar-fill" style="width:${pct}%;background:linear-gradient(90deg,${tier.color},${nextTier?nextTier.color:tier.color});"></div></div><div class="sp-tiers">${rows}</div></div>`;
 }
 let streakPanelOpen=false;
 let lastStreakTier=null;
@@ -584,16 +772,21 @@ function updateStreakPanel(){
   if(!panel)return;
   const n=calcStreak();
   if(streakPanelOpen&&n>0){
+    panel.classList.remove('closing');
     panel.innerHTML=renderStreakCard(n);
+    // Force reflow then open
+    void panel.offsetHeight;
     panel.classList.add('open');
+    setTimeout(initPixelFlames,0);
     const sc2=document.getElementById('sc2');
     const tier=getTier(n);
     if(sc2)sc2.style.borderColor=tier.glow.replace(/[\d.]+\)$/,'0.5)');
   }else{
-    panel.innerHTML='';
     panel.classList.remove('open');
+    panel.classList.add('closing');
     const sc2=document.getElementById('sc2');
     if(sc2)sc2.style.borderColor='';
+    setTimeout(()=>{ panel.classList.remove('closing'); panel.innerHTML=''; },280);
   }
 }
 function devMode(){document.body.classList.toggle('dev-mode');console.log('Dev mode:',document.body.classList.contains('dev-mode'));}
@@ -665,7 +858,14 @@ const QUOTES=[
 
 const PH=[{id:'ph1',name:'Cold Shower',cat:'Body'},{id:'ph2',name:'Meditation',cat:'Mind'},{id:'ph3',name:'Deep Work',cat:'Craft'},{id:'ph4',name:'Evening Reflection',cat:'Ritual'}];
 const PHL={};
-(()=>{for(let i=0;i<21;i++){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().split('T')[0];PHL[ds]={ph1:Math.random()>.2?'done':'failed',ph2:Math.random()>.3?'done':'failed',ph3:Math.random()>.35?'done':'failed',ph4:Math.random()>.25?'done':'failed'};}})();
+(()=>{for(let i=1;i<=365;i++){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().split('T')[0];
+if(Math.random()<.25)continue;
+const day={};
+day.ph1=Math.random()>.6?'done':'failed';
+day.ph2=Math.random()>.7?'done':'failed';
+day.ph3=Math.random()>.75?'done':'failed';
+day.ph4=Math.random()>.65?'done':'failed';
+PHL[ds]=day;}})();
 
 let habits=[],logs={},cats=[],view='today',qi=0,selCat='';
 let isPlaceholder=false,toastTimer=null;
@@ -709,36 +909,38 @@ function renderForgeRing(){
   currentMonthIdx=Math.max(0,monthList.length-1);
   const c=document.getElementById('content');
   c.innerHTML=`
-<div id="record-tab" style="display:flex;flex-direction:column;min-height:100%;overflow:hidden;margin-bottom:calc(-72px - env(safe-area-inset-bottom, 16px));">
+<div id="record-tab" style="display:flex;flex-direction:column;height:calc(100% + 68px + env(safe-area-inset-bottom, 10px));overflow:hidden;margin-bottom:calc(-68px - env(safe-area-inset-bottom, 10px));user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;">
   <div class="fr-hdr">
     <button class="fr-hdr-arrow" id="fr-prev" onclick="changeMonth(-1)" aria-label="Previous month">&#8249;</button>
     <span class="fr-month-title" id="fr-month-title"></span>
     <button class="fr-hdr-arrow" id="fr-next" onclick="changeMonth(1)" aria-label="Next month">&#8250;</button>
   </div>
   <div class="fr-ring-scene" id="fr-ring-scene">
-    <div class="fr-ghost-name" id="fr-ghost-name"></div>
+    <div class="fr-selection-arrow" id="fr-selection-arrow">&#9662;</div>
     <div class="fr-wheel-wrap" id="fr-wheel-wrap">
       <svg id="fr-ring-svg" viewBox="0 0 256 256" width="256" height="256" aria-label="Discipline ring">
         <defs>
-          <filter id="wedge-glow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="rgba(201,168,76,0.6)"/>
+          <filter id="wedge-glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="rgba(201,168,76,0.85)"/>
+            <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="rgba(201,168,76,0.35)"/>
           </filter>
         </defs>
       </svg>
       <div class="fr-ring-center" id="fr-ring-center">
-        <div class="fr-rc-pct" id="fr-rc-pct"></div>
-        <div class="fr-rc-word" id="fr-rc-word"></div>
-        <div class="fr-rc-days" id="fr-rc-days"></div>
-        <div class="fr-rc-cta">tap a day</div>
-      </div>
-      <div class="fr-day-detail" id="fr-day-detail" style="display:none;opacity:0;">
-        <div class="fr-dd-date" id="fr-dd-date"></div>
-        <div class="fr-dd-pct" id="fr-dd-pct"></div>
-        <div class="fr-dd-habits" id="fr-dd-habits"></div>
-        <button class="fr-dd-close btn-reset" onclick="closeDetail()" aria-label="Close day detail">&#10005; close</button>
+        <div class="fr-rc-month" id="fr-rc-month">
+          <div class="fr-rc-pct" id="fr-rc-pct"></div>
+          <div class="fr-rc-word" id="fr-rc-word"></div>
+          <div class="fr-rc-days" id="fr-rc-days"></div>
+          <div class="fr-rc-cta">tap a day</div>
+        </div>
+        <div class="fr-rc-day" id="fr-rc-day" style="display:none;">
+          <div class="fr-rc-day-date" id="fr-rc-day-date"></div>
+          <div class="fr-rc-day-pct" id="fr-rc-day-pct"></div>
+          <div class="fr-rc-day-list" id="fr-rc-day-list"></div>
+          <button class="fr-rc-day-close btn-reset" onclick="closeDetail()" aria-label="Close day detail">&#10005;</button>
+        </div>
       </div>
     </div>
-    <div class="fr-swipe-hint" id="fr-swipe-hint">swipe around the ring</div>
   </div>
   <div class="fr-terrain-section" id="fr-terrain-section">
     <div class="fr-terrain-hdr">ALL TIME &nbsp;·&nbsp; TAP TO JUMP</div>
@@ -758,9 +960,12 @@ function renderForgeRing(){
   });
 }
 
+let _ringTextRefs=[]; // [{el,tx,ty}] for counter-rotation
+
 function drawRing(mode){
   const m=monthList[currentMonthIdx];
   if(!m)return;
+  _ringTextRefs=[];
   const hh=effH(),ll=effL();
   const today=getDate();
   const todayPrefix=today.slice(0,7);
@@ -803,6 +1008,7 @@ function drawRing(mode){
   g.id='fr-wedges';
 
   let daysWithData=0;
+  let todayDotEl=null;
 
   for(let d=1;d<=daysInMonth;d++){
     const i=d-1;
@@ -831,9 +1037,19 @@ function drawRing(mode){
     path.setAttribute('fill',fill);
 
     if(isToday){
-      path.setAttribute('stroke','rgba(201,168,76,0.4)');
-      path.setAttribute('stroke-dasharray','4 2');
-      path.setAttribute('stroke-width','1.5');
+      path.setAttribute('stroke','rgba(201,168,76,0.35)');
+      path.setAttribute('stroke-width','0.8');
+      // Small gold dot at outer edge of today's wedge
+      const midA=i*sliceAngle+sliceAngle/2;
+      const dotCx=CX+(R+4)*Math.cos(midA);
+      const dotCy=CY+(R+4)*Math.sin(midA);
+      todayDotEl=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      todayDotEl.setAttribute('cx',dotCx.toFixed(1));
+      todayDotEl.setAttribute('cy',dotCy.toFixed(1));
+      todayDotEl.setAttribute('r','2.5');
+      todayDotEl.setAttribute('fill','rgba(201,168,76,0.65)');
+      todayDotEl.setAttribute('class','fr-today-dot');
+      todayDotEl.setAttribute('pointer-events','none');
     } else {
       path.setAttribute('stroke','none');
     }
@@ -844,8 +1060,12 @@ function drawRing(mode){
     path.setAttribute('aria-label',label);
     path.style.cursor='pointer';
     path.style.transition='opacity 0.3s ease';
-    path.addEventListener('click',()=>tapWedge(d,dateStr,pct!==null?pct:0,isToday));
-    path.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')tapWedge(d,dateStr,pct!==null?pct:0,isToday);});
+    path.addEventListener('click',(e)=>{
+      const w=document.getElementById('fr-wheel-wrap');
+      if(w&&w._suppressClick)return;
+      if(w&&w._selectDayByTap)w._selectDayByTap(d);
+    });
+    path.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){const w=document.getElementById('fr-wheel-wrap');if(w&&w._selectDayByTap)w._selectDayByTap(d);}});
     g.appendChild(path);
 
     // Day number text (skip future days)
@@ -863,7 +1083,10 @@ function drawRing(mode){
     txt.setAttribute('data-day',String(d));
     txt.textContent=String(d);
     g.appendChild(txt);
+    _ringTextRefs.push({el:txt,tx:parseFloat(tx.toFixed(1)),ty:parseFloat(ty.toFixed(1))});
   }
+
+  if(todayDotEl)g.appendChild(todayDotEl);
 
   // Center circle
   const centerCircle=document.createElementNS('http://www.w3.org/2000/svg','circle');
@@ -923,19 +1146,46 @@ function initWheelSwipe() {
   const svg = document.getElementById('fr-ring-svg');
   if (!wrap || !svg) return;
 
+  // Shared helpers
+  function normAngle(d) { while (d > 180) d -= 360; while (d < -180) d += 360; return d; }
+  function dayStr(mo, day) { return `${mo.prefix}-${String(day).padStart(2,'0')}`; }
+
+  // Cached per-gesture to avoid repeated localStorage reads
+  let cachedHH = null, cachedLL = null;
+  function gestureHL() { if (!cachedHH) { cachedHH = effH(); cachedLL = effL(); } return { hh: cachedHH, ll: cachedLL }; }
+  function clearGestureCache() { cachedHH = null; cachedLL = null; }
+
   let activePointerId = null;
-  let startAngle = 0;
   let currentRotation = 0;
   let selectedDay = null;
+  let lastSamples = [];
+  let lastRawAngle = 0;
+  let animRAF = null;
+  let isDragging = false;
+  let dragStarted = false;
+  let pointerDownPos = null;
+  const FRICTION = 0.75;
+  const MOMENTUM_DECAY = 0.86;
+  const VELOCITY_THRESHOLD = 50;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Compute initial rotation: today (or last data day) at 12 o'clock
+  // Initial rotation: today (or last data day) at 12 o'clock (under arrow)
   const m = monthList[currentMonthIdx];
   const sliceAngle = 360 / m.daysInMonth;
   const today = getDate();
   const isCurrentMonth = (m.prefix === today.slice(0, 7));
   const targetDay = isCurrentMonth ? parseInt(today.slice(8)) : m.daysInMonth;
   currentRotation = -90 - (targetDay - 1) * sliceAngle - sliceAngle / 2;
-  svg.style.transform = `rotate(${currentRotation}deg)`;
+  applyRotation();
+  selectDay(targetDay);
+
+  function applyRotation() {
+    svg.style.transform = `rotate(${currentRotation}deg)`;
+    // Counter-rotate text so day numbers always face upright
+    _ringTextRefs.forEach(({el, tx, ty}) => {
+      el.setAttribute('transform', `rotate(${-currentRotation}, ${tx}, ${ty})`);
+    });
+  }
 
   function getAngle(e) {
     const rect = wrap.getBoundingClientRect();
@@ -944,162 +1194,222 @@ function initWheelSwipe() {
     return Math.atan2(e.clientY - cy, e.clientX - cx) * (180 / Math.PI);
   }
 
-  function snapToNearest() {
+  function getDayAtTop() {
     const daysInMonth = monthList[currentMonthIdx].daysInMonth;
     const sliceDeg = 360 / daysInMonth;
     const offset = ((-90 - currentRotation) % 360 + 360) % 360;
-    const dayIdx = Math.round(offset / sliceDeg) % daysInMonth;
-    let targetRotation = -90 - dayIdx * sliceDeg - sliceDeg / 2;
-    while (targetRotation - currentRotation > 180) targetRotation -= 360;
-    while (targetRotation - currentRotation < -180) targetRotation += 360;
-    svg.style.transition = 'transform 280ms cubic-bezier(0.25,1,0.5,1)';
-    svg.style.transform = `rotate(${targetRotation}deg)`;
-    currentRotation = targetRotation;
-    selectDay(dayIdx + 1);
-    setTimeout(() => { svg.style.transition = ''; }, 300);
+    return (Math.round(offset / sliceDeg) % daysInMonth) + 1;
+  }
+
+  function computeVelocity() {
+    if (lastSamples.length < 2) return 0;
+    const first = lastSamples[0];
+    const last = lastSamples[lastSamples.length - 1];
+    const dt = (last.time - first.time) / 1000;
+    if (dt < 0.001) return 0;
+    let dAngle = normAngle(last.angle - first.angle);
+    return dAngle / dt;
+  }
+
+  function snapToDay(day, animated) {
+    if (animRAF) { cancelAnimationFrame(animRAF); animRAF = null; }
+    const daysInMonth = monthList[currentMonthIdx].daysInMonth;
+    const sliceDeg = 360 / daysInMonth;
+    const dayIdx = day - 1;
+    let target = -90 - dayIdx * sliceDeg - sliceDeg / 2;
+    target += normAngle(target - currentRotation) - (target - currentRotation);
+
+    if (!animated || reducedMotion) {
+      currentRotation = target;
+      applyRotation();
+      selectDay(day);
+      return;
+    }
+    const start = currentRotation;
+    const startTime = performance.now();
+    const duration = 280;
+    function step(now) {
+      const t = Math.min((now - startTime) / duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3); // cubic ease-out
+      currentRotation = start + (target - start) * ease;
+      applyRotation();
+      if (t < 1) {
+        animRAF = requestAnimationFrame(step);
+      } else {
+        animRAF = null;
+        currentRotation = target;
+        applyRotation();
+        selectDay(day);
+      }
+    }
+    animRAF = requestAnimationFrame(step);
+  }
+
+  function snapToNearest(animated) {
+    const raw = getDayAtTop();
+    const mo = monthList[currentMonthIdx];
+    const dim = mo.daysInMonth;
+    const { hh, ll } = gestureHL();
+    const rawPct = dayPct(dayStr(mo, raw), hh, ll);
+    if (rawPct && rawPct > 0) { snapToDay(raw, animated !== false); return; }
+    for (let offset = 1; offset <= 3; offset++) {
+      const candidates = [];
+      const prev = raw - offset; if (prev >= 1) candidates.push(prev);
+      const next = raw + offset; if (next <= dim) candidates.push(next);
+      for (const c of candidates) {
+        const p = dayPct(dayStr(mo, c), hh, ll);
+        if (p && p > 0) { snapToDay(c, animated !== false); return; }
+      }
+    }
+    snapToDay(raw, animated !== false);
+  }
+
+  function momentumCoast(vel) {
+    if (reducedMotion) { snapToNearest(false); return; }
+    let v = vel * 0.016;
+    function step() {
+      v *= MOMENTUM_DECAY;
+      currentRotation += v;
+      applyRotation();
+      if (Math.abs(v) > 0.18) {
+        animRAF = requestAnimationFrame(step);
+      } else {
+        animRAF = null;
+        snapToNearest(true);
+      }
+    }
+    animRAF = requestAnimationFrame(step);
   }
 
   function selectDay(day) {
-    if (selectedDay === day) {
-      // Second tap on same day -> open full detail
-      const mo = monthList[currentMonthIdx];
-      const ds = `${mo.prefix}-${String(day).padStart(2,'0')}`;
-      const pct = dayPct(ds, effH(), effL());
-      const isToday = (ds === getDate());
-      tapWedge(day, ds, pct, isToday);
-      return;
-    }
     selectedDay = day;
+    // Highlight wedge under arrow
     const paths = svg.querySelectorAll('path[data-day]');
-    const daysInMonth = monthList[currentMonthIdx].daysInMonth;
-    const sliceDeg = 360 / daysInMonth;
     paths.forEach(p => {
       const d = parseInt(p.dataset.day);
       if (d === day) {
-        const midAngle = ((d - 1) * sliceDeg + sliceDeg / 2) * Math.PI / 180;
-        const dx = Math.cos(midAngle) * 8;
-        const dy = Math.sin(midAngle) * 8;
-        p.setAttribute('transform', `translate(${dx},${dy})`);
         p.style.filter = 'url(#wedge-glow)';
         p.classList.add('fr-wedge--selected');
-        p.classList.remove('fr-wedge--dimmed');
       } else {
-        p.removeAttribute('transform');
         p.style.filter = '';
         p.classList.remove('fr-wedge--selected');
-        p.classList.add('fr-wedge--dimmed');
       }
     });
-    // Also move the corresponding day number text
-    const texts = svg.querySelectorAll('text[data-day]');
-    texts.forEach(t => {
-      const d = parseInt(t.dataset.day);
-      if (d === day) {
-        const midAngle = ((d - 1) * sliceDeg + sliceDeg / 2) * Math.PI / 180;
-        const dx = Math.cos(midAngle) * 8;
-        const dy = Math.sin(midAngle) * 8;
-        t.setAttribute('transform', `translate(${dx},${dy})`);
-      } else {
-        t.removeAttribute('transform');
-      }
+    // Highlight selected day number
+    svg.querySelectorAll('text[data-day]').forEach(t => {
+      if (parseInt(t.dataset.day) === day) t.classList.add('fr-day-num--selected');
+      else t.classList.remove('fr-day-num--selected');
     });
-    wrap.classList.add('scaled');
-    const hint = document.getElementById('fr-swipe-hint');
-    if (hint) hint.style.opacity = '0';
     const mo = monthList[currentMonthIdx];
-    const ds = `${mo.prefix}-${String(day).padStart(2,'0')}`;
-    const pct = dayPct(ds, effH(), effL());
+    const ds = dayStr(mo, day);
+    const { hh, ll } = gestureHL();
+    const pct = dayPct(ds, hh, ll);
     const isToday = (ds === getDate());
-    showDayInfo(day, ds, pct, isToday);
+    showDayInfo(day, ds, pct !== null ? pct : 0, isToday);
   }
 
   function deselectDay() {
     selectedDay = null;
-    const paths = svg.querySelectorAll('path[data-day]');
-    paths.forEach(p => {
-      p.removeAttribute('transform');
+    svg.querySelectorAll('path[data-day]').forEach(p => {
       p.style.filter = '';
-      p.classList.remove('fr-wedge--dimmed');
       p.classList.remove('fr-wedge--selected');
     });
-    const texts = svg.querySelectorAll('text[data-day]');
-    texts.forEach(t => t.removeAttribute('transform'));
-    wrap.classList.remove('scaled');
-    const hint = document.getElementById('fr-swipe-hint');
-    if (hint) hint.style.opacity = '';
+    svg.querySelectorAll('text[data-day]').forEach(t => t.classList.remove('fr-day-num--selected'));
     showMonthSummary();
   }
 
-  // Pointer events
+  // ── Pointer events — rAF-driven smooth rotation ──
   wrap.addEventListener('pointerdown', (e) => {
     if (activePointerId !== null) return;
+    if (animRAF) { cancelAnimationFrame(animRAF); animRAF = null; }
     activePointerId = e.pointerId;
     wrap.setPointerCapture(e.pointerId);
-    startAngle = getAngle(e) - currentRotation;
-    svg.style.transition = '';
+    lastRawAngle = getAngle(e);
+    lastSamples = [{ angle: lastRawAngle, time: performance.now() }];
+    isDragging = false;
+    dragStarted = false;
+    selectedDay = null;
+    clearGestureCache();
+    pointerDownPos = { x: e.clientX, y: e.clientY };
   });
 
   wrap.addEventListener('pointermove', (e) => {
     if (e.pointerId !== activePointerId) return;
-    currentRotation = getAngle(e) - startAngle;
-    svg.style.transform = `rotate(${currentRotation}deg)`;
+    // Drag threshold — 5px before we start rotating
+    if (!dragStarted && pointerDownPos) {
+      const dx = e.clientX - pointerDownPos.x;
+      const dy = e.clientY - pointerDownPos.y;
+      if (Math.sqrt(dx * dx + dy * dy) < 5) return;
+      dragStarted = true;
+      isDragging = true;
+    }
+    const rawAngle = getAngle(e);
+    let rawDelta = normAngle(rawAngle - lastRawAngle);
+    lastRawAngle = rawAngle;
+
+    const now = performance.now();
+    lastSamples.push({ angle: rawAngle, time: now });
+    if (lastSamples.length > 4) lastSamples.shift();
+
+    currentRotation += rawDelta * FRICTION;
+    applyRotation();
   });
 
   wrap.addEventListener('pointerup', (e) => {
     if (e.pointerId !== activePointerId) return;
     wrap.releasePointerCapture(e.pointerId);
     activePointerId = null;
-    snapToNearest();
+    if (!dragStarted) return; // tap — click handler on wedge will fire
+    isDragging = false;
+    wrap._suppressClick = true;
+    setTimeout(() => { wrap._suppressClick = false; }, 80);
+    const velocity = computeVelocity();
+    if (Math.abs(velocity) < VELOCITY_THRESHOLD) {
+      snapToNearest(true);
+    } else {
+      momentumCoast(velocity);
+    }
   });
 
   wrap.addEventListener('pointercancel', (e) => {
     if (e.pointerId !== activePointerId) return;
     activePointerId = null;
-    snapToNearest();
+    isDragging = false;
+    if (animRAF) { cancelAnimationFrame(animRAF); animRAF = null; }
+    snapToNearest(true);
   });
 
-  // Expose for external access (month changes, closeDetail)
+  // Expose for external access
+  wrap._suppressClick = false;
   wrap._resetRotation = function() {
     selectedDay = null;
+    clearGestureCache();
     deselectDay();
+    if (animRAF) { cancelAnimationFrame(animRAF); animRAF = null; }
     const nm = monthList[currentMonthIdx];
     const sd = 360 / nm.daysInMonth;
     const td = nm.prefix === getDate().slice(0,7) ? parseInt(getDate().slice(8)) : nm.daysInMonth;
-    currentRotation = -90 - (td - 1) * sd - sd / 2;
-    svg.style.transition = 'transform 280ms cubic-bezier(0.25,1,0.5,1)';
-    svg.style.transform = `rotate(${currentRotation}deg)`;
-    setTimeout(() => { svg.style.transition = ''; }, 300);
+    snapToDay(td, true);
   };
   wrap._deselectDay = deselectDay;
+  wrap._selectDayByTap = function(day) {
+    snapToDay(day, true);
+  };
 
+  // Keyboard navigation
   wrap.addEventListener('keydown', (e) => {
     const daysInMonth = monthList[currentMonthIdx].daysInMonth;
-    const sliceDeg = 360 / daysInMonth;
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
       e.preventDefault();
-      const offset = ((-90 - currentRotation) % 360 + 360) % 360;
-      const curIdx = Math.round(offset / sliceDeg) % daysInMonth;
-      const nextIdx = (curIdx + 1) % daysInMonth;
-      currentRotation = -90 - nextIdx * sliceDeg - sliceDeg / 2;
-      svg.style.transition = 'transform 280ms cubic-bezier(0.25,1,0.5,1)';
-      svg.style.transform = `rotate(${currentRotation}deg)`;
-      selectDay(nextIdx + 1);
-      setTimeout(() => { svg.style.transition = ''; }, 300);
+      const cur = getDayAtTop();
+      snapToDay((cur % daysInMonth) + 1, true);
     }
     if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
       e.preventDefault();
-      const offset = ((-90 - currentRotation) % 360 + 360) % 360;
-      const curIdx = Math.round(offset / sliceDeg) % daysInMonth;
-      const prevIdx = (curIdx - 1 + daysInMonth) % daysInMonth;
-      currentRotation = -90 - prevIdx * sliceDeg - sliceDeg / 2;
-      svg.style.transition = 'transform 280ms cubic-bezier(0.25,1,0.5,1)';
-      svg.style.transform = `rotate(${currentRotation}deg)`;
-      selectDay(prevIdx + 1);
-      setTimeout(() => { svg.style.transition = ''; }, 300);
+      const cur = getDayAtTop();
+      snapToDay(((cur - 2 + daysInMonth) % daysInMonth) + 1, true);
     }
-    if (e.key === 'Escape') {
-      deselectDay();
-    }
+    if (e.key === 'Escape') { deselectDay(); }
   });
   wrap.setAttribute('tabindex', '0');
   wrap.setAttribute('role', 'group');
@@ -1109,107 +1419,67 @@ function initWheelSwipe() {
 function showDayInfo(day, dateStr, pct, isToday) {
   const center = document.getElementById('fr-ring-center');
   if (!center) return;
+  const monthView = document.getElementById('fr-rc-month');
+  const dayView = document.getElementById('fr-rc-day');
+  if (!monthView || !dayView) return;
+
   const d = new Date(dateStr + 'T00:00:00');
   const mn = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const dateText = `${mn[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-  const word = isToday ? 'In progress\u2026' : scoreWord(pct || 0);
+  const dateText = `${mn[d.getMonth()]} ${d.getDate()}`;
+  const word = isToday ? 'In progress' : scoreWord(pct || 0);
   const hh = effH(), ll = effL();
   const dayLog = ll[dateStr] || {};
-  const doneCount = hh.filter(h => dayLog[h.id] === 'done').length;
 
-  center.style.transition = 'opacity 130ms ease-in';
+  center.style.transition = 'opacity 100ms ease-in';
   center.style.opacity = '0';
   setTimeout(() => {
-    document.getElementById('fr-rc-pct').textContent = `${pct || 0}%`;
-    document.getElementById('fr-rc-word').textContent = word;
-    document.getElementById('fr-rc-days').textContent = `${doneCount} of ${hh.length} done`;
-    let dateEl = document.getElementById('fr-rc-date');
-    if (!dateEl) {
-      dateEl = document.createElement('div');
-      dateEl.id = 'fr-rc-date';
-      dateEl.style.cssText = 'font-family:"Josefin Sans",sans-serif;font-size:8px;letter-spacing:0.12em;opacity:0.35;text-transform:uppercase;margin-bottom:2px;';
-      center.insertBefore(dateEl, center.firstChild);
-    }
-    dateEl.textContent = dateText;
-    dateEl.style.display = '';
-    center.style.transition = 'opacity 220ms cubic-bezier(0.25,1,0.5,1)';
+    monthView.style.display = 'none';
+    dayView.style.display = 'flex';
+
+    document.getElementById('fr-rc-day-date').textContent = dateText;
+    document.getElementById('fr-rc-day-pct').textContent = `${pct || 0}% · ${word}`;
+
+    const listEl = document.getElementById('fr-rc-day-list');
+    listEl.innerHTML = '';
+    hh.forEach(h => {
+      const status = dayLog[h.id];
+      const icon = status === 'done' ? '✓' : status === 'failed' ? '✗' : '·';
+      const cls = status === 'done' ? 'done' : status === 'failed' ? 'fail' : 'skip';
+      const row = document.createElement('div');
+      row.className = 'fr-rc-habit-row';
+      row.innerHTML = `<span class="fr-rc-habit-icon fr-rc-${cls}">${icon}</span><span class="fr-rc-habit-name">${h.name}</span>`;
+      listEl.appendChild(row);
+    });
+
+    center.style.transition = 'opacity 180ms cubic-bezier(0.25,1,0.5,1)';
     requestAnimationFrame(() => center.style.opacity = '1');
-  }, 140);
+  }, 110);
 }
 
 function showMonthSummary() {
   const center = document.getElementById('fr-ring-center');
   if (!center) return;
+  const monthView = document.getElementById('fr-rc-month');
+  const dayView = document.getElementById('fr-rc-day');
+  if (!monthView || !dayView) return;
   const m = monthList[currentMonthIdx];
-  center.style.transition = 'opacity 130ms ease-in';
+  center.style.transition = 'opacity 100ms ease-in';
   center.style.opacity = '0';
   setTimeout(() => {
-    const dateEl = document.getElementById('fr-rc-date');
-    if (dateEl) dateEl.style.display = 'none';
+    dayView.style.display = 'none';
+    monthView.style.display = 'flex';
     document.getElementById('fr-rc-pct').textContent = (m.hasData && m.pct != null) ? `${m.pct}%` : '\u2014';
     document.getElementById('fr-rc-word').textContent = (m.hasData && m.word) ? m.word : 'No data';
     document.getElementById('fr-rc-days').textContent = (m.hasData && m.daysWithData != null) ? `${m.daysWithData} of ${m.daysInMonth} days` : '';
-    center.style.transition = 'opacity 220ms cubic-bezier(0.25,1,0.5,1)';
+    center.style.transition = 'opacity 180ms cubic-bezier(0.25,1,0.5,1)';
     requestAnimationFrame(() => center.style.opacity = '1');
-  }, 140);
-}
-
-function tapWedge(day,dateStr,pct,isToday){
-  const center=document.getElementById('fr-ring-center');
-  const detail=document.getElementById('fr-day-detail');
-  if(!center||!detail)return;
-
-  // Fill detail content
-  const hh=effH(),ll=effL();
-  const dayLog=ll[dateStr]||{};
-
-  const d=new Date(dateStr+'T00:00:00');
-  const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  document.getElementById('fr-dd-date').textContent=`${monthNames[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-
-  if(isToday){
-    document.getElementById('fr-dd-pct').textContent=`${pct||0}% — In progress…`;
-  } else {
-    document.getElementById('fr-dd-pct').textContent=`${pct||0}% — ${scoreWord(pct||0)}`;
-  }
-
-  const habitsEl=document.getElementById('fr-dd-habits');
-  habitsEl.innerHTML='';
-  hh.forEach(h=>{
-    const status=dayLog[h.id];
-    const icon=status==='done'?'✓':status==='failed'?'✗':'·';
-    const cls=status==='done'?'fr-dd-done':status==='failed'?'fr-dd-fail':'fr-dd-skip';
-    const row=document.createElement('div');
-    row.className='fr-dd-row';
-    row.innerHTML=`<span class="fr-dd-icon ${cls}">${icon}</span><span class="fr-dd-name">${h.name}</span>`;
-    habitsEl.appendChild(row);
-  });
-
-  // Crossfade center → detail
-  center.style.transition='opacity 130ms ease-in';
-  center.style.opacity='0';
-  setTimeout(()=>{
-    center.style.display='none';
-    detail.style.display='flex';
-    detail.style.transition='opacity 220ms cubic-bezier(0.22,1,0.36,1)';
-    requestAnimationFrame(()=>detail.style.opacity='1');
-  },140);
+  }, 110);
 }
 
 function closeDetail(){
-  const center=document.getElementById('fr-ring-center');
-  const detail=document.getElementById('fr-day-detail');
-  if(!center||!detail)return;
-  detail.style.transition='opacity 130ms ease-in';
-  detail.style.opacity='0';
-  setTimeout(()=>{
-    detail.style.display='none';
-    center.style.display='';
-    center.style.transition='opacity 180ms cubic-bezier(0.22,1,0.36,1)';
-    requestAnimationFrame(()=>center.style.opacity='1');
-  },140);
+  // Deselect and return to month summary
   const wrap=document.getElementById('fr-wheel-wrap');
-  if(wrap&&wrap._deselectDay)wrap._deselectDay();
+  if(wrap&&wrap._deselectDay) wrap._deselectDay();
 }
 
 function updateRingHeader(direction){
@@ -1222,33 +1492,6 @@ function updateRingHeader(direction){
   // Month title
   const titleEl=document.getElementById('fr-month-title');
   if(titleEl)titleEl.textContent=`${name.slice(0,3).toUpperCase()} ${year}`;
-
-  // Ghost name animation
-  const ghost=document.getElementById('fr-ghost-name');
-  if(ghost){
-    const dx=direction==='next'?30:(direction==='prev'?-30:0);
-    if(dx!==0){
-      // Slide out
-      ghost.style.transition='opacity 180ms ease-in, transform 180ms ease-in';
-      ghost.style.opacity='0';
-      ghost.style.transform=`translateX(${dx}px)`;
-      setTimeout(()=>{
-        ghost.textContent=name;
-        ghost.style.transition='none';
-        ghost.style.transform=`translateX(${-dx}px)`;
-        ghost.style.opacity='0';
-        requestAnimationFrame(()=>{
-          ghost.style.transition='opacity 220ms cubic-bezier(0.22,1,0.36,1), transform 220ms cubic-bezier(0.22,1,0.36,1)';
-          ghost.style.opacity='1';
-          ghost.style.transform='translateX(0)';
-        });
-      },190);
-    } else {
-      ghost.textContent=name;
-      ghost.style.opacity='1';
-      ghost.style.transform='translateX(0)';
-    }
-  }
 
   // Disable/enable arrows
   const prev=document.getElementById('fr-prev');
@@ -1353,6 +1596,7 @@ function initTerrainDrag(){
   const stage=document.getElementById('fr-terrain-stage');
   const inner=document.getElementById('fr-terrain-inner');
   if(!stage||!inner)return;
+  const fab=document.querySelector('.fab');
 
   let dragging=false,startX=0,velocity=0,offset=inner._terrainOffset||0,rafId=null;
 
@@ -1385,6 +1629,7 @@ function initTerrainDrag(){
     velocity=0;
     if(rafId){cancelAnimationFrame(rafId);rafId=null;}
     stage.style.cursor='grabbing';
+    if(fab)fab.classList.add('terrain-dragging');
   }
 
   function moveDrag(x){
@@ -1400,6 +1645,9 @@ function initTerrainDrag(){
     if(!dragging)return;
     dragging=false;
     stage.style.cursor='grab';
+    if(fab){
+      setTimeout(()=>{fab.classList.remove('terrain-dragging');},500);
+    }
     if(Math.abs(velocity)>0.5){
       startAnimFrame();
     }
@@ -1408,9 +1656,32 @@ function initTerrainDrag(){
   stage.addEventListener('mousedown',e=>{startDrag(e.clientX);e.preventDefault();});
   window.addEventListener('mousemove',e=>{if(dragging)moveDrag(e.clientX);});
   window.addEventListener('mouseup',endDrag);
-  stage.addEventListener('touchstart',e=>{e.preventDefault();startDrag(e.touches[0].clientX);},{passive:false});
-  stage.addEventListener('touchmove',e=>{e.preventDefault();moveDrag(e.touches[0].clientX);},{passive:false});
-  stage.addEventListener('touchend',endDrag);
+  let touchStartX=0,touchMoved=false;
+  stage.addEventListener('touchstart',e=>{
+    touchStartX=e.touches[0].clientX;
+    touchMoved=false;
+    startDrag(e.touches[0].clientX);
+  },{passive:true});
+  stage.addEventListener('touchmove',e=>{
+    const dx=Math.abs(e.touches[0].clientX-touchStartX);
+    if(dx>8)touchMoved=true;
+    if(touchMoved)e.preventDefault();
+    moveDrag(e.touches[0].clientX);
+  },{passive:false});
+  stage.addEventListener('touchend',e=>{
+    endDrag();
+    if(!touchMoved){
+      const touch=e.changedTouches[0];
+      const el=document.elementFromPoint(touch.clientX,touch.clientY);
+      if(el){
+        const col=el.closest('.fr-t-col');
+        if(col){
+          const idx=parseInt(col.getAttribute('data-idx'),10);
+          if(!isNaN(idx))jumpToMonth(idx);
+        }
+      }
+    }
+  });
   stage.style.cursor='grab';
 
   // Expose state for Task 10 shared rAF loop
@@ -1607,16 +1878,20 @@ function getMonthOverMonth() {
   function monthStats(year, month) { // month is 1-based
     const key = `${year}-${String(month).padStart(2,'0')}`;
     const daysInMonth = new Date(year, month, 0).getDate();
-    let doneDays = 0;
-    for (let d = 1; d <= daysInMonth; d++) {
+    let doneDays = 0, discDone = 0, discTotal = 0;
+    const elapsed = year === now.getFullYear() && month === now.getMonth()+1
+      ? now.getDate() : daysInMonth;
+    for (let d = 1; d <= elapsed; d++) {
       const dateStr = `${key}-${String(d).padStart(2,'0')}`;
+      const dayLog = ll[dateStr] || {};
+      let dayDone = 0;
+      hh.forEach(h => { if (dayLog[h.id] === 'done') { dayDone++; discDone++; } });
+      discTotal += hh.length;
       const pct = dayPct(dateStr, hh, ll);
       if (pct !== null && pct >= 50) doneDays++;
     }
-    const elapsed = year === now.getFullYear() && month === now.getMonth()+1
-      ? now.getDate() : daysInMonth;
     const pct = elapsed > 0 ? Math.round((doneDays / elapsed) * 100) : 0;
-    return { name: monthNames[month-1], pct: doneDays > 0 ? pct : null, elapsed, daysInMonth };
+    return { name: monthNames[month-1], pct: doneDays > 0 ? pct : null, elapsed, daysInMonth, doneDays, discDone, discTotal };
   }
 
   const curM = now.getMonth() + 1, curY = now.getFullYear();
@@ -1742,20 +2017,21 @@ function checkStreakMilestone() {
     setTimeout(() => showToast(milestone.msg, milestone.sub), 1200);
   }
 }
-let pdShownToday = false;
+function pdShownCheck(){ try{ return localStorage.getItem('gc1:pdShown')===getDate(); }catch{return false;} }
 function showPerfectDay() {
-  if (pdShownToday) return;
-  pdShownToday = true;
+  if (pdShownCheck()) return;
+  try{ localStorage.setItem('gc1:pdShown',getDate()); }catch{}
   const o = document.getElementById('pd-overlay');
   const m = document.getElementById('pd-modal');
   if (o) o.classList.add('show');
-  if (m) m.classList.add('show');
+  if (m) { m.classList.remove('pd-exit'); m.classList.add('show'); }
+  comboVibrate(5);
 }
 function closePerfectDay() {
   const o = document.getElementById('pd-overlay');
   const m = document.getElementById('pd-modal');
-  if (o) o.classList.remove('show');
-  if (m) m.classList.remove('show');
+  if (o) { o.classList.add('pd-fade-out'); setTimeout(()=>{o.classList.remove('show','pd-fade-out');},350); }
+  if (m) { m.classList.add('pd-exit'); setTimeout(()=>{m.classList.remove('show','pd-exit');},350); }
 }
 function openSettings() {
   const el = document.getElementById('settings-sheet');
@@ -1823,9 +2099,9 @@ function markH(id,status,btnEl,evt){
   if(btnEl){btnEl.classList.add(status==='done'?'stamp-done':'stamp-fail');setTimeout(()=>btnEl.classList.remove('stamp-done','stamp-fail'),320);addRipple(btnEl,evt);}
   const done2 = habits.filter(h => logs[t][h.id] === 'done').length;
   const tot2 = habits.length;
-  if(logs[t][id]==='done') showToast('Discipline marked', tot2 > 0 ? `${done2} of ${tot2} today` : null);
-  else if(logs[t][id]==='failed') showToast('Logged — face it', null);
-  else showToast('Cleared', null);
+  if(logs[t][id]==='done'){ showToast('Discipline marked', tot2 > 0 ? `${done2} of ${tot2} today` : null); heatFlash(); comboHit(evt); }
+  else if(logs[t][id]==='failed'){ showToast('Logged — face it', null); comboReset(); }
+  else { showToast('Cleared', null); comboReset(); }
   patchHabitCard(id,logs[t][id]);renderScores();updateHeader();
   const _tl=logs[t]||{};updateHeat(habits.filter(h=>_tl[h.id]==='done').length,habits.length);
   // Perfect Day check
@@ -1915,7 +2191,7 @@ function renderToday(){
   <div class="scrow af s1">
     <div class="sc card ${tp!==null&&tp>=70?'lit':tp!==null&&tp<40?'bad':tp!==null?'ok':''}" id="sc0"><div class="sc-num">${tp!==null?tp+'%':'—'}</div><div class="sc-word">${tp!==null?todayLabel(tp):''}</div><div class="sc-lbl">Today</div></div>
     <div class="sc card ${wp!==null&&wp>=70?'lit':wp!==null&&wp<40?'bad':wp!==null?'ok':''}" id="sc1"><div class="sc-num">${wp!==null?wp+'%':'—'}</div><div class="sc-word">${wp!==null?weekLabel(wp):''}</div><div class="sc-lbl">7 Day</div></div>
-    <div class="sc card ${streak>=3?'lit':streak>0?'ok':'bad'}" id="sc2" onclick="toggleStreakPanel()" style="cursor:pointer;">${streak>0?`<span class="sc-fire" id="sc2-fire" style="font-size:${flameData(streak).compactSize}px;filter:saturate(${flameData(streak).sat}) hue-rotate(${flameData(streak).hue}deg);">🔥</span>`:'<span class="sc-fire" id="sc2-fire"></span>'}<div class="sc-num">${streak>0?streak:'—'}</div><div class="sc-word">${streak>0?getTier(streak).name:'No Streak'}</div><div class="sc-lbl">Streak</div></div>
+    <div class="sc card ${streak>=3?'lit':streak>0?'ok':'bad'}" id="sc2" onclick="toggleStreakPanel()" style="cursor:pointer;">${streak>0?`<span class="sc-fire" id="sc2-fire">${pixelFlameHTML(flameData(streak).compactSize)}</span>`:'<span class="sc-fire" id="sc2-fire"></span>'}<div class="sc-num">${streak>0?streak:'—'}</div><div class="sc-word">${streak>0?getTier(streak).name:'No Streak'}</div><div class="sc-lbl">Streak</div></div>
   </div>
   <div id="streak-panel"></div>
   <div class="shdr af s2"><span class="shdr-l">Today's Disciplines</span></div>
@@ -1975,23 +2251,28 @@ function renderReport() {
   </div>`;
 
   const mom = getMonthOverMonth();
+  const momDelta = (mom.current.pct !== null && mom.previous.pct !== null)
+    ? mom.current.pct - mom.previous.pct : null;
+  const momDeltaHtml = momDelta !== null
+    ? `<span class="rpt-month-delta ${momDelta >= 0 ? 'up' : 'down'}">${momDelta >= 0 ? '+' : ''}${momDelta}%</span>`
+    : '';
   const momHtml = `
   <div class="shdr shdr-m af s4"><span class="shdr-l">Month Over Month</span></div>
   <div class="rpt-month-row af s5">
     <div class="rpt-month-card current">
       <div class="rpt-month-name">${mom.current.name}</div>
-      <div class="rpt-month-pct">${mom.current.pct !== null ? mom.current.pct + '%' : '—'}</div>
-      <div class="rpt-month-sub">${mom.current.elapsed} days in</div>
+      <div class="rpt-month-pct">${mom.current.pct !== null ? mom.current.pct + '%' : '—'} <span class="rpt-month-disc">(${mom.current.discDone}/${mom.current.discTotal})</span> ${momDeltaHtml}</div>
+      <div class="rpt-month-sub">${mom.current.doneDays}/${mom.current.elapsed} days done</div>
     </div>
     <div class="rpt-month-card">
       <div class="rpt-month-name">${mom.previous.name}</div>
-      <div class="rpt-month-pct">${mom.previous.pct !== null ? mom.previous.pct + '%' : '—'}</div>
-      <div class="rpt-month-sub">${mom.previous.daysInMonth} days</div>
+      <div class="rpt-month-pct">${mom.previous.pct !== null ? mom.previous.pct + '%' : '—'} <span class="rpt-month-disc">(${mom.previous.discDone}/${mom.previous.discTotal})</span></div>
+      <div class="rpt-month-sub">${mom.previous.doneDays}/${mom.previous.daysInMonth} days done</div>
     </div>
   </div>`;
 
   document.getElementById('content').innerHTML = `
-    <div class="shdr af s1"><span class="shdr-l">Report</span></div>
+    <div class="shdr shdr-m af s1"><span class="shdr-l">Report</span></div>
 
     <div class="rpt-stats-row af s2">
       <div class="card rpt-stat-card">
@@ -2012,8 +2293,8 @@ function renderReport() {
     ${weekHtml}
     ${momHtml}
 
-    <div class="card af s3" style="padding:14px;">
-      <div class="rpt-section-hdr">By Category</div>
+    <div class="shdr shdr-m af s3"><span class="shdr-l">By Category</span></div>
+    <div class="card af s3" style="padding:14px;margin:0 18px 12px;">
       ${catBars}
     </div>
 
@@ -2208,6 +2489,105 @@ function onDragEnd(){
   dragEl=null;dragItems=[];dragIdx=-1;
 }
 
+/* ── Today Tab Long-Press Reorder ── */
+let tdDragEl=null,tdDragClone=null,tdDragOffsetY=0,tdLongPress=null,tdDragging=false,tdStartX=0,tdStartY=0;
+let tdFingerY=0,tdRafId=null;
+const TD_HOLD_MS=350;
+const TD_MOVE_THRESHOLD=10;
+let tdReorderBound=false;
+function initTodayReorder(){
+  if(tdReorderBound||isPlaceholder)return;
+  tdReorderBound=true;
+  document.addEventListener('touchstart',tdTouchStart,{passive:false});
+  document.addEventListener('touchmove',tdTouchMove,{passive:false});
+  document.addEventListener('touchend',tdTouchEnd);
+  document.addEventListener('touchcancel',tdTouchEnd);
+}
+function tdTouchStart(e){
+  if(view!=='today')return;
+  const card=e.target.closest('.hcard');
+  if(!card||!card.closest('.hlist'))return;
+  if(e.target.closest('.hbtn'))return;
+  const touch=e.touches[0];
+  tdStartX=touch.clientX;
+  tdStartY=touch.clientY;
+  tdLongPress=setTimeout(()=>{
+    tdDragging=true;
+    tdDragEl=card;
+    const rect=card.getBoundingClientRect();
+    tdDragOffsetY=tdStartY-rect.top;
+    // Build clone
+    tdDragClone=card.cloneNode(true);
+    tdDragClone.className='hcard card td-drag-clone';
+    tdDragClone.style.cssText=`position:fixed;z-index:800;pointer-events:none;width:${rect.width}px;top:${rect.top}px;left:${rect.left}px;border:1px solid var(--cbor);`;
+    document.body.appendChild(tdDragClone);
+    card.classList.add('td-drag-placeholder');
+    const hlist=card.closest('.hlist');
+    if(hlist)hlist.classList.add('reordering');
+    tdFingerY=tdStartY;
+    tdDragLoop();
+    comboVibrate(3);
+  },TD_HOLD_MS);
+}
+function tdDragLoop(){
+  if(!tdDragging){tdRafId=null;return;}
+  if(tdDragClone) tdDragClone.style.top=(tdFingerY-tdDragOffsetY)+'px';
+  // Reorder cards
+  if(tdDragEl&&tdDragEl.parentElement){
+    const items=Array.from(tdDragEl.parentElement.children);
+    const curIdx=items.indexOf(tdDragEl);
+    for(let i=0;i<items.length;i++){
+      if(items[i]===tdDragEl)continue;
+      const rect=items[i].getBoundingClientRect();
+      const mid=rect.top+rect.height/2;
+      if(tdFingerY<mid&&i<curIdx){
+        tdDragEl.parentElement.insertBefore(tdDragEl,items[i]);
+        comboVibrate(1);
+        break;
+      }else if(tdFingerY>mid&&i>curIdx){
+        tdDragEl.parentElement.insertBefore(tdDragEl,items[i].nextSibling);
+        comboVibrate(1);
+        break;
+      }
+    }
+  }
+  tdRafId=requestAnimationFrame(tdDragLoop);
+}
+function tdTouchMove(e){
+  const touch=e.touches[0];
+  if(tdLongPress&&!tdDragging){
+    const dx=touch.clientX-tdStartX,dy=touch.clientY-tdStartY;
+    if(Math.sqrt(dx*dx+dy*dy)>TD_MOVE_THRESHOLD){
+      clearTimeout(tdLongPress);
+      tdLongPress=null;
+    }
+    return;
+  }
+  if(!tdDragging)return;
+  e.preventDefault();
+  tdFingerY=touch.clientY;
+}
+function tdTouchEnd(){
+  clearTimeout(tdLongPress);
+  tdLongPress=null;
+  if(!tdDragging){return;}
+  tdDragging=false;
+  if(tdRafId){cancelAnimationFrame(tdRafId);tdRafId=null;}
+  if(tdDragEl){
+    const newOrder=Array.from(tdDragEl.parentElement.children).map(el=>el.dataset.id).filter(Boolean);
+    if(newOrder.length===habits.length){
+      const map={};habits.forEach(h=>map[h.id]=h);
+      habits=newOrder.map(id=>map[id]).filter(Boolean);
+      saveH();
+    }
+    tdDragEl.classList.remove('td-drag-placeholder');
+    const hlist=tdDragEl.closest('.hlist');
+    if(hlist)hlist.classList.remove('reordering');
+  }
+  if(tdDragClone){tdDragClone.remove();tdDragClone=null;}
+  tdDragEl=null;
+}
+
 function render(){
   const c=document.getElementById('content');
   if(view==='today')c.innerHTML=renderToday();
@@ -2215,7 +2595,9 @@ function render(){
   else if(view==='report')renderReport();
   else if(view==='forge')c.innerHTML=renderForge();
   if(view==='forge')setTimeout(initReorder,0);
+  if(view==='today')setTimeout(initTodayReorder,0);
   updateHeader();
+  setTimeout(initPixelFlames,0);
   setTimeout(()=>document.querySelectorAll('.cbar-fill[data-pct]').forEach(el=>{el.style.width=el.dataset.pct+'%';}),80);
 }
 
@@ -2234,10 +2616,10 @@ function openFabSheet(){
           <div class="sheet-item-name">${h.name}</div>
           <div class="sheet-item-cat">${getCatName(h.cat)}</div>
         </div>
-        <button class="sheet-tick" onclick="sheetTick('${h.id}',this)">
+        <button class="sheet-tick" onclick="sheetTick('${h.id}',this,event)">
           ${done?'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--heat)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}
         </button>
-        <button class="sheet-fail" onclick="sheetFail('${h.id}',this)">
+        <button class="sheet-fail" onclick="sheetFail('${h.id}',this,event)">
           ${failed?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(220,80,80,0.9)" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>':''}
         </button>
       </div>`;
@@ -2255,7 +2637,7 @@ function _sheetAnimate(btn,cls){
   btn.classList.add(cls);
   setTimeout(()=>btn.classList.remove(cls),300);
 }
-function sheetTick(id,btn){
+function sheetTick(id,btn,evt){
   const t=getDate();
   if(!logs[t])logs[t]={};
   logs[t][id]=logs[t][id]==='done'?null:'done';
@@ -2272,8 +2654,9 @@ function sheetTick(id,btn){
   _updateSheetDone(tl);
   patchHabitCard(id,logs[t][id]);
   renderScores();updateHeader();
+  if(isDone){ heatFlash(); comboHit(evt); } else { comboReset(); }
 }
-function sheetFail(id,btn){
+function sheetFail(id,btn,evt){
   const t=getDate();
   if(!logs[t])logs[t]={};
   logs[t][id]=logs[t][id]==='failed'?null:'failed';
@@ -2290,6 +2673,7 @@ function sheetFail(id,btn){
   _updateSheetDone(tl);
   patchHabitCard(id,logs[t][id]);
   renderScores();updateHeader();
+  comboReset();
 }
 function _updateSheetDone(tl){
   const anyDone=habits.some(h=>tl[h.id]==='done');
@@ -2454,5 +2838,6 @@ function devResetAll() {
     <button class="dev-btn dev-btn-danger" style="grid-column: span 2;" onclick="devResetAll()">Reset All</button>
   </div>
 </div>
+<div class="combo-badge" id="combo-badge"><div class="combo-num" id="combo-num">x2</div><div class="combo-lbl">COMBO</div></div>
 </body>
 </html>
