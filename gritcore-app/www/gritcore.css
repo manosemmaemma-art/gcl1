@@ -81,7 +81,6 @@ html, body {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
   padding-bottom: calc(72px + env(safe-area-inset-bottom, 16px));
 }
 
@@ -365,7 +364,6 @@ body { color: var(--ct); }
 
 .sheet-list {
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
   flex: 1;
 }
 
@@ -1240,7 +1238,7 @@ button:focus-visible, .btn-reset:focus-visible {
 .fr-rc-day{display:none;flex-direction:column;align-items:center;width:100%;height:100%;padding:10px 6px 4px;pointer-events:auto;position:relative;}
 .fr-rc-day-date{font-family:'Josefin Sans',sans-serif;font-size:9px;letter-spacing:.14em;color:var(--ctd);text-transform:uppercase;flex-shrink:0;}
 .fr-rc-day-pct{font-family:'Josefin Sans',sans-serif;font-size:9px;letter-spacing:.08em;color:var(--gold);flex-shrink:0;margin:2px 0 4px;}
-.fr-rc-day-list{width:100%;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:1px;mask-image:linear-gradient(to bottom,black calc(100% - 8px),transparent 100%);-webkit-mask-image:linear-gradient(to bottom,black calc(100% - 8px),transparent 100%);}
+.fr-rc-day-list{width:100%;flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:1px;mask-image:linear-gradient(to bottom,black calc(100% - 8px),transparent 100%);-webkit-mask-image:linear-gradient(to bottom,black calc(100% - 8px),transparent 100%);}
 .fr-rc-day-list::-webkit-scrollbar{width:2px;}
 .fr-rc-day-list::-webkit-scrollbar-thumb{background:rgba(201,168,76,0.25);border-radius:1px;}
 .fr-rc-day-list::-webkit-scrollbar-track{background:transparent;}
