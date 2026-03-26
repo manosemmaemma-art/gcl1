@@ -2345,7 +2345,7 @@ function rptSheet(type) {
       return `<div class="sheet-header"><span class="sheet-title">Profile</span></div>
     <div style="padding:20px 18px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;">
       <div style="width:64px;height:64px;border-radius:50%;background:var(--heat);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:28px;color:#111;font-weight:700;box-shadow:0 0 24px var(--heat);">${name[0].toUpperCase()}</div>
-      <input id="profile-name-input" value="${safeName}" maxlength="20"
+      <input id="profile-name-input" value="${safeName}" maxlength="20" inputmode="text"
         style="background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);text-align:center;font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--cthi);letter-spacing:2px;width:180px;padding:4px 0;outline:none;"
         onchange="localStorage.setItem('gc1:profile.name',this.value.trim()||'Warrior');closeRptSheet();render();">
       <div style="font-size:11px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;font-family:'Josefin Sans',sans-serif;">${tier.name}</div>
@@ -2410,6 +2410,12 @@ function rptSheet(type) {
   </div>`,
   };
   content.innerHTML = sheets[type]?.() || '';
+  if (type === 'profile') {
+    const inp = document.getElementById('profile-name-input');
+    if (inp) inp.addEventListener('focusin', () => {
+      setTimeout(() => inp.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+    });
+  }
   backdrop.style.display = 'block';
   requestAnimationFrame(() => el.classList.add('open'));
   window._rptPrevFocus = document.activeElement;
