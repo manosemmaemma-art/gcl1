@@ -331,7 +331,7 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
   </div>
   <div class="content" id="content"></div>
   <div class="sheet-backdrop" id="fab-backdrop" role="button" tabindex="0" aria-label="Close" onclick="closeFabSheet()"></div>
-  <div class="fab-sheet" id="fab-sheet">
+  <div class="fab-sheet" id="fab-sheet" role="dialog" aria-modal="true" aria-label="Quick log disciplines" tabindex="-1">
     <div class="sheet-handle"></div>
     <div class="sheet-header">
       <span class="sheet-title">Today's Disciplines</span>
@@ -392,7 +392,7 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
 </div>
 
 <div id="settings-backdrop" class="sheet-backdrop" role="button" tabindex="0" aria-label="Close" onclick="closeSettings()" style="display:none"></div>
-<div class="fab-sheet" id="settings-sheet">
+<div class="fab-sheet" id="settings-sheet" role="dialog" aria-modal="true" aria-label="Settings" tabindex="-1">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
     <span class="sheet-title">Settings</span>
@@ -2072,6 +2072,8 @@ function openSettings() {
   `;
   backdrop.style.display = 'block';
   requestAnimationFrame(() => el.classList.add('open'));
+  window._settingsPrevFocus = document.activeElement;
+  setTimeout(() => document.getElementById('settings-sheet').focus(), 50);
 }
 function closeSettings() {
   const el = document.getElementById('settings-sheet');
@@ -2079,6 +2081,7 @@ function closeSettings() {
   if (!el) return;
   el.classList.remove('open');
   if (bd) { bd.classList.remove('open'); setTimeout(() => { bd.style.display = 'none'; }, 380); }
+  if (window._settingsPrevFocus) { window._settingsPrevFocus.focus(); window._settingsPrevFocus = null; }
 }
 /* ── Dev Tools ── */
 function devGenYear(){
@@ -2320,7 +2323,7 @@ function renderReport() {
     </div>
 
     <div id="rpt-sheet-backdrop" class="sheet-backdrop" role="button" tabindex="0" aria-label="Close" onclick="closeRptSheet()" style="display:none"></div>
-    <div class="fab-sheet" id="rpt-sheet">
+    <div class="fab-sheet" id="rpt-sheet" role="dialog" aria-modal="true" aria-label="Details" tabindex="-1">
       <div class="sheet-handle"></div>
       <div id="rpt-sheet-content"></div>
     </div>
@@ -2409,6 +2412,8 @@ function rptSheet(type) {
   content.innerHTML = sheets[type]?.() || '';
   backdrop.style.display = 'block';
   requestAnimationFrame(() => el.classList.add('open'));
+  window._rptPrevFocus = document.activeElement;
+  setTimeout(() => document.getElementById('rpt-sheet').focus(), 50);
 }
 
 function closeRptSheet() {
@@ -2416,6 +2421,7 @@ function closeRptSheet() {
   const backdrop = document.getElementById('rpt-sheet-backdrop');
   el.classList.remove('open');
   backdrop.style.display = 'none';
+  if (window._rptPrevFocus) { window._rptPrevFocus.focus(); window._rptPrevFocus = null; }
 }
 function renderForge(){
   const hh=habits;
@@ -2634,10 +2640,13 @@ function openFabSheet(){
   _updateSheetDone(tl);
   document.getElementById('fab-backdrop').classList.add('open');
   document.getElementById('fab-sheet').classList.add('open');
+  window._fabPrevFocus = document.activeElement;
+  setTimeout(() => document.getElementById('fab-sheet').focus(), 50);
 }
 function closeFabSheet(){
   document.getElementById('fab-backdrop').classList.remove('open');
   document.getElementById('fab-sheet').classList.remove('open');
+  if (window._fabPrevFocus) { window._fabPrevFocus.focus(); window._fabPrevFocus = null; }
 }
 function _sheetAnimate(btn,cls){
   btn.classList.add(cls);
