@@ -2,17 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="format-detection" content="telephone=no,date=no,email=no,address=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#f0ece5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#070605" media="(prefers-color-scheme: dark)">
-<title>Gritcore</title>
+<title>GritCore</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="img/icon-192.png">
 <link href="fonts/fonts.css" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
-html,body{min-height:100dvh;overscroll-behavior:none;overflow:hidden;width:100%;max-width:100%;}
+html,body{min-height:100dvh;overscroll-behavior:none;overflow:hidden;width:100%;max-width:100vw;touch-action:manipulation;-webkit-overflow-scrolling:touch;position:relative;}
 body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);transition:background .6s;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;}
 :root{
   --gold:#D4AA50;--goldb:rgba(212,170,80,.12);--goldbor:rgba(212,170,80,.3);
@@ -64,8 +69,8 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
 .af{animation:fadeUp .2s ease both}
 .s1{animation-delay:.04s}.s2{animation-delay:.08s}.s3{animation-delay:.12s}.s4{animation-delay:.16s}.s5{animation-delay:.2s}.s6{animation-delay:.24s}
 #app{max-width:430px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden;}
-.hdr{padding:max(14px, calc(env(safe-area-inset-top) + 8px)) 18px 0;position:sticky;top:0;z-index:30;background:var(--chdr);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--cbor);transition:background .6s,border-color .6s;-webkit-user-select:none;user-select:none;}
-.hdr-top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding-bottom:10px;}
+.hdr{padding:max(12px, calc(env(safe-area-inset-top) + 6px)) 16px 0;position:sticky;top:0;z-index:30;background:var(--chdr);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--cbor);transition:background .6s,border-color .6s;-webkit-user-select:none;user-select:none;}
+.hdr-top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding-bottom:8px;}
 .logo{font-family:'Cormorant Garamond',serif;font-size:26px;letter-spacing:7px;line-height:1;font-weight:700;text-transform:uppercase;text-shadow:var(--ts);}
 .logo-d{font-size:12px;color:var(--ctdd);margin-right:5px;letter-spacing:0;vertical-align:middle;position:relative;top:-2px;}
 .logo-g{color:var(--gold);}
@@ -74,11 +79,11 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
 .hdr-logo-wrap{text-align:center;}
 .hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;justify-self:end;}
 .hdr-date{font-size:11px;color:var(--ctd);letter-spacing:1px;font-family:'Josefin Sans',sans-serif;font-weight:400;text-shadow:var(--ts);}
-.sbadge{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;border:1px solid var(--cbor);background:var(--cs);box-shadow:var(--card-shadow);transition:border-color .4s,background .4s;min-width:60px;justify-content:center;}
+.sbadge{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;border:1px solid var(--cbor);background:var(--cs);box-shadow:var(--card-shadow);transition:border-color .4s,background .4s;min-width:auto;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;}
 .sbadge.bad{background:var(--bloodb);border-color:var(--bloodbor);}
 .sfire{line-height:1;display:block;transform-origin:bottom center;}
 .stxt{font-size:11px;letter-spacing:1.5px;font-family:'Josefin Sans',sans-serif;font-weight:600;text-transform:uppercase;white-space:nowrap;}
-.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--cnb);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--cnbbor);display:flex;z-index:10001;height:68px;padding-bottom:env(safe-area-inset-bottom,0);transition:background .6s,border-color .6s;}
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--cnb);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--cnbbor);display:flex;z-index:10001;box-sizing:content-box;height:68px;padding-bottom:env(safe-area-inset-bottom,0px);transition:background .6s,border-color .6s;}
 .bni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;padding:6px 4px;-webkit-user-select:none;user-select:none;}
 .bni svg{width:20px;height:20px;stroke:var(--ctd);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .4s;}
 .bni-lbl{font-size:9px;letter-spacing:2px;color:var(--ctd);font-family:'Josefin Sans',sans-serif;font-weight:400;text-transform:uppercase;text-shadow:var(--ts);}
@@ -87,14 +92,14 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
 .bni.tap{animation:navPop .25s cubic-bezier(.34,1.56,.64,1);}
 .bni-dot{display:none;}
 .bni.on{background:none;border:none;border-radius:0;transition:none;}
-.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:0 0 calc(68px + env(safe-area-inset-bottom, 10px));}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:0 0 calc(68px + env(safe-area-inset-bottom, 0px));}
 .card{background:var(--cs);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--cbor);border-radius:16px;box-shadow:var(--card-shadow);transition:background .6s,border-color .6s,box-shadow .6s;}
 .qcard{margin:20px 18px 0;padding:20px 18px;border-left:2px solid var(--heat-color,rgba(201,168,76,0.5));cursor:pointer;transition:opacity .3s;overflow:hidden;word-wrap:break-word;}
 .qcard:active{transform:scale(.99);}
 .qtext{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;line-height:1.5;color:var(--cthi);margin-bottom:8px;overflow-wrap:break-word;}
 .qauth{font-family:'Josefin Sans',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ctd);}
-.scrow{display:flex;gap:10px;padding:16px 18px 0;}
-.sc{flex:1;padding:16px 10px 14px;text-align:center;position:relative;overflow:hidden;}
+.scrow{display:flex;gap:6px;padding:12px 12px 0;}
+.sc{flex:1 1 0;min-width:0;padding:14px 12px;text-align:center;position:relative;overflow:visible;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;}
 .sc.lit{border-color:var(--goldbor);}
 .sc.bad{border-color:var(--bloodbor);}
 .sc::after{content:'';position:absolute;bottom:0;left:10%;width:80%;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:center;transition:transform .5s ease,background .4s;}
@@ -249,7 +254,7 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
   letter-spacing:2px;
   color:var(--gold);
   text-transform:uppercase;
-  z-index:300;
+  z-index:10000;
   opacity:0;
   transition:top 0.25s cubic-bezier(0.22,1,0.36,1), opacity 0.2s ease;
   pointer-events:none;
@@ -261,14 +266,14 @@ body{font-family:'Josefin Sans',sans-serif;color:var(--ct);background:var(--bg);
 }
 .toast.show{
   opacity:1;
-  top:calc(var(--hdr-h, 56px) + 8px);
+  top:calc(var(--hdr-h, 80px) + 6px);
 }
 .toast-icon{font-size:13px;flex-shrink:0;}
 .toast-body{display:flex;flex-direction:column;gap:2px;}
 .toast-msg{font-size:11px;letter-spacing:2px;color:var(--gold);}
 .toast-sub{font-size:11px;letter-spacing:1px;color:var(--ctdd);text-transform:uppercase;font-weight:400;}
 .ftr{text-align:center;padding:20px;margin-top:14px;border-top:1px solid var(--cbor);}
-.ftr-logo{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;color:var(--ctdd);text-transform:uppercase;font-weight:700;text-shadow:var(--ts);}
+.ftr-logo{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:6px;text-transform:uppercase;font-weight:700;background:linear-gradient(180deg,#f5f2ec 0%,#c9a84c 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:.5;}
 .ftr-sub{font-size:11px;color:var(--ctdd);letter-spacing:2.5px;margin-top:3px;font-style:italic;opacity:.7;font-family:'Cormorant Garamond',serif;text-shadow:var(--ts);}
 .sample-banner{margin:9px 18px 0;padding:11px 14px;background:var(--cs2);border:1px solid var(--cbor);border-radius:12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .2s;}
 .sample-banner:active{transform:scale(.99);}
@@ -284,14 +289,7 @@ body.premium .bni.on{background:none;border:none;}
 body.premium .qcard{border-left-color:rgba(201,168,76,0.9);}
 body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
 
-/* ── ONBOARDING ── */
-#onboarding{position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;justify-content:flex-end;padding:0;overflow:hidden;}
-#onboarding-card{position:relative;z-index:2;margin:0;padding:32px 28px max(40px, calc(env(safe-area-inset-bottom) + 32px));background:rgba(250,247,242,.92);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border-top:1px solid rgba(90,62,10,.2);border-radius:28px 28px 0 0;}
-#onboarding-wordmark{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:700;letter-spacing:10px;color:var(--gold);text-transform:uppercase;text-shadow:var(--ts);margin-bottom:4px;}
-#onboarding-tagline{font-family:'Josefin Sans',sans-serif;font-size:11px;letter-spacing:4px;color:var(--ctd);text-transform:uppercase;margin-bottom:24px;text-shadow:var(--ts);}
-#onboarding-price{font-family:'Josefin Sans',sans-serif;font-size:11px;letter-spacing:2.5px;color:var(--ctdd);text-transform:uppercase;margin-bottom:24px;text-shadow:var(--ts);}
-#onboarding-btn{width:100%;padding:16px;border:1.5px solid var(--goldbor);border-radius:12px;background:transparent;color:var(--gold);font-family:'Josefin Sans',sans-serif;font-weight:600;font-size:11px;letter-spacing:4px;cursor:pointer;text-transform:uppercase;transition:all .25s;text-shadow:var(--ts);}
-#onboarding-btn:active{transform:scale(.97);background:var(--goldb);}
+/* ── ONBOARDING — see gritcore.css ── */
 /* ── Category Manager ── */
 .cat-mgr-list{display:flex;flex-direction:column;gap:4px;}
 .cat-pill-mgr{display:flex;align-items:center;gap:6px;padding:6px 8px;background:rgba(255,255,255,.04);border-radius:8px;}
@@ -322,17 +320,17 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
   <div id="ambient-veil"></div>
   <div class="hdr" id="hdr">
     <div class="hdr-top">
-      <div class="hdr-left"><button class="settings-btn btn-reset" onclick="openSettings()" aria-label="Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ctd)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button><div id="hdr-date" class="hdr-date"></div></div>
+      <div class="hdr-left"><button class="settings-btn btn-reset" onclick="openSettings()" aria-label="Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ctd)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
       <div class="hdr-logo-wrap"><div class="logo"><span class="logo-d">◆</span><span class="logo-g">GRIT</span><span class="logo-c">CORE</span></div><div class="logo-sub" id="logo-tagline">Forge your discipline.</div></div>
       <div class="hdr-right">
-        <div class="sbadge" id="sbadge"><span class="sfire" id="sfire"><span class="pf-slot" data-pf-size="11"></span></span><span class="stxt" id="stxt">0</span></div>
+        <div class="sbadge" id="sbadge" role="button" tabindex="0" onclick="sw('today');setTimeout(()=>toggleStreakPanel(),100)" aria-label="Streak"><span class="sfire" id="sfire"><span class="pf-slot" data-pf-size="11"></span></span><span class="stxt" id="stxt">0</span></div>
       </div>
     </div>
   </div>
   <div class="content" id="content"></div>
   <div class="sheet-backdrop" id="fab-backdrop" role="button" tabindex="0" aria-label="Close" onclick="closeFabSheet()"></div>
   <div class="fab-sheet" id="fab-sheet" role="dialog" aria-modal="true" aria-label="Quick log disciplines" tabindex="-1">
-    <div class="sheet-handle"></div>
+    <div class="sheet-handle-zone" data-sheet="fab-sheet"><div class="sheet-handle"></div></div>
     <div class="sheet-header">
       <span class="sheet-title">Today's Disciplines</span>
       <button class="sheet-done-btn" id="sheet-done" onclick="closeFabSheet()">Done</button>
@@ -393,12 +391,18 @@ body.premium .logo{text-shadow:0 0 16px rgba(201,168,76,.2),var(--ts);}
 
 <div id="settings-backdrop" class="sheet-backdrop" role="button" tabindex="0" aria-label="Close" onclick="closeSettings()" style="display:none"></div>
 <div class="fab-sheet" id="settings-sheet" role="dialog" aria-modal="true" aria-label="Settings" tabindex="-1">
-  <div class="sheet-handle"></div>
+  <div class="sheet-handle-zone" data-sheet="settings-sheet"><div class="sheet-handle"></div></div>
   <div class="sheet-header">
     <span class="sheet-title">Settings</span>
     <button class="sheet-done-btn" onclick="closeSettings()">Done</button>
   </div>
   <div class="settings-list" id="settings-list"></div>
+</div>
+
+<div id="rpt-sheet-backdrop" class="sheet-backdrop" role="button" tabindex="0" aria-label="Close" onclick="closeRptSheet()" style="display:none"></div>
+<div class="fab-sheet" id="rpt-sheet" role="dialog" aria-modal="true" aria-label="Details" tabindex="-1">
+  <div class="sheet-handle-zone" data-sheet="rpt-sheet"><div class="sheet-handle"></div></div>
+  <div id="rpt-sheet-content"></div>
 </div>
 
 <script>
@@ -553,8 +557,8 @@ function initPixelFlames(){
 let comboCount=0, comboTimer=null, comboFadeTimer=null;
 const COMBO_WINDOW=4000; // ms between marks to keep combo alive
 const COMBO_LINGER=2000; // ms to show after last hit before fading
-function comboEnabled(){ try{ return localStorage.getItem('gc1:comboOff')!=='1'; }catch{return true;} }
-function hapticEnabled(){ try{ return localStorage.getItem('gc1:hapticOff')!=='1'; }catch{return true;} }
+function comboEnabled(){ return getPref('combo'); }
+function hapticEnabled(){ return getPref('haptic'); }
 function comboVibrate(count){
   if(!hapticEnabled()||!navigator.vibrate)return;
   // Accelerating: short pulses that get stronger with combo
@@ -616,7 +620,7 @@ function comboReset(){
 
 /* STREAK TIERS */
 const TIERS=[
-  {min:0,  max:0,   name:'No Streak',    sub:'Light the fire.',             color:'#9a9288',glow:'rgba(154,146,136,0)',      anim:'none',spd:0,  sz:10,bgA:.06},
+  {min:0,  max:0,   name:'Awaiting',     sub:'Your forge is ready.',         color:'#b0a898',glow:'rgba(176,168,152,.1)',      anim:'none',spd:0,  sz:10,bgA:.06},
   {min:1,  max:1,   name:'Sparked',      sub:'The ember catches.',          color:'#FBBF24',glow:'rgba(251,191,36,.2)',       anim:'f1',  spd:3.5,sz:11,bgA:.07},
   {min:2,  max:2,   name:'Kindled',      sub:'Something is waking.',        color:'#F59E0B',glow:'rgba(245,158,11,.25)',      anim:'f2',  spd:3.2,sz:11,bgA:.08},
   {min:3,  max:4,   name:'Lit',          sub:'The flame is alive.',         color:'#F59E0B',glow:'rgba(245,158,11,.3)',       anim:'f3',  spd:3.0,sz:12,bgA:.09},
@@ -636,16 +640,24 @@ function getTier(n){return TIERS.find(t=>n>=t.min&&n<=t.max)||TIERS[0];}
 
 /* ── ACHIEVEMENTS ── */
 const ACHIEVEMENTS = [
-  { id:'first_log',    icon:'⚡', name:'First Spark',   desc:'Log your first discipline' },
-  { id:'first_forge',  icon:'🔨', name:'Forge Master',  desc:'Create your first discipline' },
-  { id:'streak_3',     icon:'🔥', name:'On A Roll',     desc:'Achieve a 3-day streak' },
-  { id:'streak_7',     icon:'⚔️', name:'Week Warrior',  desc:'Achieve a 7-day streak' },
-  { id:'streak_30',    icon:'👑', name:'Iron Will',     desc:'Achieve a 30-day streak' },
-  { id:'streak_100',   icon:'💎', name:'Legendary',     desc:'Achieve a 100-day streak' },
-  { id:'perfect_day',  icon:'✨', name:'Perfect Day',   desc:'Complete every discipline in one day' },
-  { id:'centurion',    icon:'💯', name:'Centurion',     desc:'Log 100 total disciplines' },
-  { id:'five_habits',  icon:'⚒️', name:'Disciplined',  desc:'Forge 5 disciplines' },
-  { id:'no_miss',      icon:'🛡️', name:'Unbroken',     desc:'Never fail a discipline today' },
+  { id:'first_log',    icon:'⚡', name:'First Spark',     desc:'Log your first discipline' },
+  { id:'first_forge',  icon:'🔨', name:'Forge Master',    desc:'Create your first discipline' },
+  { id:'streak_3',     icon:'🔥', name:'On A Roll',       desc:'Achieve a 3-day streak' },
+  { id:'streak_7',     icon:'⚔️', name:'Week Warrior',    desc:'Achieve a 7-day streak' },
+  { id:'streak_14',    icon:'🏹', name:'Fortnight Force', desc:'Achieve a 14-day streak' },
+  { id:'streak_30',    icon:'👑', name:'Iron Will',       desc:'Achieve a 30-day streak' },
+  { id:'streak_60',    icon:'🗡️', name:'Relentless',      desc:'Achieve a 60-day streak' },
+  { id:'streak_100',   icon:'💎', name:'Legendary',       desc:'Achieve a 100-day streak' },
+  { id:'streak_365',   icon:'🌟', name:'Eternal Flame',   desc:'Achieve a 365-day streak' },
+  { id:'perfect_day',  icon:'✨', name:'Perfect Day',     desc:'Complete every discipline in one day' },
+  { id:'perfect_week', icon:'🏅', name:'Flawless Week',   desc:'7 consecutive perfect days' },
+  { id:'centurion',    icon:'💯', name:'Centurion',       desc:'Log 100 total disciplines' },
+  { id:'log_500',      icon:'📜', name:'Chronicler',      desc:'Log 500 total disciplines' },
+  { id:'log_1000',     icon:'🔱', name:'Titan',           desc:'Log 1000 total disciplines' },
+  { id:'five_habits',  icon:'⚒️', name:'Disciplined',    desc:'Forge 5 disciplines' },
+  { id:'ten_habits',   icon:'⚙️', name:'Arsenal',        desc:'Forge 10 disciplines' },
+  { id:'no_miss',      icon:'🛡️', name:'Unbroken',       desc:'Complete all with no fails today' },
+  { id:'comeback',     icon:'🦅', name:'Phoenix Rise',    desc:'Complete all after a failed day' },
 ];
 
 function loadAch() { try { return JSON.parse(localStorage.getItem('gc1:ach')||'{}'); } catch(e){ return {}; } }
@@ -657,25 +669,46 @@ function checkAchievements() {
   const hh = effH(), ll = effL();
   let totalDone = 0, perfectDayFound = false;
   const today = getDate(), todayLog = ll[today] || {};
+  const perfectDays = [];
   Object.entries(ll).forEach(([d, dayLog]) => {
     let dd = 0;
     hh.forEach(h => { if(dayLog[h.id]==='done'){ totalDone++; dd++; } });
-    if(hh.length && dd === hh.length) perfectDayFound = true;
+    if(hh.length && dd === hh.length) { perfectDayFound = true; perfectDays.push(d); }
   });
+  perfectDays.sort();
+  let maxConsecPerfect = 0, curConsec = 1;
+  for(let i = 1; i < perfectDays.length; i++){
+    const prev = new Date(perfectDays[i-1]), cur = new Date(perfectDays[i]);
+    if((cur - prev) === 86400000) curConsec++; else curConsec = 1;
+    if(curConsec > maxConsecPerfect) maxConsecPerfect = curConsec;
+  }
+  if(perfectDays.length === 1) maxConsecPerfect = 1;
   const streak = calcStreak();
   const realHabits = isPlaceholder ? [] : habits;
+  const yesterday = daysBack(1, today);
+  const yLog = ll[yesterday] || {};
+  const yFailed = hh.length > 0 && Object.values(yLog).includes('failed');
+  const todayAllDone = hh.length > 0 && hh.every(h => todayLog[h.id] === 'done');
 
   const conditions = {
-    first_log:   totalDone >= 1,
-    first_forge: realHabits.length >= 1,
-    streak_3:    streak >= 3,
-    streak_7:    streak >= 7,
-    streak_30:   streak >= 30,
-    streak_100:  streak >= 100,
-    perfect_day: perfectDayFound,
-    centurion:   totalDone >= 100,
-    five_habits: realHabits.length >= 5,
-    no_miss:     hh.length > 0 && !Object.values(todayLog).includes('failed') && hh.some(h=>todayLog[h.id]==='done'),
+    first_log:    totalDone >= 1,
+    first_forge:  realHabits.length >= 1,
+    streak_3:     streak >= 3,
+    streak_7:     streak >= 7,
+    streak_14:    streak >= 14,
+    streak_30:    streak >= 30,
+    streak_60:    streak >= 60,
+    streak_100:   streak >= 100,
+    streak_365:   streak >= 365,
+    perfect_day:  perfectDayFound,
+    perfect_week: maxConsecPerfect >= 7,
+    centurion:    totalDone >= 100,
+    log_500:      totalDone >= 500,
+    log_1000:     totalDone >= 1000,
+    five_habits:  realHabits.length >= 5,
+    ten_habits:   realHabits.length >= 10,
+    no_miss:      hh.length > 0 && !Object.values(todayLog).includes('failed') && hh.some(h=>todayLog[h.id]==='done'),
+    comeback:     yFailed && todayAllDone,
   };
 
   let queue = [];
@@ -708,22 +741,66 @@ function showAchBanner(ach) {
   if(achBannerTimer) clearTimeout(achBannerTimer);
   achBannerTimer = setTimeout(() => { b.classList.remove('show'); achBannerTimer = null; }, 3500);
 }
+function dismissAchBanner(){
+  const b = document.getElementById('ach-banner');
+  if(!b) return;
+  if(achBannerTimer){ clearTimeout(achBannerTimer); achBannerTimer = null; }
+  b.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out';
+  b.style.transform = 'translateX(-50%) translateY(-120%)';
+  b.style.opacity = '0';
+  setTimeout(() => { b.classList.remove('show'); b.style.cssText = ''; }, 300);
+}
+(function initAchSwipe(){
+  const b = document.getElementById('ach-banner');
+  if(!b) return;
+  let startY = 0, curY = 0, dragging = false;
+  b.addEventListener('touchstart', function(e){
+    if(!b.classList.contains('show')) return;
+    startY = curY = e.touches[0].clientY;
+    dragging = true;
+    b.style.transition = 'none';
+  }, {passive:true});
+  b.addEventListener('touchmove', function(e){
+    if(!dragging) return;
+    curY = e.touches[0].clientY;
+    const dy = curY - startY;
+    if(dy < 0){
+      b.style.transform = `translateX(-50%) translateY(${dy}px)`;
+      b.style.opacity = String(Math.max(0, 1 + dy / 80));
+    }
+  }, {passive:true});
+  b.addEventListener('touchend', function(){
+    if(!dragging) return;
+    dragging = false;
+    const dy = curY - startY;
+    if(dy < -30){
+      dismissAchBanner();
+    } else {
+      b.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
+      b.style.transform = 'translateX(-50%) translateY(0)';
+      b.style.opacity = '1';
+      setTimeout(() => { b.style.cssText = ''; }, 250);
+    }
+  }, {passive:true});
+})();
 
 function flameData(days){
   const t=Math.min(days,365)/365;
-  const e=1-(1-t)*(1-t);
-  function lerp(a,b){return a+(b-a)*Math.min(1,Math.max(0,e));}
+  const fast=Math.log(1+days*8)/Math.log(1+365*8);
+  const slow=1-(1-t)*(1-t);
+  function lF(a,b){return a+(b-a)*Math.min(1,Math.max(0,fast));}
+  function lS(a,b){return a+(b-a)*Math.min(1,Math.max(0,slow));}
   const tierIdx=TIERS.findIndex((_,i,a)=>i===a.length-1||days<a[i+1].min);
   return{
-    compactSize:Math.round(lerp(11,22)),
-    bigSize:Math.round(lerp(32,52)),
-    hue:Math.round(lerp(0,-32)),
-    sat:+lerp(.6,1.75).toFixed(2),
-    bloodOp:+lerp(0,.95).toFixed(2),
-    lavaH:Math.round(lerp(4,82)),
-    drips:Math.min(5,Math.round(lerp(1,5))),
-    dripSpeed:+lerp(4.5,1.8).toFixed(1),
-    flickerSpd:+lerp(2.8,1.1).toFixed(1),
+    compactSize:Math.round(lF(11,22)),
+    bigSize:Math.round(lF(32,52)),
+    hue:Math.round(lS(0,-32)),
+    sat:+lF(.6,1.75).toFixed(2),
+    bloodOp:+lS(0,.95).toFixed(2),
+    lavaH:Math.round(lS(4,82)),
+    drips:Math.min(5,Math.round(lS(1,5))),
+    dripSpeed:+lS(4.5,1.8).toFixed(1),
+    flickerSpd:+lF(2.8,1.1).toFixed(1),
     tierIdx,
     iconSize(i){return Math.round(10+i*(18/(TIERS.length-1)));}
   };
@@ -1954,8 +2031,8 @@ function updateStreakBadge(){
   fire.style.fontSize=tier.sz+'px';fire.style.color=tier.color;fire.style.transformOrigin='bottom center';
   if(tier.anim==='none'){fire.style.animation='none';fire.style.filter='none';}
   else fire.style.animation=`${tier.anim} ${tier.spd}s ease-in-out infinite`;
-  if(n===0){txt.textContent='No Streak';txt.style.color='var(--blood)';badge.className='sbadge bad';badge.style.borderColor='';badge.style.background='';}
-  else{txt.textContent=`${n} · ${tier.name}`;txt.style.color=tier.color;badge.className='sbadge';badge.style.borderColor=tier.glow.replace(/[\d.]+\)$/,'0.35)');badge.style.background=`rgba(${hexToRgb(tier.color)},${tier.bgA})`;}
+  if(n===0){txt.textContent='0';txt.style.color='var(--blood)';badge.className='sbadge bad';badge.style.borderColor='';badge.style.background='';}
+  else{txt.textContent=String(n);txt.style.color=tier.color;badge.className='sbadge';badge.style.borderColor=tier.glow.replace(/[\d.]+\)$/,'0.35)');badge.style.background=`rgba(${hexToRgb(tier.color)},${tier.bgA})`;}
   if(n>0&&lastStreakTier!==null&&lastStreakTier!==tier.name){
     const sc2=document.getElementById('sc2');
     if(sc2){sc2.style.position='relative';const f=document.createElement('div');f.className='tier-up-flash';sc2.appendChild(f);setTimeout(()=>f.remove(),950);}
@@ -2057,9 +2134,23 @@ function openSettings() {
       <span class="settings-row-value">Celebrations only</span>
     </div>
     <div class="settings-row" role="button" tabindex="0" onclick="rptSheet('about');closeSettings();" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
-      <div class="settings-row-left"><span class="settings-row-icon">◆</span><span class="settings-row-label">About GritCore</span></div>
+      <div class="settings-row-left"><span class="settings-row-icon">◆</span><span class="settings-row-label">About GRITCORE</span></div>
       <span class="settings-row-value"></span>
     </div>
+    <div class="settings-pref-header">CUSTOMISATION</div>
+    ${[
+      {icon:'◈',label:'Streak Badges',sub:'Show streak count on cards',key:'streaks'},
+      {icon:'×',label:'Combo Counter',sub:'x1, x2, x3 on rapid logging',key:'combo'},
+      {icon:'◇',label:'Button Effects',sub:'Ripple & glow on log',key:'buttonFx'},
+      {icon:'≡',label:'Haptic Feedback',sub:'Vibration on interactions',key:'haptic'},
+      {icon:'○',label:'Background Animations',sub:'Marble glow, ambient pulse',key:'bgAnim'},
+      {icon:'△',label:'Heat System',sub:'Silver → gold color shift',key:'heat'},
+      {icon:'◐',label:'Reduced Animations',sub:'~33% intensity',key:'reducedAnim'},
+      {icon:'✦',label:'Perfect Day',sub:'Celebration when all done',key:'perfectDay'},
+      {icon:'★',label:'Achievements',sub:'Streak milestones',key:'achievements'},
+      {icon:'◷',label:'Daily Reminder',sub:'9:00 AM default',key:'reminder'},
+      {icon:'❝',label:'Motivational Quotes',sub:'Quote on Today tab',key:'quotes'},
+    ].map(r=>`<div class="settings-pref-row"><span class="settings-pref-icon">${r.icon}</span><div style="flex:1"><div class="settings-pref-label">${r.label}</div><div class="settings-pref-sublabel">${r.sub}</div></div><div class="ob-pill-switch${getPref(r.key)?' on':''}" role="switch" aria-checked="${getPref(r.key)}" tabindex="0" data-pref="${r.key}" onclick="toggleSettingsPref(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><div class="ob-pill-knob"></div></div></div>`).join('')}
     <div class="settings-row" role="button" tabindex="0" style="border-top:1px solid rgba(255,255,255,0.08);margin-top:8px;" onclick="if(confirm('Generate 1 year of sample data? This will overwrite existing logs.')){devGenYear();closeSettings();}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
       <div class="settings-row-left"><span class="settings-row-icon">⚙</span><span class="settings-row-label">Generate 1 Year Data</span></div>
       <span class="settings-row-value" style="color:rgba(251,191,36,0.6);">Dev</span>
@@ -2068,12 +2159,25 @@ function openSettings() {
       <div class="settings-row-left"><span class="settings-row-icon" style="color:rgba(220,80,80,0.8);">⊘</span><span class="settings-row-label" style="color:rgba(220,80,80,0.8);">Reset All Data</span></div>
       <span class="settings-row-value" style="color:rgba(220,80,80,0.5);">Dev</span>
     </div>
+    <div class="settings-row" role="button" tabindex="0" onclick="devTriggerOnboarding()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}">
+      <div class="settings-row-left"><span class="settings-row-icon">⚙</span><span class="settings-row-label">Show Onboarding</span></div>
+      <span class="settings-row-value" style="color:rgba(251,191,36,0.6);">Dev</span>
+    </div>
     <div class="settings-version">GritCore v0.31</div>
   `;
   backdrop.style.display = 'block';
   requestAnimationFrame(() => el.classList.add('open'));
   window._settingsPrevFocus = document.activeElement;
   setTimeout(() => document.getElementById('settings-sheet').focus(), 50);
+  // Swipe-to-close handled by universal initSheetSwipe()
+}
+function toggleSettingsPref(el){
+  const key=el.dataset.pref;
+  const on=!el.classList.contains('on');
+  el.classList.toggle('on',on);
+  el.setAttribute('aria-checked',String(on));
+  setPref(key,on);
+  render();
 }
 function closeSettings() {
   const el = document.getElementById('settings-sheet');
@@ -2171,9 +2275,6 @@ function bestDayStr(hh,ll){const days=[0,0,0,0,0,0,0],tots=[0,0,0,0,0,0,0];last3
 
 
 function updateHeader(){
-  const d=new Date();
-  const el=document.getElementById('hdr-date');
-  if(el)el.textContent=d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}).toUpperCase();
   updateStreakBadge();
 }
 
@@ -2206,7 +2307,7 @@ function renderToday(){
   <div class="shdr af s2"><span class="shdr-l">Today's Disciplines</span></div>
   ${hhtml}
   ${q?`<div class="qcard card af s4" role="button" tabindex="0" onclick="qPreview(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();qPreview(this)}"><div class="qtext">"${q.t}"</div><div class="qauth">— ${q.a}</div></div>`:''}
-  <div class="ftr"><div class="ftr-logo">Gritcore</div><div class="ftr-sub">Discipline is freedom</div></div>`;
+  <div class="ftr"><div class="ftr-logo">GRITCORE</div><div class="ftr-sub">Discipline is freedom</div></div>`;
 }
 function catStats(){const hh=effH(),ll=effL();return cats.filter(c=>hh.some(h=>h.cat===c.id)).map(c=>{let done=0,total=0;Object.values(ll).forEach(dayLog=>{hh.filter(h=>h.cat===c.id).forEach(h=>{if(dayLog[h.id]==='done'){done++;total++;}else if(dayLog[h.id]==='failed')total++;});});return{cat:c.name,pct:total>0?Math.round((done/total)*100):0};});}
 function renderReport() {
@@ -2308,105 +2409,363 @@ function renderReport() {
     </div>
 
     <div class="rpt-icon-row af s4">
-      <button class="rpt-icon-btn" onclick="rptSheet('profile')">
-        <span class="rpt-icon">👤</span><span class="rpt-icon-lbl">Profile</span>
+      <button class="rpt-icon-btn" onclick="rptPump(this,'profile')">
+        <svg class="rpt-svg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 16 0v1"/></svg><span class="rpt-icon-lbl">Profile</span>
       </button>
-      <button class="rpt-icon-btn" onclick="rptSheet('settings')">
-        <span class="rpt-icon">⚙️</span><span class="rpt-icon-lbl">Settings</span>
+      <button class="rpt-icon-btn" onclick="rptPump(this,'calories')">
+        <svg class="rpt-svg" viewBox="0 0 24 24"><path d="M12 2c-4 5-7 8-7 12a7 7 0 0 0 14 0c0-4-3-7-7-12z"/><path d="M12 22a3 3 0 0 1-3-3c0-2 3-5 3-5s3 3 3 5a3 3 0 0 1-3 3z"/></svg><span class="rpt-icon-lbl">Calories</span>
       </button>
-      <button class="rpt-icon-btn" onclick="rptSheet('achievements')">
-        <span class="rpt-icon">🏆</span><span class="rpt-icon-lbl">Achievements</span>
+      <button class="rpt-icon-btn" onclick="rptPump(this,'achievements')">
+        <svg class="rpt-svg" viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16.5,14 18.5,21 12,17 5.5,21 7.5,14 2,9 9,9"/></svg><span class="rpt-icon-lbl">Achievements</span>
       </button>
-      <button class="rpt-icon-btn" onclick="rptSheet('about')">
-        <span class="rpt-icon">◆</span><span class="rpt-icon-lbl">About</span>
+      <button class="rpt-icon-btn" onclick="rptPump(this,'workouts')">
+        <svg class="rpt-svg" viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M2 10v4M22 10v4M6 12h12M2 12h4M18 12h4"/></svg><span class="rpt-icon-lbl">Workouts</span>
+      </button>
+      <button class="rpt-icon-btn" onclick="rptPump(this,'about')">
+        <svg class="rpt-svg" viewBox="0 0 24 24"><path d="M12 2l8 4.5v7L12 18l-8-4.5v-7L12 2z"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="0.5"/></svg><span class="rpt-icon-lbl">About</span>
       </button>
     </div>
 
-    <div id="rpt-sheet-backdrop" class="sheet-backdrop" role="button" tabindex="0" aria-label="Close" onclick="closeRptSheet()" style="display:none"></div>
-    <div class="fab-sheet" id="rpt-sheet" role="dialog" aria-modal="true" aria-label="Details" tabindex="-1">
-      <div class="sheet-handle"></div>
-      <div id="rpt-sheet-content"></div>
-    </div>
   `;
 }
+
+/* ── Calorie Calculator ── */
+function loadCalData(){
+  return {
+    age: localStorage.getItem('gc1:cal.age')||'25',
+    gender: localStorage.getItem('gc1:cal.gender')||'male',
+    height: localStorage.getItem('gc1:cal.height')||'175',
+    weight: localStorage.getItem('gc1:cal.weight')||'70',
+    activity: localStorage.getItem('gc1:cal.activity')||'1.55'
+  };
+}
+function saveCalData(d){
+  localStorage.setItem('gc1:cal.age',d.age);
+  localStorage.setItem('gc1:cal.gender',d.gender);
+  localStorage.setItem('gc1:cal.height',d.height);
+  localStorage.setItem('gc1:cal.weight',d.weight);
+  localStorage.setItem('gc1:cal.activity',d.activity);
+}
+function calculateCalories(){
+  const age=parseInt(document.getElementById('cal-age')?.value)||25;
+  const gender=document.querySelector('.cal-gender-btn.active')?.dataset.g||'male';
+  const height=parseFloat(document.getElementById('cal-height')?.value)||175;
+  const weight=parseFloat(document.getElementById('cal-weight')?.value)||70;
+  const activity=parseFloat(document.getElementById('cal-activity')?.value)||1.55;
+  saveCalData({age,gender,height,weight,activity});
+  const bmr=gender==='male'
+    ? 10*weight+6.25*height-5*age+5
+    : 10*weight+6.25*height-5*age-161;
+  const maintain=Math.round(bmr*activity);
+  const lose=Math.round(maintain-500);
+  const gain=Math.round(maintain+500);
+  const el=document.getElementById('cal-results');
+  if(el) el.innerHTML=`
+    <div class="cal-result-card highlight"><div><div class="cal-result-label">Maintain Weight</div></div><div class="cal-result-val">${maintain.toLocaleString()}<span class="cal-result-unit">cal/day</span></div></div>
+    <div class="cal-result-card"><div><div class="cal-result-label">Lose Weight</div><div style="font-size:10px;color:var(--ctdd);margin-top:2px;">-500 cal/day</div></div><div class="cal-result-val">${lose.toLocaleString()}<span class="cal-result-unit">cal/day</span></div></div>
+    <div class="cal-result-card"><div><div class="cal-result-label">Gain Weight</div><div style="font-size:10px;color:var(--ctdd);margin-top:2px;">+500 cal/day</div></div><div class="cal-result-val">${gain.toLocaleString()}<span class="cal-result-unit">cal/day</span></div></div>
+    <div style="font-size:10px;color:var(--ctdd);text-align:center;padding:4px 0;font-family:'Josefin Sans',sans-serif;letter-spacing:.5px;">Based on Mifflin-St Jeor equation</div>`;
+}
+
+/* ── Workout Tracker ── */
+const DEFAULT_EXERCISES=['Push-ups','Pull-ups','Squats','Deadlift','Bench Press','Overhead Press','Barbell Rows','Lunges','Plank','Dumbbell Curls','Tricep Dips','Leg Press','Calf Raises','Lat Pulldown','Shoulder Press'];
+function loadWorkouts(){ try{return JSON.parse(localStorage.getItem('gc1:workouts')||'[]');}catch(e){return[];} }
+function saveWorkouts(w){ localStorage.setItem('gc1:workouts',JSON.stringify(w)); }
+function loadCustomExercises(){ try{return JSON.parse(localStorage.getItem('gc1:exercises')||'[]');}catch(e){return[];} }
+function saveCustomExercises(e){ localStorage.setItem('gc1:exercises',JSON.stringify(e)); }
+function getAllExercises(){ return [...DEFAULT_EXERCISES,...loadCustomExercises()]; }
+
+let wkActiveWorkout=null;
+function wkStartWorkout(){
+  wkActiveWorkout={id:Date.now().toString(),date:getDate(),exercises:[]};
+  renderWkActive();
+}
+function wkAddExercise(name){
+  if(!wkActiveWorkout)return;
+  wkActiveWorkout.exercises.push({name,sets:[{reps:'',weight:''}]});
+  renderWkActive();
+}
+function wkAddSet(exIdx){
+  if(!wkActiveWorkout||!wkActiveWorkout.exercises[exIdx])return;
+  wkActiveWorkout.exercises[exIdx].sets.push({reps:'',weight:''});
+  renderWkActive();
+}
+function wkRemoveExercise(exIdx){
+  if(!wkActiveWorkout)return;
+  wkActiveWorkout.exercises.splice(exIdx,1);
+  renderWkActive();
+}
+function wkSaveWorkout(){
+  if(!wkActiveWorkout||!wkActiveWorkout.exercises.length){showToast('Add exercises first');return;}
+  const cont=document.getElementById('rpt-sheet-content');
+  wkActiveWorkout.exercises.forEach((ex,ei)=>{
+    ex.sets.forEach((s,si)=>{
+      const r=cont.querySelector(`[data-reps="${ei}-${si}"]`);
+      const w=cont.querySelector(`[data-weight="${ei}-${si}"]`);
+      if(r)s.reps=r.value;
+      if(w)s.weight=w.value;
+    });
+  });
+  wkActiveWorkout.exercises=wkActiveWorkout.exercises.filter(ex=>ex.sets.some(s=>s.reps));
+  if(!wkActiveWorkout.exercises.length){showToast('Log at least one set');return;}
+  const all=loadWorkouts();
+  all.unshift(wkActiveWorkout);
+  saveWorkouts(all);
+  wkActiveWorkout=null;
+  showToast('Workout saved');
+  rptSheet('workouts');
+}
+function wkCancelWorkout(){
+  wkActiveWorkout=null;
+  rptSheet('workouts');
+}
+function wkDeleteWorkout(id){
+  const all=loadWorkouts().filter(w=>w.id!==id);
+  saveWorkouts(all);
+  rptSheet('workouts');
+}
+function wkAddCustomExercise(){
+  const inp=document.getElementById('wk-custom-input');
+  if(!inp)return;
+  const name=inp.value.trim();
+  if(!name)return;
+  const custom=loadCustomExercises();
+  if(custom.includes(name)||DEFAULT_EXERCISES.includes(name)){showToast('Already exists');return;}
+  custom.push(name);
+  saveCustomExercises(custom);
+  inp.value='';
+  renderWkActive();
+}
+function renderWkActive(){
+  const cont=document.getElementById('rpt-sheet-content');
+  if(!cont||!wkActiveWorkout)return;
+  const allEx=getAllExercises();
+  const usedNames=wkActiveWorkout.exercises.map(e=>e.name);
+  const picks=allEx.filter(n=>!usedNames.includes(n));
+  const pickChips=picks.map(n=>`<div class="wk-pick-chip" onclick="wkAddExercise('${n.replace(/'/g,"\\'")}')">${n}</div>`).join('');
+  const exercises=wkActiveWorkout.exercises.map((ex,ei)=>{
+    const sets=ex.sets.map((s,si)=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+      <span style="font-size:10px;color:var(--ctdd);width:18px;font-family:var(--fnt-ui);">S${si+1}</span>
+      <input class="wk-input wk-input-sm" type="number" inputmode="numeric" placeholder="Reps" data-reps="${ei}-${si}" value="${s.reps}">
+      <span style="font-size:10px;color:var(--ctdd);">x</span>
+      <input class="wk-input wk-input-sm" type="number" inputmode="decimal" placeholder="kg" data-weight="${ei}-${si}" value="${s.weight}">
+    </div>`).join('');
+    return `<div class="wk-exercise-row" style="flex-direction:column;align-items:stretch;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <span class="wk-exercise-name">${ex.name}</span>
+        <button class="wk-del-btn" onclick="wkRemoveExercise(${ei})">x</button>
+      </div>
+      ${sets}
+      <div class="wk-add-btn" onclick="wkAddSet(${ei})" style="padding:6px;font-size:10px;">+ Add Set</div>
+    </div>`;
+  }).join('');
+  cont.innerHTML=`<div class="sheet-header"><span class="sheet-title">Log Workout</span><button class="sheet-close-btn" onclick="wkCancelWorkout()">x</button></div>
+    <div class="wk-section">
+      <div class="rpt-section-hdr">Exercises</div>
+      ${exercises||'<div class="wk-empty">Tap an exercise below to add it</div>'}
+      <div class="rpt-section-hdr" style="margin-top:12px;">Add Exercise</div>
+      <div class="wk-exercise-picker">${pickChips}</div>
+      <div style="display:flex;gap:6px;">
+        <input class="wk-input" id="wk-custom-input" placeholder="Custom exercise name" style="flex:1;">
+        <button class="wk-add-btn" onclick="wkAddCustomExercise()" style="padding:8px 12px;white-space:nowrap;">+ Add</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:14px;">
+        <button class="wk-save-btn" onclick="wkSaveWorkout()" style="flex:1;">Save Workout</button>
+      </div>
+    </div>`;
+}
+
+function rptPump(btn, type) {
+  btn.classList.remove('pumping');
+  void btn.offsetWidth;
+  btn.classList.add('pumping');
+  btn.addEventListener('animationend', () => btn.classList.remove('pumping'), {once:true});
+  setTimeout(() => rptSheet(type), 120);
+}
+
+function hideFab(){ const f=document.querySelector('.fab'); if(f){f.style.transition='opacity 0.22s ease';f.style.opacity='0';f.style.pointerEvents='none';} }
+function showFab(){ const f=document.querySelector('.fab'); if(f){f.style.transition='opacity 0.18s ease';f.style.opacity='1';f.style.pointerEvents='';} }
 
 function rptSheet(type) {
   const el = document.getElementById('rpt-sheet');
   const content = document.getElementById('rpt-sheet-content');
   const backdrop = document.getElementById('rpt-sheet-backdrop');
+  hideFab();
+
+  if (type === 'workouts' && wkActiveWorkout) {
+    backdrop.style.display = 'block';
+    requestAnimationFrame(() => { backdrop.classList.add('open'); el.classList.add('open'); });
+    document.getElementById('content').style.overflow = 'hidden';
+    renderWkActive();
+    return;
+  }
+
   const sheets = {
     profile: () => {
       const earned = loadAch();
       const unlockedCount = Object.keys(earned).length;
       const streak = calcStreak();
       const tier = getTier(streak);
+      const bests = getPersonalBests();
       const name = localStorage.getItem('gc1:profile.name') || 'Warrior';
       const safeName = name.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
-      return `<div class="sheet-header"><span class="sheet-title">Profile</span></div>
+      const hh = effH(), ll = effL();
+      let totalLogged = 0;
+      Object.values(ll).forEach(day => { Object.values(day).forEach(v => { if(v==='done') totalLogged++; }); });
+      const joinDate = localStorage.getItem('gc1:joined') || getDate();
+      if(!localStorage.getItem('gc1:joined')) localStorage.setItem('gc1:joined', getDate());
+      const joinStr = new Date(joinDate+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      return `<div class="sheet-header"><span class="sheet-title">Profile</span><button class="sheet-close-btn" onclick="closeRptSheet()">x</button></div>
     <div style="padding:20px 18px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;">
-      <div style="width:64px;height:64px;border-radius:50%;background:var(--heat);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:28px;color:#111;font-weight:700;box-shadow:0 0 24px var(--heat);">${name[0].toUpperCase()}</div>
+      <div style="width:68px;height:68px;border-radius:50%;background:var(--heat);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:28px;color:#111;font-weight:700;box-shadow:0 0 24px var(--heat);">${name[0].toUpperCase()}</div>
       <input id="profile-name-input" value="${safeName}" maxlength="20" inputmode="text"
         style="background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);text-align:center;font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--cthi);letter-spacing:2px;width:180px;padding:4px 0;outline:none;"
         onchange="localStorage.setItem('gc1:profile.name',this.value.trim()||'Warrior');closeRptSheet();render();">
       <div style="font-size:11px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;font-family:'Josefin Sans',sans-serif;">${tier.name}</div>
+      <div style="font-size:10px;color:var(--ctdd);font-family:'Josefin Sans',sans-serif;letter-spacing:1px;">Joined ${joinStr}</div>
     </div>
-    <div style="padding:0 16px 20px;display:flex;flex-direction:column;gap:1px;">
-      <div class="rpt-section-hdr">Stats</div>
-      ${[['🔥','Current Streak',streak+' day'+(streak!==1?'s':'')],['🏆','Achievements',unlockedCount+' / '+ACHIEVEMENTS.length],['⚡','Disciplines',effH().length+' active']].map(([icon,label,val])=>`<div style="display:flex;align-items:center;gap:12px;padding:13px 12px;background:rgba(255,255,255,.03);border-radius:10px;margin-bottom:1px;"><span style="font-size:16px;">${icon}</span><span style="flex:1;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ctd);font-family:'Josefin Sans',sans-serif;">${label}</span><span style="font-size:11px;letter-spacing:1px;color:var(--cthi);font-family:'Josefin Sans',sans-serif;">${val}</span></div>`).join('')}
-    </div>`;
-    },
-    settings: () => `<div class="sheet-header"><span class="sheet-title">Settings</span></div>
-  <div style="padding:0 16px 20px;display:flex;flex-direction:column;gap:16px;">
-    <div>
+    <div class="rpt-section-hdr" style="padding:14px 16px 6px;">Stats</div>
+    <div class="prof-stat-grid">
+      <div class="prof-stat-card"><div class="prof-stat-val">${streak}</div><div class="prof-stat-lbl">Current Streak</div></div>
+      <div class="prof-stat-card"><div class="prof-stat-val">${bests.bestStreak>0?bests.bestStreak:'--'}</div><div class="prof-stat-lbl">Best Streak</div></div>
+      <div class="prof-stat-card"><div class="prof-stat-val">${totalLogged}</div><div class="prof-stat-lbl">Total Logged</div></div>
+      <div class="prof-stat-card"><div class="prof-stat-val">${unlockedCount}/${ACHIEVEMENTS.length}</div><div class="prof-stat-lbl">Achievements</div></div>
+      <div class="prof-stat-card"><div class="prof-stat-val">${hh.length}</div><div class="prof-stat-lbl">Disciplines</div></div>
+      <div class="prof-stat-card"><div class="prof-stat-val">${bests.bestMonth!==null?bests.bestMonth+'%':'--'}</div><div class="prof-stat-lbl">Best Month</div></div>
+    </div>
+    <div style="padding:4px 16px 20px;display:flex;flex-direction:column;gap:12px;">
       <div class="rpt-section-hdr">Data</div>
       <div style="background:rgba(255,255,255,.03);border-radius:12px;overflow:hidden;">
         <button onclick="if(confirm('Reset today\\'s log?')){const t=getDate();delete logs[t];saveL();closeRptSheet();render();}" style="width:100%;display:flex;align-items:center;gap:12px;padding:14px 14px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;">
-          <span style="font-size:16px;">🔄</span>
-          <span style="flex:1;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cthi);font-family:'Josefin Sans',sans-serif;">Reset Today's Log</span>
-          <span style="color:var(--ctdd);font-size:12px;">›</span>
+          <span style="font-size:14px;">🔄</span>
+          <span style="flex:1;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cthi);font-family:'Josefin Sans',sans-serif;">Reset Today</span>
+          <span style="color:var(--ctdd);font-size:12px;">></span>
         </button>
         <button onclick="exportData()" style="width:100%;display:flex;align-items:center;gap:12px;padding:14px 14px;background:none;border:none;cursor:pointer;">
-          <span style="font-size:16px;">↓</span>
+          <span style="font-size:14px;">↓</span>
           <span style="flex:1;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cthi);font-family:'Josefin Sans',sans-serif;">Export Record</span>
-          <span style="color:var(--ctdd);font-size:12px;">›</span>
+          <span style="color:var(--ctdd);font-size:12px;">></span>
         </button>
       </div>
-    </div>
-    <div>
-      <div class="rpt-section-hdr">Danger Zone</div>
       <div style="background:rgba(239,68,68,.06);border-radius:12px;overflow:hidden;border:1px solid rgba(239,68,68,.15);">
         <button onclick="if(confirm('Clear all data? This cannot be undone.')){localStorage.clear();location.reload();}" style="width:100%;display:flex;align-items:center;gap:12px;padding:14px 14px;background:none;border:none;cursor:pointer;">
-          <span style="font-size:16px;">🗑</span>
+          <span style="font-size:14px;">🗑</span>
           <span style="flex:1;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#f57a7a;font-family:'Josefin Sans',sans-serif;">Clear All Data</span>
-          <span style="color:rgba(239,68,68,.5);font-size:12px;">›</span>
+          <span style="color:rgba(239,68,68,.5);font-size:12px;">></span>
         </button>
       </div>
+    </div>`;
+    },
+    calories: () => {
+      const d = loadCalData();
+      return `<div class="sheet-header"><span class="sheet-title">Calorie Calculator</span><button class="sheet-close-btn" onclick="closeRptSheet()">x</button></div>
+    <div class="cal-form">
+      <div class="cal-field">
+        <label class="cal-label">Age</label>
+        <input class="cal-input" id="cal-age" type="number" inputmode="numeric" min="15" max="80" value="${d.age}" placeholder="25">
+      </div>
+      <div class="cal-field">
+        <label class="cal-label">Gender</label>
+        <div class="cal-gender-row">
+          <button class="cal-gender-btn ${d.gender==='male'?'active':''}" data-g="male" onclick="document.querySelectorAll('.cal-gender-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">Male</button>
+          <button class="cal-gender-btn ${d.gender==='female'?'active':''}" data-g="female" onclick="document.querySelectorAll('.cal-gender-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');">Female</button>
+        </div>
+      </div>
+      <div class="cal-row">
+        <div class="cal-field">
+          <label class="cal-label">Height (cm)</label>
+          <input class="cal-input" id="cal-height" type="number" inputmode="decimal" min="100" max="250" value="${d.height}" placeholder="175">
+        </div>
+        <div class="cal-field">
+          <label class="cal-label">Weight (kg)</label>
+          <input class="cal-input" id="cal-weight" type="number" inputmode="decimal" min="30" max="300" value="${d.weight}" placeholder="70">
+        </div>
+      </div>
+      <div class="cal-field">
+        <label class="cal-label">Activity Level</label>
+        <select class="cal-select" id="cal-activity">
+          <option value="1.2" ${d.activity==='1.2'?'selected':''}>Sedentary (little/no exercise)</option>
+          <option value="1.375" ${d.activity==='1.375'?'selected':''}>Light (1-3 days/week)</option>
+          <option value="1.55" ${d.activity==='1.55'?'selected':''}>Moderate (3-5 days/week)</option>
+          <option value="1.725" ${d.activity==='1.725'?'selected':''}>Active (6-7 days/week)</option>
+          <option value="1.9" ${d.activity==='1.9'?'selected':''}>Very Active (hard daily exercise)</option>
+        </select>
+      </div>
+      <button class="cal-calc-btn" onclick="calculateCalories()">Calculate</button>
     </div>
-    <div style="font-size:11px;letter-spacing:1.5px;color:var(--ctdd);text-align:center;padding-top:4px;font-family:'Josefin Sans',sans-serif;">GritCore v0.27</div>
-  </div>`,
+    <div class="cal-results" id="cal-results"></div>`;
+    },
     achievements: () => {
       const earned = loadAch();
       const rows = ACHIEVEMENTS.map(a => {
         const isEarned = !!earned[a.id];
         const date = isEarned ? new Date(earned[a.id]).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
-        return `<div style="display:flex;align-items:center;gap:12px;padding:13px 12px;background:rgba(255,255,255,.03);border-radius:10px;margin-bottom:1px;opacity:${isEarned?1:.35};">
+        return `<div style="display:flex;align-items:center;gap:12px;padding:13px 12px;background:rgba(255,255,255,.03);border-radius:10px;margin-bottom:2px;opacity:${isEarned?1:.35};">
       <span style="font-size:20px;${isEarned?'':'filter:grayscale(1)'}">${a.icon}</span>
-      <div style="flex:1;"><div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:${isEarned?'var(--cthi)':'var(--ctd)'};font-family:'Josefin Sans',sans-serif;">${a.name}</div><div style="font-size:11px;color:var(--ctdd);margin-top:2px;">${a.desc}</div></div>
-      ${isEarned?`<span style="font-size:11px;color:var(--gold);letter-spacing:1px;font-family:'Josefin Sans',sans-serif;">${date}</span>`:'<span style="font-size:14px;color:var(--ctdd);">🔒</span>'}
+      <div style="flex:1;"><div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:${isEarned?'var(--cthi)':'var(--ctd)'};font-family:'Josefin Sans',sans-serif;">${a.name}</div><div style="font-size:10px;color:var(--ctdd);margin-top:2px;font-family:'Josefin Sans',sans-serif;">${a.desc}</div></div>
+      ${isEarned?`<span style="font-size:10px;color:var(--gold);letter-spacing:1px;font-family:'Josefin Sans',sans-serif;">${date}</span>`:'<span style="font-size:14px;color:var(--ctdd);">🔒</span>'}
     </div>`;
       }).join('');
       const count = Object.keys(earned).length;
-      return `<div class="sheet-header"><span class="sheet-title">Achievements</span><span style="font-size:11px;letter-spacing:1.5px;color:var(--gold);font-family:'Josefin Sans',sans-serif;">${count}/${ACHIEVEMENTS.length}</span></div>
+      const pct = ACHIEVEMENTS.length ? Math.round((count/ACHIEVEMENTS.length)*100) : 0;
+      return `<div class="sheet-header"><span class="sheet-title">Achievements</span><button class="sheet-close-btn" onclick="closeRptSheet()">x</button></div>
+    <div style="padding:0 16px 6px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <span style="font-size:11px;letter-spacing:1.5px;color:var(--gold);font-family:'Josefin Sans',sans-serif;">${count} / ${ACHIEVEMENTS.length} unlocked</span>
+        <span style="font-size:11px;color:var(--ctdd);font-family:'Josefin Sans',sans-serif;">${pct}%</span>
+      </div>
+      <div style="height:4px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;margin-bottom:14px;">
+        <div style="height:100%;width:${pct}%;background:var(--gold);border-radius:4px;transition:width .4s;"></div>
+      </div>
+    </div>
     <div style="padding:0 16px 20px;">${rows}</div>`;
     },
-    about: () => `<div class="sheet-header"><span class="sheet-title">About</span></div>
-  <div style="padding:24px 20px;text-align:center;">
-    <div style="font-size:22px;letter-spacing:3px;color:var(--cthi);font-family:'Cormorant Garamond',serif;font-style:italic;margin-bottom:6px;">GritCore</div>
-    <div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-family:'Josefin Sans',sans-serif;margin-bottom:20px;">Forge your discipline.</div>
-    <div style="font-size:11px;line-height:1.8;color:var(--ctd);font-family:'Josefin Sans',sans-serif;letter-spacing:.5px;max-width:280px;margin:0 auto;">
-      GritCore is a daily discipline tracker built on one belief: small, consistent actions compound into extraordinary character. Show up every day. Mark your disciplines. Watch your streak grow.
+    workouts: () => {
+      const all = loadWorkouts();
+      const history = all.slice(0,20).map(w => {
+        const dateStr = new Date(w.date+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+        const exList = w.exercises.map(ex => {
+          const setStr = ex.sets.filter(s=>s.reps).map(s => s.weight ? `${s.reps}x${s.weight}kg` : `${s.reps} reps`).join(', ');
+          return `<div class="wk-history-exercise">${ex.name}</div><div class="wk-history-sets">${setStr}</div>`;
+        }).join('');
+        return `<div class="wk-history-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="wk-history-date">${dateStr}</div>
+            <button class="wk-del-btn" onclick="if(confirm('Delete this workout?'))wkDeleteWorkout('${w.id}')">x</button>
+          </div>
+          ${exList}
+        </div>`;
+      }).join('');
+      return `<div class="sheet-header"><span class="sheet-title">Workouts</span><button class="sheet-close-btn" onclick="closeRptSheet()">x</button></div>
+    <div class="wk-section">
+      <button class="wk-start-btn" onclick="wkStartWorkout()">Start Workout</button>
     </div>
-    <div style="margin-top:24px;font-size:11px;color:var(--ctdd);letter-spacing:1.5px;font-family:'Josefin Sans',sans-serif;">Version 0.27</div>
+    <div style="padding:0 16px;">
+      <div class="rpt-section-hdr">History${all.length?' ('+all.length+')':''}</div>
+      ${history || '<div class="wk-empty">No workouts logged yet</div>'}
+    </div>`;
+    },
+    about: () => `<div class="sheet-header"><span class="sheet-title">About</span><button class="sheet-close-btn" onclick="closeRptSheet()">x</button></div>
+  <div style="padding:24px 20px;text-align:center;">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;letter-spacing:10px;text-transform:uppercase;background:linear-gradient(180deg,#f5f2ec 0%,#c9a84c 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;">GRITCORE</div>
+    <div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-family:'Josefin Sans',sans-serif;margin-bottom:24px;">Forge your discipline.</div>
+    <div style="font-size:11px;line-height:1.9;color:var(--ctd);font-family:'Josefin Sans',sans-serif;letter-spacing:.5px;max-width:280px;margin:0 auto;margin-bottom:20px;">
+      <span style="font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);text-shadow:0 0 12px rgba(201,168,76,.35);">GRITCORE</span> is a daily discipline tracker built on one belief: small, consistent actions compound into extraordinary character.
+    </div>
+    <div class="rpt-section-hdr" style="text-align:center;">What You Get</div>
+    <div style="display:flex;flex-direction:column;gap:6px;max-width:260px;margin:8px auto 20px;text-align:left;">
+      ${[['Track daily disciplines with streaks','Stay accountable every day'],['Forge Ring calendar visualization','See your month at a glance'],['18 achievements to unlock','Celebrate real milestones'],['Calorie calculator','Know your daily targets'],['Workout tracker','Log every session'],['Category-based organization','Group your disciplines'],['Export your data anytime','Your data, your control']].map(([t,s])=>`<div style="padding:10px 12px;background:rgba(255,255,255,.03);border-radius:8px;"><div style="font-size:11px;color:var(--cthi);font-family:'Josefin Sans',sans-serif;letter-spacing:.5px;">${t}</div><div style="font-size:10px;color:var(--ctdd);margin-top:2px;font-family:'Josefin Sans',sans-serif;">${s}</div></div>`).join('')}
+    </div>
+    <div class="rpt-section-hdr" style="text-align:center;">Philosophy</div>
+    <div style="font-size:11px;line-height:1.9;color:var(--ctd);font-family:'Josefin Sans',sans-serif;letter-spacing:.5px;max-width:280px;margin:8px auto 20px;font-style:italic;">
+      "We are what we repeatedly do. Excellence, then, is not an act, but a habit."
+      <div style="color:var(--ctdd);margin-top:4px;font-style:normal;letter-spacing:1.5px;text-transform:uppercase;font-size:10px;">Will Durant</div>
+    </div>
+    <div style="height:1px;background:rgba(255,255,255,.06);margin:16px auto;max-width:200px;"></div>
+    <div style="font-size:10px;color:var(--ctdd);letter-spacing:1px;font-family:'Josefin Sans',sans-serif;line-height:2;">
+      Built with discipline.<br>
+      Version 0.31
+    </div>
   </div>`,
   };
   content.innerHTML = sheets[type]?.() || '';
@@ -2416,8 +2775,15 @@ function rptSheet(type) {
       setTimeout(() => inp.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
     });
   }
+  if (type === 'calories') {
+    setTimeout(calculateCalories, 50);
+  }
   backdrop.style.display = 'block';
-  requestAnimationFrame(() => el.classList.add('open'));
+  requestAnimationFrame(() => {
+    backdrop.classList.add('open');
+    el.classList.add('open');
+  });
+  document.getElementById('content').style.overflow = 'hidden';
   window._rptPrevFocus = document.activeElement;
   setTimeout(() => document.getElementById('rpt-sheet').focus(), 50);
 }
@@ -2426,9 +2792,54 @@ function closeRptSheet() {
   const el = document.getElementById('rpt-sheet');
   const backdrop = document.getElementById('rpt-sheet-backdrop');
   el.classList.remove('open');
-  backdrop.style.display = 'none';
+  backdrop.classList.remove('open');
+  setTimeout(() => { backdrop.style.display = 'none'; }, 300);
+  document.getElementById('content').style.overflow = '';
+  wkActiveWorkout = null;
+  showFab();
   if (window._rptPrevFocus) { window._rptPrevFocus.focus(); window._rptPrevFocus = null; }
 }
+
+/* ── Universal swipe-to-close on all sheet handles ── */
+(function initSheetSwipe(){
+  const closers = {
+    'fab-sheet': () => closeFabSheet(),
+    'settings-sheet': () => closeSettings(),
+    'rpt-sheet': () => closeRptSheet(),
+    'dev-console-drawer': () => closeDevConsole()
+  };
+  document.addEventListener('touchstart', function(e){
+    const zone = e.target.closest('.sheet-handle-zone');
+    if(!zone) return;
+    const sheetId = zone.dataset.sheet;
+    const sheet = document.getElementById(sheetId);
+    if(!sheet) return;
+    const startY = e.touches[0].clientY;
+    let curY = startY;
+    function onMove(ev){
+      curY = ev.touches[0].clientY;
+      const dy = curY - startY;
+      if(dy > 0){
+        sheet.classList.add('dragging');
+        sheet.style.transform = `translateX(-50%) translateY(${dy}px)`;
+      }
+    }
+    function onEnd(){
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onEnd);
+      const dy = curY - startY;
+      sheet.classList.remove('dragging');
+      sheet.style.transform = '';
+      if(dy > 60 && closers[sheetId]){
+        closers[sheetId]();
+      }
+    }
+    document.addEventListener('touchmove', onMove, {passive:true});
+    document.addEventListener('touchend', onEnd, {passive:true});
+  }, {passive:true});
+})();
+
+
 function renderForge(){
   const hh=habits;
   let mlist='';
@@ -2442,7 +2853,7 @@ function renderForge(){
   <div class="shdr af s5 mt6"><span class="shdr-l">Active (${hh.length})</span></div>
   <div class="manage-list">${mlist}</div>
   <button class="export-btn af s6" onclick="exportData()">↓ Export Record</button>
-  <div class="ftr"><div class="ftr-logo">Gritcore</div><div class="ftr-sub">Build the person you intend to be</div></div>`;
+  <div class="ftr"><div class="ftr-logo">GRITCORE</div><div class="ftr-sub">Build the person you intend to be</div></div>`;
 }
 /* ── Discipline Reorder (touch drag) ── */
 let dragEl=null,dragClone=null,dragStartY=0,dragOffsetY=0;
@@ -2705,22 +3116,208 @@ function _updateSheetDone(tl){
 /* DEV CONSOLE — dormant, will be reimplemented later */
 function initDevConsole(){}
 
-/* ONBOARDING */
-function showOnboarding(){
-  const ol=document.createElement('div');ol.id='onboarding';
-  const card=document.createElement('div');card.id='onboarding-card';
-  card.innerHTML=`
-    <div id="onboarding-wordmark">Gritcore</div>
-    <div id="onboarding-tagline">Forge your discipline.</div>
-    <button id="onboarding-btn" onclick="beginApp()">Begin</button>
-  `;
-  ol.appendChild(card);
-  document.body.appendChild(ol);
+/* PREFERENCES */
+function getPref(key){
+  const D={streaks:'1',buttonFx:'1',bgAnim:'1',heat:'1',reducedAnim:'0',achievements:'1',reminder:'0',quotes:'1',combo:'1',haptic:'1',perfectDay:'1'};
+  const v=localStorage.getItem('gc:pref:'+key);
+  return (v!==null?v:(D[key]||'1'))==='1';
 }
-function beginApp(){
-  const ol=document.getElementById('onboarding');
-  if(ol){ol.style.transition='opacity .4s ease';ol.style.opacity='0';setTimeout(()=>ol.remove(),400);}
+function setPref(key,val){
+  localStorage.setItem('gc:pref:'+key,val?'1':'0');
+}
+
+/* ONBOARDING */
+let currentScreen=0,addedDisciplines=[],screenSeen=new Set([0]);
+const OB_CHIPS=[{n:'Exercise',c:'Health'},{n:'Meditate',c:'Mind'},{n:'Read',c:'Mind'},{n:'Wake Early',c:'Productivity'},{n:'Journal',c:'Mind'}];
+const OB_CATS=['Health','Mind','Productivity','Lifestyle'];
+let prefState={streaks:true,buttonFx:true,bgAnim:true,heat:true,reducedAnim:false,achievements:true,reminder:false,quotes:true,combo:true,haptic:true,perfectDay:true};
+let selectedPlan='yearly';
+
+function showOnboarding(){
+  currentScreen=0;addedDisciplines=[];screenSeen=new Set([0]);
+  prefState={streaks:true,buttonFx:true,bgAnim:true,heat:true,reducedAnim:false,achievements:true,reminder:false,quotes:true,combo:true,haptic:true,perfectDay:true};
+  selectedPlan='yearly';
+
+  const ol=document.createElement('div');
+  ol.id='onboarding';ol.setAttribute('role','dialog');ol.setAttribute('aria-modal','true');
+
+  // Progress bar
+  const prog=document.createElement('div');prog.className='ob-progress';
+  for(let i=0;i<6;i++){const b=document.createElement('div');b.className='ob-progress-bar'+(i===0?' active':'');prog.appendChild(b);}
+
+  // Screen 0 — Brand Reveal
+  const s0=document.createElement('div');s0.className='ob-screen active';
+  s0.innerHTML=`<div class="ob-screen-inner" style="justify-content:center;" aria-label="Brand reveal, screen 1 of 6"><div class="ob-glow"></div><div class="ob-glow ob-glow-2"></div><div id="ob-wordmark" class="ob-fade-in">GRITCORE</div><div class="ob-divider ob-fade-in ob-stagger-1"></div><div id="ob-tagline" class="ob-fade-in ob-stagger-2">Built for the days you don\u2019t feel like it. The discipline is already in you \u2014 this is where you forge it.</div><div class="ob-tap-hint ob-fade-in ob-stagger-4">Tap to continue</div></div>`;
+  // Tap navigation handled by global touchend handler
+
+  // Screen 1 — Forge Metaphor
+  const s1=document.createElement('div');s1.className='ob-screen';
+  s1.innerHTML=`<div class="ob-screen-inner" style="justify-content:center;" aria-label="The forge metaphor, screen 2 of 6"><div class="ob-skip" role="button" tabindex="0" onclick="skipOnboarding()">SKIP</div><div class="ob-glow ob-glow-sm"></div><div class="ob-hammer ob-drop-in">\u2692</div><div class="ob-headline ob-fade-up ob-stagger-1">Habits are temporary.<br>Disciplines are forged.</div><div class="ob-divider ob-fade-in ob-stagger-2"></div><div class="ob-subtext ob-fade-in ob-stagger-3">Track what matters. Build streaks of iron.<br>Watch your progress burn brighter every day.</div><div class="ob-tap-hint ob-fade-in ob-stagger-5">Tap to continue</div></div>`;
+
+  // Screen 2 — First Discipline
+  const s2=document.createElement('div');s2.className='ob-screen';
+  s2.innerHTML=`<div class="ob-screen-inner" style="justify-content:center;" aria-label="Choose your disciplines, screen 3 of 6"><div class="ob-skip" role="button" tabindex="0" onclick="skipOnboarding()">SKIP</div><div class="ob-title">Choose your disciplines</div><div class="ob-subtitle">Tap to add, or type your own</div><div class="ob-chips" id="ob-chips-area"></div><div class="ob-disc-list" id="ob-disc-list"></div><div class="ob-custom-wrap"><input class="ob-input" id="ob-custom-input" type="text" placeholder="Add your own..." maxlength="40" onkeydown="if(event.key==='Enter'){event.preventDefault();_obAddCustom()}"><button class="ob-add-btn" onclick="_obAddCustom()">+</button></div><div class="ob-cat-label">Category for custom disciplines:</div><div class="ob-cat-row" id="ob-cat-row"><div class="ob-cat-pill active" data-cat="Health" onclick="_obSelCat(this)">Health</div><div class="ob-cat-pill" data-cat="Mind" onclick="_obSelCat(this)">Mind</div><div class="ob-cat-pill" data-cat="Productivity" onclick="_obSelCat(this)">Productivity</div><div class="ob-cat-pill" data-cat="Lifestyle" onclick="_obSelCat(this)">Lifestyle</div><button class="ob-cat-new" onclick="_obNewCat()">+ New</button></div><div class="ob-nav"><button class="ob-nav-back" onclick="goToScreen(1)">\u2190 Back</button><button class="ob-btn" onclick="goToScreen(3)">NEXT</button></div></div>`;
+  // Render initial chips
+  setTimeout(()=>_obRenderScreen2(),0);
+
+  // Screen 3 — Make It Yours
+  const s3=document.createElement('div');s3.className='ob-screen';
+  s3.innerHTML=`<div class="ob-screen-inner" style="justify-content:flex-start;padding-top:max(60px,calc(env(safe-area-inset-top)+28px));" aria-label="Make it yours, screen 4 of 6"><div class="ob-skip" role="button" tabindex="0" onclick="skipOnboarding()">SKIP</div><div class="ob-title">Make it yours</div><div class="ob-subtitle">Choose how GritCore feels</div><div class="ob-card active" role="switch" aria-checked="true" tabindex="0" onclick="_obCard(this,'streaks')"><span class="ob-card-icon">\u25C8</span><div class="ob-card-text"><div class="ob-card-title">Streak Badges</div><div class="ob-card-desc">Show streak count on each card</div></div><div class="ob-toggle-circle on">\u2713</div></div><div class="ob-card active" role="switch" aria-checked="true" tabindex="0" onclick="_obCard(this,'combo')"><span class="ob-card-icon">\u00D7</span><div class="ob-card-text"><div class="ob-card-title">Combo Counter</div><div class="ob-card-desc">x1, x2, x3 on rapid logging</div></div><div class="ob-toggle-circle on">\u2713</div></div><div class="ob-card active" role="switch" aria-checked="true" tabindex="0" onclick="_obCard(this,'buttonFx')"><span class="ob-card-icon">\u25C7</span><div class="ob-card-text"><div class="ob-card-title">Button Effects</div><div class="ob-card-desc">Ripple &amp; glow when logging</div></div><div class="ob-toggle-circle on">\u2713</div></div><div class="ob-card active" role="switch" aria-checked="true" tabindex="0" onclick="_obCard(this,'haptic')"><span class="ob-card-icon">\u2261</span><div class="ob-card-text"><div class="ob-card-title">Haptic Feedback</div><div class="ob-card-desc">Vibration on interactions</div></div><div class="ob-toggle-circle on">\u2713</div></div><div class="ob-card active" role="switch" aria-checked="true" tabindex="0" onclick="_obCard(this,'bgAnim')"><span class="ob-card-icon">\u25CB</span><div class="ob-card-text"><div class="ob-card-title">Background Animations</div><div class="ob-card-desc">Marble glow, ambient pulse</div></div><div class="ob-toggle-circle on">\u2713</div></div><div class="ob-card active" role="switch" aria-checked="true" tabindex="0" onclick="_obCard(this,'heat')"><span class="ob-card-icon">\u25B3</span><div class="ob-card-text"><div class="ob-card-title">Heat System</div><div class="ob-card-desc">Silver \u2192 gold color shift</div></div><div class="ob-toggle-circle on">\u2713</div></div><div style="display:flex;align-items:center;gap:12px;margin-top:12px;width:100%;max-width:340px;"><div class="ob-pill-switch" role="switch" aria-checked="false" tabindex="0" onclick="_obPill(this,'reducedAnim')"><div class="ob-pill-knob"></div></div><div style="font-family:'Josefin Sans',sans-serif;font-size:10px;color:var(--ctd);">\u25D0 Reduced Animations (~33%)</div></div><div class="ob-settings-note">All settings available later in Settings \u2192 Customisation</div><div class="ob-nav"><button class="ob-nav-back" onclick="goToScreen(2)">\u2190 Back</button><button class="ob-btn" onclick="goToScreen(4)">NEXT</button></div></div>`;
+
+  // Screen 4 — Stay Motivated
+  const s4=document.createElement('div');s4.className='ob-screen';
+  s4.innerHTML=`<div class="ob-screen-inner" style="justify-content:flex-start;padding-top:max(60px,calc(env(safe-area-inset-top)+28px));" aria-label="Stay motivated, screen 5 of 6"><div class="ob-skip" role="button" tabindex="0" onclick="skipOnboarding()">SKIP</div><div class="ob-title">Stay motivated</div><div class="ob-subtitle">Choose what keeps you going</div><div class="ob-card active" role="switch" aria-checked="true" tabindex="0" onclick="_obCard(this,'perfectDay')"><span class="ob-card-icon">\u2726</span><div class="ob-card-text"><div class="ob-card-title">Perfect Day</div><div class="ob-card-desc">Celebration when all disciplines done</div></div><div class="ob-toggle-circle on">\u2713</div></div><div class="ob-card active" role="switch" aria-checked="true" tabindex="0" onclick="_obCard(this,'achievements')"><span class="ob-card-icon">\u2605</span><div class="ob-card-text"><div class="ob-card-title">Achievements</div><div class="ob-card-desc">Streak milestones (7, 14, 30, 60, 100 days)</div></div><div class="ob-toggle-circle on">\u2713</div></div><div class="ob-card" role="switch" aria-checked="false" tabindex="0" onclick="_obCard(this,'reminder')"><span class="ob-card-icon">\u25F7</span><div class="ob-card-text"><div class="ob-card-title">Daily Reminder</div><div class="ob-card-desc">9:00 AM default \u00B7 change later in Settings</div></div><div class="ob-toggle-circle">\u2713</div></div><div class="ob-card active" role="switch" aria-checked="true" tabindex="0" onclick="_obCard(this,'quotes')"><span class="ob-card-icon">\u275D</span><div class="ob-card-text"><div class="ob-card-title">Motivational Quotes</div><div class="ob-card-desc">Daily quote on Today tab</div></div><div class="ob-toggle-circle on">\u2713</div></div><div class="ob-settings-note">All settings available later in Settings \u2192 Customisation</div><div class="ob-nav"><button class="ob-nav-back" onclick="goToScreen(3)">\u2190 Back</button><button class="ob-btn" onclick="goToScreen(5)">NEXT</button></div></div>`;
+
+  // Screen 5 — Paywall
+  const s5=document.createElement('div');s5.className='ob-screen';
+  s5.innerHTML=`<div class="ob-screen-inner" aria-label="Your forge is ready, screen 6 of 6"><div class="ob-title statement">Your forge is ready</div><div class="ob-subtitle">Start your free trial to begin</div><div class="ob-value-row"><span class="ob-check-circle">\u2713</span><span>Unlimited disciplines with streak tracking</span></div><div class="ob-value-row"><span class="ob-check-circle">\u2713</span><span>Daily heat system that rewards consistency</span></div><div class="ob-value-row"><span class="ob-check-circle">\u2713</span><span>Achievements and milestone celebrations</span></div><div class="ob-stat-line">Users who track daily are 85% more likely to build lasting habits</div><div class="ob-plan-cards"><div class="ob-plan-card" id="ob-plan-weekly" role="radio" aria-checked="false" tabindex="0" onclick="_obPlan('weekly')" onkeydown="if(event.key==='Enter'){this.click()}"><div class="ob-plan-radio"></div><div><div class="ob-plan-label">WEEKLY</div><div class="ob-plan-price">$6.99</div><div class="ob-plan-period">/ week</div></div></div><div class="ob-plan-card selected" id="ob-plan-yearly" role="radio" aria-checked="true" tabindex="0" onclick="_obPlan('yearly')" onkeydown="if(event.key==='Enter'){this.click()}"><div class="ob-plan-radio selected"></div><div><div class="ob-plan-label">YEARLY</div><div class="ob-plan-price">$39.99</div><div class="ob-plan-period">/ year</div><div class="ob-plan-savings">Save 85%</div></div><div class="ob-plan-badge">BEST VALUE</div></div></div><button class="ob-cta-trial" onclick="startFreeTrial()">START FREE TRIAL</button><div class="ob-trial-detail" id="ob-trial-detail">7 days free, then $39.99 per year. Cancel anytime.</div><div class="ob-maybe-later" role="button" tabindex="0" onclick="dismissOnboarding('today')" onkeydown="if(event.key==='Enter'){this.click()}">Maybe later</div><div class="ob-restore" role="button" tabindex="0" onclick="if(typeof paywall!=='undefined')paywall.restore()">Already purchased? Restore</div><button class="ob-nav-back" onclick="goToScreen(4)" style="margin-top:12px;">\u2190 Back</button></div>`;
+
+  ol.appendChild(prog);
+  [s0,s1,s2,s3,s4,s5].forEach(s=>ol.appendChild(s));
+  document.body.appendChild(ol);
+
+  // Tap navigation — click event is more reliable than touchend on iOS
+  ol.addEventListener('click',function(e){
+    const t=e.target;
+    if(t.closest('button,input,a,.ob-card,.ob-chip,.ob-skip,.ob-pill-switch,.ob-plan-card,.ob-cta-trial,.ob-maybe-later,.ob-restore,.ob-disc-row,.ob-cat-pill,.ob-cat-new,.ob-cat-row,.ob-toggle-circle,.ob-custom-wrap,.ob-nav,.ob-add-btn,.ob-btn,.ob-nav-back'))return;
+    const x=e.clientX,w=window.innerWidth;
+    if(x<w*0.45&&currentScreen>0)goToScreen(currentScreen-1);
+    else if(x>w*0.55&&currentScreen<5)goToScreen(currentScreen+1);
+  });
+
+  // Keyboard nav
+  document.addEventListener('keydown',function _obKey(e){
+    if(!document.getElementById('onboarding'))return document.removeEventListener('keydown',_obKey);
+    if(e.key==='ArrowRight'&&currentScreen<5)goToScreen(currentScreen+1);
+    if(e.key==='ArrowLeft'&&currentScreen>0)goToScreen(currentScreen-1);
+  });
+}
+
+function _obSelectChip(name){
+  const def=OB_CHIPS.find(c=>c.n===name);
+  if(!def||addedDisciplines.some(d=>d.name===name))return;
+  addedDisciplines.push({name:def.n,cat:def.c,fromChip:true});
+  _obRenderScreen2();
+}
+function _obRemoveDisc(idx){
+  addedDisciplines.splice(idx,1);
+  _obRenderScreen2();
+}
+function _obRenderScreen2(){
+  const ca=document.getElementById('ob-chips-area');
+  const dl=document.getElementById('ob-disc-list');
+  if(!ca||!dl)return;
+  const taken=new Set(addedDisciplines.filter(d=>d.fromChip).map(d=>d.name));
+  ca.innerHTML=OB_CHIPS.filter(c=>!taken.has(c.n)).map(c=>`<div class="ob-chip" tabindex="0" onclick="_obSelectChip('${c.n}')">${c.n}</div>`).join('');
+  if(!OB_CHIPS.some(c=>!taken.has(c.n)))ca.style.display='none';else ca.style.display='';
+  dl.innerHTML=addedDisciplines.map((d,i)=>`<div class="ob-disc-row"><span class="ob-disc-name">${d.name}</span><span class="ob-disc-cat">${d.cat||'Uncategorized'}</span><button class="ob-disc-x" onclick="_obRemoveDisc(${i})">\u00D7</button></div>`).join('');
+}
+function _obSelCat(el){
+  document.querySelectorAll('.ob-cat-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+}
+function _obNewCat(){
+  const row=document.getElementById('ob-cat-row');
+  const btn=row.querySelector('.ob-cat-new');
+  // If input already exists, focus it
+  if(row.querySelector('.ob-cat-input')){row.querySelector('.ob-cat-input').focus();return;}
+  const inp=document.createElement('input');
+  inp.className='ob-cat-input';inp.type='text';inp.placeholder='Name...';inp.maxLength=20;
+  inp.style.cssText='width:80px;padding:6px 10px;border-radius:8px;border:1px solid var(--gold);background:rgba(201,168,76,0.08);font-family:"Josefin Sans",sans-serif;font-size:10px;color:var(--gold);outline:none;letter-spacing:1px;';
+  function addCat(){
+    const name=inp.value.trim();
+    if(!name){inp.remove();return;}
+    const p=document.createElement('div');
+    p.className='ob-cat-pill active';p.dataset.cat=name;p.textContent=name;
+    p.onclick=function(){_obSelCat(this);};
+    document.querySelectorAll('.ob-cat-pill').forEach(x=>x.classList.remove('active'));
+    row.insertBefore(p,btn);
+    inp.remove();
+  }
+  inp.onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();addCat();}};
+  inp.onblur=addCat;
+  row.insertBefore(inp,btn);
+  inp.focus();
+}
+function _obCard(el,key){
+  const on=!el.classList.contains('active');
+  el.classList.toggle('active',on);
+  el.setAttribute('aria-checked',String(on));
+  const circle=el.querySelector('.ob-toggle-circle');
+  if(circle)circle.classList.toggle('on',on);
+  prefState[key]=on;
+}
+function _obPill(el,key){
+  const on=!el.classList.contains('on');
+  el.classList.toggle('on',on);
+  el.setAttribute('aria-checked',String(on));
+  prefState[key]=on;
+}
+function _obAddCustom(){
+  const inp=document.getElementById('ob-custom-input');
+  if(!inp)return;
+  const name=inp.value.trim();
+  if(!name||addedDisciplines.some(d=>d.name===name))return;
+  const catEl=document.querySelector('.ob-cat-pill.active');
+  const cat=catEl?catEl.dataset.cat:'';
+  addedDisciplines.push({name:name,cat:cat,fromChip:false});
+  inp.value='';
+  _obRenderScreen2();
+}
+function _obPlan(plan){
+  selectedPlan=plan;
+  const wk=document.getElementById('ob-plan-weekly'),yr=document.getElementById('ob-plan-yearly');
+  wk.classList.toggle('selected',plan==='weekly');wk.setAttribute('aria-checked',String(plan==='weekly'));
+  wk.querySelector('.ob-plan-radio').classList.toggle('selected',plan==='weekly');
+  yr.classList.toggle('selected',plan==='yearly');yr.setAttribute('aria-checked',String(plan==='yearly'));
+  yr.querySelector('.ob-plan-radio').classList.toggle('selected',plan==='yearly');
+  const det=document.getElementById('ob-trial-detail');
+  if(det)det.textContent=plan==='yearly'?'7 days free, then $39.99 per year. Cancel anytime.':'7 days free, then $6.99 per week. Cancel anytime.';
+}
+
+function goToScreen(n){
+  if(n<0||n>5)return;
+  const screens=document.querySelectorAll('.ob-screen');
+  screens[currentScreen].classList.remove('active');
+  currentScreen=n;
+  screens[n].classList.add('active');
+  if(!screenSeen.has(n))screenSeen.add(n);
+  document.querySelectorAll('.ob-progress-bar').forEach((b,i)=>{b.classList.toggle('active',i<=n);});
+}
+
+function dismissOnboarding(targetTab){
+  Object.entries(prefState).forEach(([k,v])=>setPref(k,v));
+  const newHabits=[];
+  // Auto-capture any text still in the input
+  const obInp=document.getElementById('ob-custom-input');
+  if(obInp&&obInp.value.trim()){
+    const catEl=document.querySelector('.ob-cat-pill.active');
+    addedDisciplines.push({name:obInp.value.trim(),cat:catEl?catEl.dataset.cat:'',fromChip:false});
+  }
+  addedDisciplines.forEach(d=>{newHabits.push({id:Date.now()+'-'+Math.random().toString(36).slice(2,6),name:d.name,cat:d.cat||'',order:habits.length+newHabits.length});});
+  if(newHabits.length){const hh=effH();newHabits.forEach(h=>hh.push(h));habits=hh;save();}
+  if(typeof paywall!=='undefined')paywall.initTrial();
   store.set('gc:onboarded','1');
+  const ol=document.getElementById('onboarding');
+  if(ol){
+    ol.style.pointerEvents='none';
+    // Render behind the overlay before fading out
+    sw(targetTab||'today');render();
+    requestAnimationFrame(()=>{
+      ol.style.transition='opacity 0.4s ease-out';ol.style.opacity='0';
+      setTimeout(()=>ol.remove(),420);
+    });
+  }
+}
+
+function skipOnboarding(){
+  dismissOnboarding('today');
+}
+
+function startFreeTrial(){
+  // Dismiss first, then attempt purchase in background
+  dismissOnboarding('today');
+  try{if(typeof paywall!=='undefined')paywall.purchase().catch(()=>{});}catch(e){}
 }
 
 /* INIT */
@@ -2819,10 +3416,9 @@ function devAddTestData() {
   showToast('Test data added');
 }
 function devTriggerOnboarding() {
-  if (!confirm('Re-trigger onboarding? App will reload.')) return;
-  localStorage.removeItem('gc:onboarded');
-  closeDevConsole();
-  location.reload();
+  localStorage.removeItem('gc:gc:onboarded');
+  closeSettings();
+  showOnboarding();
 }
 function devResetDate() {
   localStorage.removeItem('gc:sim_date');
@@ -2833,7 +3429,7 @@ function devResetAll() {
   localStorage.removeItem('gc:gc1:habits');
   localStorage.removeItem('gc:gc1:logs');
   localStorage.removeItem('gc1:milestones');
-  localStorage.removeItem('gc1:achievements');
+  localStorage.removeItem('gc1:ach');
   localStorage.removeItem('gc:sim_date');
   isPlaceholder=true;
   saveH();saveL();render();
@@ -2845,7 +3441,7 @@ function devResetAll() {
 <button class="dev-console-btn" id="dev-console-btn" onclick="toggleDevConsole()">⚙</button>
 <div class="sheet-backdrop dev-console-backdrop" id="dev-console-backdrop" role="button" tabindex="0" aria-label="Close" onclick="closeDevConsole()"></div>
 <div class="dev-console-drawer" id="dev-console-drawer">
-  <div class="sheet-handle"></div>
+  <div class="sheet-handle-zone" data-sheet="dev-console-drawer"><div class="sheet-handle"></div></div>
   <div class="dev-console-title">Dev Console</div>
   <div class="dev-console-grid">
     <button class="dev-btn" onclick="devDayPlus()">+1 Day</button>

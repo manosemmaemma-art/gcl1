@@ -197,6 +197,43 @@ Never delete or reset user data during code cleanup. Before removing any file, f
 
 Never do broad code cleanup, refactoring, or file reorganization unless explicitly asked. Preserve all existing user data, dev tools, and features during any edit.
 
+## CSS & Layout Change Protocol
+
+Before making ANY CSS or layout change:
+1. Run `./visual-check.sh` to capture baseline screenshots
+2. Make the requested change — ONE change at a time
+3. Re-run `./visual-check.sh` and compare screenshots
+4. If any test fails or layout shifts unexpectedly, **automatically revert** (`git checkout -- <file>`) and try a different approach
+5. Only present the result once all tests pass
+6. Never chain multiple CSS layout changes (flex, width, overflow, position) without confirming each works
+
+**CSS scope rule:** Never add `:active`, `transition`, or `transform` to shared selectors (`.card`, `.sc`) without scoping to the specific tab (e.g., `#view-report .card:active`).
+
+**Stacking context rule:** All sheets/overlays that need to cover the header MUST be static HTML outside `.content`. Never render them inside view template strings.
+
+## Visual Regression Testing
+
+- **Run tests:** `./visual-check.sh`
+- **First run:** Creates baseline screenshots (no comparison)
+- **Subsequent runs:** Compares against baselines, flags regressions
+- **Update baselines** after intentional UI changes: `npm run test:visual:update`
+- **View diff report:** `npx playwright show-report`
+- Test config: `playwright.config.js`
+- Test file: `tests/visual-regression.spec.js`
+- Baselines: `tests/visual-regression.spec.js-snapshots/`
+
+## iOS Safari Constraints
+
+This is a mobile-first PWA targeting iPhones via the App Store (Capacitor). Always consider:
+- **Shadows:** Use dark shadow colors (`rgba(0,0,0,...)`) not colored shadows — iOS Safari renders colored shadows differently than Chrome
+- **Overflow:** `overflow: hidden` + `border-radius` combos can clip content unexpectedly on iOS
+- **Touch events:** CSS animations/transforms can conflict with touch scrolling — never use `transform` on scrollable containers
+- **Animations:** Keep all animations GPU-friendly (`transform`, `opacity` only). Avoid animating `width`, `height`, `top`, `left`, `margin`, `padding`
+- **Touch scrolling:** Never set `touch-action: none` on scrollable areas. Use `-webkit-overflow-scrolling: touch` for momentum scroll
+- **Input zoom:** Font size must be >= 16px on inputs to prevent iOS auto-zoom
+- **Safe areas:** Always account for `env(safe-area-inset-top)` and `env(safe-area-inset-bottom)` in fixed/sticky elements
+- **Spring physics:** Use conservative defaults — iOS users expect subtle, not bouncy
+
 ## General Instructions
 
 When implementing multi-step plans, complete each step fully and commit progress before moving to the next. If hitting usage limits is a risk, prioritize finishing current work over starting new tasks.
