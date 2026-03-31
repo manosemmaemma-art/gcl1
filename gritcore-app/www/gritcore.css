@@ -828,13 +828,6 @@ body.dev-mode .dev-console-btn {
   background: rgba(201,168,76,.12); border-color: var(--gold);
   color: var(--gold);
 }
-.cal-calc-btn {
-  background: var(--gold); color: #111; border: none; border-radius: 12px;
-  padding: 14px; font-family: var(--fnt-ui); font-size: 12px;
-  letter-spacing: 2px; text-transform: uppercase; font-weight: 600;
-  cursor: pointer; transition: opacity .2s;
-}
-.cal-calc-btn:active { opacity: .8; }
 .cal-results { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; }
 .cal-result-card {
   display: flex; justify-content: space-between; align-items: center;
