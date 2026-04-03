@@ -393,6 +393,12 @@ body.premium .logo{text-shadow:0 0 16px var(--gold-15),var(--ts);}
   <button class="pd-btn" onclick="closePerfectDay()">Continue</button>
 </div>
 
+<div id="wr-overlay" class="wr-overlay" onclick="closeWeeklyReport()" role="presentation"></div>
+<div id="wr-modal" class="wr-modal" role="dialog" aria-modal="true" aria-label="Weekly Report" tabindex="-1">
+  <div class="wr-panels" id="wr-panels"></div>
+  <div class="wr-dots" id="wr-dots"></div>
+</div>
+
 <div id="settings-backdrop" class="sheet-backdrop" role="button" tabindex="0" aria-label="Close" onclick="closeSettings()" style="display:none"></div>
 <div class="fab-sheet" id="settings-sheet" role="dialog" aria-modal="true" aria-label="Settings" tabindex="-1">
   <div class="sheet-handle-zone" data-sheet="settings-sheet"><div class="sheet-handle"></div></div>
@@ -2190,6 +2196,31 @@ function getTodayQuote(){const d=Math.floor(Date.now()/86400000);return QUOTES[d
 function getTomorrowQuote(){const d=Math.floor(Date.now()/86400000)+1;return QUOTES[d%QUOTES.length];}
 let quoteIdx = -1;
 function qPreview(el){if(QUOTES.length<=1)return;const txt=el.querySelector('.qtext');const auth=el.querySelector('.qauth');if(quoteIdx===-1){const today=getTodayQuote();quoteIdx=QUOTES.findIndex(q=>q.t===today.t);}quoteIdx=(quoteIdx+1)%QUOTES.length;txt.textContent=QUOTES[quoteIdx].t;auth.textContent='— '+QUOTES[quoteIdx].a;}
+function initQuoteLongPress(){
+  const qcard=document.querySelector('.qcard');
+  if(!qcard||qcard._lpInit)return;
+  qcard._lpInit=true;
+  let timer=null;
+  qcard.addEventListener('pointerdown',(e)=>{
+    if(e.target.closest('button'))return;
+    timer=setTimeout(()=>{
+      const txt=qcard.querySelector('.qtext');
+      if(!txt)return;
+      const text=txt.textContent.replace(/^"|"$/g,'').trim();
+      if(!text)return;
+      let saved=[];try{saved=JSON.parse(localStorage.getItem('gc1:savedQuotes')||'[]');}catch{saved=[];}
+      if(!saved.includes(text)){saved.push(text);localStorage.setItem('gc1:savedQuotes',JSON.stringify(saved));
+        qcard.style.transition='box-shadow .3s';qcard.style.boxShadow='0 0 20px var(--gold-15)';
+        setTimeout(()=>{qcard.style.boxShadow='';},800);
+        if(typeof comboVibrate==='function')comboVibrate(1);
+        showToast('Quote saved');
+      } else {showToast('Already saved');}
+    },600);
+  });
+  qcard.addEventListener('pointerup',()=>clearTimeout(timer));
+  qcard.addEventListener('pointercancel',()=>clearTimeout(timer));
+  qcard.addEventListener('pointermove',()=>clearTimeout(timer));
+}
 const STREAK_MILESTONES = [
   { days: 7,   msg: '7-Day Streak',   sub: 'One week of iron will.' },
   { days: 14,  msg: '14-Day Streak',  sub: 'Two weeks. Unshakeable.' },
@@ -2285,6 +2316,223 @@ function closePerfectDay() {
   if (m) { m.classList.add('pd-exit'); setTimeout(()=>{m.classList.remove('show','pd-exit');},350); }
   if (window._pdPrevFocus) { window._pdPrevFocus.focus(); window._pdPrevFocus = null; }
 }
+/* ── Weekly Report ── */
+let _wrPanel=0;
+const HERO_QUOTES={
+  perfect:["The summit is not the end. It is where the wind is strongest.","Perfection is a door, not a destination — what lies beyond it is what defines you.","Even fire must rest to burn again. You have earned this.","The rarest victories are the quiet ones. This was one.","You did not bend. The world noticed, even if it said nothing.","To complete everything is human. To begin again tomorrow is divine."],
+  crushing:["Momentum is invisible until it isn't. You are building something others cannot see.","The days you did not feel like it were the ones that mattered most. You showed up anyway.","Discipline is choosing between what you want now and what you want most.","You are not lucky. You are relentless.","The forge glows hottest for those who refuse to leave it.","Consistency is not glamorous. It is just powerful."],
+  comeback:["The forge does not remember your absence. Only your return.","Falling is not failure. Staying down is. You stood.","There is no shame in the restart. Only in the refusal to begin again.","The blade that breaks and is reforged cuts deeper than one never tested.","You came back. That is the whole story.","Most people stay down. You did not. Remember that."],
+  strong:["You are not where you were. That is enough.","The compound effect is silent until it roars. Keep going.","Most quit at this stage. You did not.","Quiet consistency is the loudest form of ambition.","The work you cannot see is the work that matters most.","You have become someone who shows up. That changes everything."],
+  steady:["Not every day will be a fire. Some will be embers. Both matter.","The forge respects the one who shows up, not the one who shines.","Quiet discipline outlasts loud motivation. Every time.","You are holding the line. The line is what keeps everything together.","Progress whispers. Regression shouts. Trust the whisper.","The middle of the journey is where most people turn back. You are still here."],
+  slipping:["The crack in the blade is where the light enters.","You are not starting over. You are starting from experience.","One discipline. One day. That is all the forge asks of you.","The distance between where you are and where you want to be is one decision.","What matters now is not what happened. It is what happens next.","You have survived worse. This is just a chapter."],
+  cold:["The ember never truly dies. It waits beneath the ash.","You have been here before. You know the way back.","The hardest step is always the next one. Take it.","The forge is patient. It does not close. It does not judge. It waits.","Begin again. Not because it is easy, but because you are still here.","Something in you brought you back to this screen. Listen to it."],
+  newForge:["Every master was once a disaster. Begin.","The first strike shapes the metal. You have already begun.","Small fires grow. Trust the process.","You do not need to see the whole staircase. Just the next step.","What you start today will thank you in six months.","The forge was empty before you arrived. Now it is not. That matters."]
+};
+const Q_TEMPLATES=["{S} {B} {E}.","Not all progress is visible. {C}.","The forge {B} {E} — {R}.","Strength {B} {E}, {T}."];
+const Q_PARTS={
+  S:{up:["Your fire","What you built","This momentum","The heat in you","Your discipline"],down:["The ash","What fell away","The silence","This weight","The gap"],any:["The forge","Discipline","The blade","Iron","The anvil","The path","Strength","The work"]},
+  B:{up:["was earned by","belongs to","rewards","sharpens","recognizes"],down:["forgives","does not remember","waits beneath","asks only for","heals through"],any:["was never about","is not measured by","transforms","outlasts","begins with"]},
+  E:{up:["those who refused to stop","the ones who stayed","every quiet morning you chose this","hands that would not let go","the relentless"],down:["your absence — only your return","the willingness to begin again","one more honest day","showing up imperfectly","the courage to restart"],any:["what others see","talent — only by persistence","a single step repeated","the days no one was watching"]},
+  C:{up:["Now protect it","Do not mistake the view for the peak","Keep the fire fed"],down:["But you are still moving","And you are still here","Begin with what you have"],any:["The forge knows","That is enough for today","Everything else is noise"]},
+  R:{up:["because you earned it","because consistency is its own proof"],down:["because starting over is still starting","because the forge does not close"],any:["because that is what iron does","because you chose to be here"]},
+  T:{up:["and the forge remembers","and that changes everything"],down:["and that is enough","and tomorrow is unwritten"],any:["always","every single time","without exception"]}
+};
+
+function _wrSeed(){return Math.floor(Date.now()/604800000);}
+function _wrRng(seed){let s=seed|0;return()=>{s=s*1664525+1013904223&0x7fffffff;return(s>>>0)/0x80000000;};}
+function _wrHash(str){let h=0;for(let i=0;i<str.length;i++){h=((h<<5)-h)+str.charCodeAt(i);h|=0;}return Math.abs(h);}
+
+function getWeeklyState(){
+  const wp=weekPct();const streak=calcStreak();
+  const joined=localStorage.getItem('gc1:joined')||getDate();
+  const daysSinceJoin=Math.floor((new Date()-new Date(joined+'T00:00:00'))/86400000);
+  if(daysSinceJoin<14)return 'newForge';
+  const hh=effH(),ll=effL();
+  let lwDone=0,lwTotal=0;
+  for(let i=7;i<14;i++){const d=daysBack(i);const dl=ll[d]||{};hh.forEach(h=>{if(dl[h.id]==='done')lwDone++;if(dl[h.id])lwTotal++;});}
+  const lwPct=lwTotal>0?Math.round(lwDone/lwTotal*100):null;
+  const delta=lwPct!==null&&wp!==null?wp-lwPct:0;
+  if(wp===100)return 'perfect';
+  if(wp>=85&&streak>=7)return 'crushing';
+  if(delta>=20&&wp>=50)return 'comeback';
+  if(wp>=70)return 'strong';
+  if(wp>=50)return 'steady';
+  if(wp>=30)return 'slipping';
+  return 'cold';
+}
+
+function getWeeklyQuote(state){
+  const mood=['perfect','crushing','strong','comeback'].includes(state)?'up':['slipping','cold'].includes(state)?'down':'any';
+  const rng=_wrRng(_wrSeed()+_wrHash(state));
+  if(rng()<0.5&&HERO_QUOTES[state]?.length){
+    return HERO_QUOTES[state][Math.floor(rng()*HERO_QUOTES[state].length)];
+  }
+  const tpl=Q_TEMPLATES[Math.floor(rng()*Q_TEMPLATES.length)];
+  return tpl.replace(/\{(\w+)\}/g,(_,key)=>{
+    const p=Q_PARTS[key];if(!p)return '';
+    const pool=[...(p[mood]||[]),...(p.any||[])];
+    return pool[Math.floor(rng()*pool.length)]||'';
+  });
+}
+
+function getLastWeekPct(){
+  const hh=effH(),ll=effL();
+  let done=0,total=0;
+  for(let i=7;i<14;i++){const d=daysBack(i);const dl=ll[d]||{};hh.forEach(h=>{if(dl[h.id]==='done')done++;if(dl[h.id])total++;});}
+  return total>0?Math.round(done/total*100):null;
+}
+
+function buildWeeklyReport(){
+  const wp=weekPct()||0;
+  const bars=getWeeklyBars();
+  const streak=calcStreak();
+  const tier=getTier(streak);
+  const best=bestHabit(effH(),effL());
+  const worst=worstHabit(effH(),effL());
+  const state=getWeeklyState();
+  const quote=getWeeklyQuote(state);
+  const lwPct=getLastWeekPct();
+  const delta=lwPct!==null?wp-lwPct:null;
+  const hh=effH(),ll=effL();
+  let perfectDays=0;
+  for(let i=0;i<7;i++){const d=daysBack(i);const p=dayPct(d,hh,ll);if(p===100)perfectDays++;}
+  const wLabel=wp>=90?'Forged':wp>=70?'Strong':wp>=50?'Holding':wp>=30?'Wavering':'Rebuilding';
+  const panels=document.getElementById('wr-panels');
+  const dots=document.getElementById('wr-dots');
+  if(!panels||!dots)return;
+  const p1=`<div class="wr-panel">
+    <div class="wr-title">YOUR WEEK</div>
+    <div class="wr-big-num" id="wr-counter" data-target="${wp}">0</div>
+    <div class="wr-score-word">${wLabel}</div>
+    <div class="wr-ember">${typeof emberSVGHTML==='function'?emberSVGHTML(Math.max(16,Math.round(wp/100*40)),wp>=70):''}</div>
+  </div>`;
+  const maxPct=Math.max(...bars.map(b=>b.pct||0),10);
+  const barHTML=bars.map((b,i)=>{
+    const h=b.pct!==null?Math.max(4,Math.round((b.pct/maxPct)*120)):4;
+    const cls=b.pct>=80?'high':b.pct>=50?'mid':'low';
+    return `<div class="wr-bar-col">
+      <div class="wr-bar-pct">${b.pct!==null?b.pct+'%':''}</div>
+      <div class="wr-bar ${cls}" style="height:4px;--target-h:${h}px;" data-rise="${i}"></div>
+      <div class="wr-bar-lbl">${b.label}</div>
+    </div>`;
+  }).join('');
+  const p2=`<div class="wr-panel"><div class="wr-title">7 DAYS</div><div class="wr-bar-row">${barHTML}</div></div>`;
+  let statsHTML='';
+  if(best)statsHTML+=`<div class="wr-stat-row"><span class="wr-stat-label">Best Discipline</span><span class="wr-stat-value">${esc(best.name)} ${best.pct}%</span></div>`;
+  if(worst)statsHTML+=`<div class="wr-stat-row"><span class="wr-stat-label">Needs Work</span><span class="wr-stat-value">${esc(worst.name)} ${worst.pct}%</span></div>`;
+  statsHTML+=`<div class="wr-stat-row"><span class="wr-stat-label">Perfect Days</span><span class="wr-stat-value">${perfectDays} of 7</span></div>`;
+  statsHTML+=`<div class="wr-stat-row"><span class="wr-stat-label">Streak</span><span class="wr-stat-value">${streak>0?streak+'d · '+tier.name:'No streak'}</span></div>`;
+  if(delta!==null)statsHTML+=`<div class="wr-stat-row"><span class="wr-stat-label">vs Last Week</span><span class="wr-stat-value">${delta>=0?'<span class="wr-up">+'+delta+'%</span>':'<span class="wr-down">'+delta+'%</span>'}</span></div>`;
+  const p3=`<div class="wr-panel"><div class="wr-title">HIGHLIGHTS</div>${statsHTML}</div>`;
+  const hintShown=localStorage.getItem('gc1:quoteSaveHintShown');
+  const hintHTML=hintShown?'':'<div class="wr-hint">hold to save</div>';
+  const p4=`<div class="wr-panel" style="position:relative;">
+    <div class="wr-quote-mark">\u201C</div>
+    <div class="wr-title">THE FORGE SPEAKS</div>
+    <div class="wr-quote-text" id="wr-quote-text">${esc(quote)}</div>
+    <div class="wr-divider"></div>
+    <button class="wr-btn" onclick="closeWeeklyReport()">CONTINUE</button>
+    ${hintHTML}
+  </div>`;
+  panels.innerHTML=p1+p2+p3+p4;
+  dots.innerHTML=[0,1,2,3].map(i=>`<div class="wr-dot${i===0?' active':''}" data-panel="${i}"></div>`).join('');
+  _wrPanel=0;
+  panels.style.transform='translateX(0)';
+}
+
+function showWeeklyReport(){
+  if(!getPref('weeklyReport'))return;
+  const joined=localStorage.getItem('gc1:joined');
+  if(!joined)return;
+  const daysSinceJoin=Math.floor((new Date()-new Date(joined+'T00:00:00'))/86400000);
+  if(daysSinceJoin<7)return;
+  const lastShown=localStorage.getItem('gc1:weeklyReportShown');
+  if(lastShown){const daysSince=Math.floor((new Date()-new Date(lastShown+'T00:00:00'))/86400000);if(daysSince<7)return;}
+  localStorage.setItem('gc1:weeklyReportShown',getDate());
+  buildWeeklyReport();
+  const o=document.getElementById('wr-overlay');
+  const m=document.getElementById('wr-modal');
+  if(o)o.classList.add('show');
+  if(m)m.classList.add('show');
+  setTimeout(()=>document.getElementById('wr-modal')?.focus(),50);
+  const counter=document.getElementById('wr-counter');
+  if(counter){
+    const target=parseInt(counter.dataset.target)||0;
+    let current=0;const duration=1200;const start=performance.now();
+    const anim=(now)=>{
+      const elapsed=now-start;const progress=Math.min(elapsed/duration,1);
+      const eased=1-Math.pow(1-progress,3);
+      current=Math.round(eased*target);
+      counter.textContent=current+'%';
+      if(progress<1)requestAnimationFrame(anim);
+    };
+    requestAnimationFrame(anim);
+  }
+  const wp=weekPct()||0;
+  if(wp>=80&&typeof fireConfetti==='function')setTimeout(fireConfetti,600);
+  setTimeout(()=>{
+    document.querySelectorAll('.wr-bar[data-rise]').forEach((bar,i)=>{
+      setTimeout(()=>{bar.style.height=bar.style.getPropertyValue('--target-h');},i*100);
+    });
+  },400);
+  document.addEventListener('keydown',function wrEsc(e){
+    if(e.key==='Escape'){closeWeeklyReport();document.removeEventListener('keydown',wrEsc);}
+  });
+  _initWRSwipe();
+  _initWRQuoteLongPress();
+}
+
+function closeWeeklyReport(){
+  const o=document.getElementById('wr-overlay');
+  const m=document.getElementById('wr-modal');
+  if(o){o.classList.remove('show');}
+  if(m){m.classList.remove('show');}
+}
+
+function _initWRSwipe(){
+  const panels=document.getElementById('wr-panels');
+  if(!panels)return;
+  let startX=0,currentX=0,dragging=false;
+  const totalPanels=4;
+  panels.addEventListener('pointerdown',(e)=>{if(e.pointerType==='mouse'&&e.button!==0)return;startX=e.clientX;currentX=0;dragging=true;panels.style.transition='none';});
+  panels.addEventListener('pointermove',(e)=>{if(!dragging)return;currentX=e.clientX-startX;const offset=-_wrPanel*100;const pct=offset+(currentX/panels.offsetWidth)*100;panels.style.transform=`translateX(${pct}%)`;});
+  panels.addEventListener('pointerup',(e)=>{if(!dragging)return;dragging=false;panels.style.transition='';
+    if(Math.abs(currentX)>50){
+      if(currentX<0&&_wrPanel<totalPanels-1)_wrPanel++;
+      else if(currentX>0&&_wrPanel>0)_wrPanel--;
+    }
+    panels.style.transform=`translateX(-${_wrPanel*100}%)`;
+    document.querySelectorAll('.wr-dot').forEach((d,i)=>d.classList.toggle('active',i===_wrPanel));
+    if(_wrPanel===1){document.querySelectorAll('.wr-bar[data-rise]').forEach((bar,i)=>{setTimeout(()=>{bar.style.height=bar.style.getPropertyValue('--target-h');},i*100);});}
+  });
+  panels.addEventListener('pointercancel',()=>{dragging=false;panels.style.transition='';panels.style.transform=`translateX(-${_wrPanel*100}%)`;});
+  document.getElementById('wr-modal')?.addEventListener('keydown',(e)=>{
+    if(e.key==='ArrowRight'&&_wrPanel<totalPanels-1){_wrPanel++;panels.style.transform=`translateX(-${_wrPanel*100}%)`;document.querySelectorAll('.wr-dot').forEach((d,i)=>d.classList.toggle('active',i===_wrPanel));}
+    if(e.key==='ArrowLeft'&&_wrPanel>0){_wrPanel--;panels.style.transform=`translateX(-${_wrPanel*100}%)`;document.querySelectorAll('.wr-dot').forEach((d,i)=>d.classList.toggle('active',i===_wrPanel));}
+  });
+}
+
+function _initWRQuoteLongPress(){
+  const el=document.getElementById('wr-quote-text');
+  if(!el)return;
+  let timer=null;
+  el.addEventListener('pointerdown',()=>{
+    timer=setTimeout(()=>{
+      const text=el.textContent;if(!text)return;
+      let saved=[];try{saved=JSON.parse(localStorage.getItem('gc1:savedQuotes')||'[]');}catch{saved=[];}
+      if(!saved.includes(text)){saved.push(text);localStorage.setItem('gc1:savedQuotes',JSON.stringify(saved));
+        localStorage.setItem('gc1:quoteSaveHintShown','1');
+        el.style.transition='color .3s';el.style.color='var(--gold)';setTimeout(()=>{el.style.color='';},800);
+        if(typeof comboVibrate==='function')comboVibrate(1);
+        showToast('Quote saved');
+      } else {showToast('Already saved');}
+    },600);
+  });
+  el.addEventListener('pointerup',()=>clearTimeout(timer));
+  el.addEventListener('pointercancel',()=>clearTimeout(timer));
+  el.addEventListener('pointermove',()=>clearTimeout(timer));
+}
+
 function openSettings() {
   const el = document.getElementById('settings-sheet');
   const backdrop = document.getElementById('settings-backdrop');
@@ -2328,7 +2576,6 @@ function openSettings() {
       {icon:'◐',label:'Reduced Animations',sub:'~33% intensity',key:'reducedAnim'},
       {icon:'✦',label:'Perfect Day',sub:'Celebration when all done',key:'perfectDay'},
       {icon:'★',label:'Achievements',sub:'Streak milestones',key:'achievements'},
-      {icon:'◷',label:'Daily Reminder',sub:'9:00 AM default',key:'reminder'},
       {icon:'❝',label:'Motivational Quotes',sub:'Quote on Today tab',key:'quotes'},
       {icon:'◆',label:'Weekly Report',sub:'Summary after each week',key:'weeklyReport'},
     ].map(r=>`<div class="settings-pref-row"><span class="settings-pref-icon">${r.icon}</span><div style="flex:1"><div class="settings-pref-label">${r.label}</div><div class="settings-pref-sublabel">${r.sub}</div></div><div class="ob-pill-switch${getPref(r.key)?' on':''}" role="switch" aria-checked="${getPref(r.key)}" tabindex="0" data-pref="${r.key}" onclick="toggleSettingsPref(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><div class="ob-pill-knob"></div></div></div>`).join('')}
@@ -3327,6 +3574,7 @@ function render(){
   else if(view==='forge')c.innerHTML=renderForge();
   if(view==='forge')setTimeout(initReorder,0);
   if(view==='today')setTimeout(initTodayReorder,0);
+  if(view==='today')setTimeout(initQuoteLongPress,100);
   updateHeader();
   setTimeout(initPixelFlames,0);
   setTimeout(()=>document.querySelectorAll('.cbar-fill[data-pct]').forEach(el=>{el.style.width=el.dataset.pct+'%';}),80);
@@ -3640,6 +3888,7 @@ load().then(async()=>{
   })();
 
   const _t=getDate();const _tl=logs[_t]||{};updateHeat(habits.filter(h=>_tl[h.id]==='done').length,habits.length);updateMotivation();
+  setTimeout(showWeeklyReport,1500);
 });
 /* ── Dev Console ── */
 let devConsoleOpen = false;
