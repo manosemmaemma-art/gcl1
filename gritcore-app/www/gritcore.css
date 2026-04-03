@@ -1644,3 +1644,41 @@ button:focus-visible, .btn-reset:focus-visible {
   text-underline-offset: 2px;
 }
 .toast-undo:active { opacity: .7; }
+
+/* ── Weekly Report Modal ── */
+.wr-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:10015;opacity:0;pointer-events:none;transition:opacity .35s ease;}
+.wr-overlay.show{opacity:1;pointer-events:auto;}
+.wr-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.92);width:calc(100% - 40px);max-width:400px;height:auto;max-height:80vh;background:rgba(18,14,10,.97);border:1px solid var(--goldbor);border-radius:20px;z-index:10016;opacity:0;pointer-events:none;overflow:hidden;transition:opacity .35s ease,transform .35s cubic-bezier(0.22,1,0.36,1);box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 30px var(--gold-05);}
+.wr-modal.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1);}
+.wr-panels{display:flex;transition:transform .4s cubic-bezier(0.22,1,0.36,1);touch-action:pan-y;}
+.wr-panel{min-width:100%;box-sizing:border-box;padding:32px 24px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:380px;}
+.wr-title{font-family:'Josefin Sans',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--ctd);margin-bottom:16px;}
+.wr-big-num{font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:700;color:var(--gold);line-height:1;margin-bottom:4px;text-shadow:0 0 30px var(--gold-15);}
+.wr-score-word{font-family:'Josefin Sans',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ctd);margin-bottom:20px;}
+.wr-ember{margin-bottom:12px;}
+.wr-bar-row{display:flex;gap:6px;align-items:flex-end;width:100%;max-width:280px;height:140px;margin-bottom:12px;}
+.wr-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.wr-bar{width:100%;border-radius:4px 4px 0 0;min-height:4px;transition:height .6s cubic-bezier(0.22,1,0.36,1);}
+.wr-bar.high{background:var(--gold);}
+.wr-bar.mid{background:var(--hm3);}
+.wr-bar.low{background:var(--hm1);}
+.wr-bar-lbl{font-size:9px;letter-spacing:1px;color:var(--ctdd);font-family:'Josefin Sans',sans-serif;}
+.wr-bar-pct{font-size:8px;color:var(--ctd);font-family:'Josefin Sans',sans-serif;}
+.wr-stat-row{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:280px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.wr-stat-row:last-child{border-bottom:none;}
+.wr-stat-label{font-size:11px;letter-spacing:1px;color:var(--ctd);font-family:'Josefin Sans',sans-serif;}
+.wr-stat-value{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--ct);}
+.wr-stat-value .wr-up{color:var(--gold);}
+.wr-stat-value .wr-down{color:var(--blood);}
+.wr-quote-mark{font-family:'Cormorant Garamond',serif;font-size:120px;color:var(--gold);opacity:.12;line-height:1;position:absolute;top:16px;left:20px;pointer-events:none;}
+.wr-quote-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px;color:var(--ct);line-height:1.6;text-align:center;max-width:280px;position:relative;z-index:1;}
+.wr-divider{width:40px;height:1px;background:var(--goldbor);margin:20px auto;}
+.wr-btn{font-family:'Josefin Sans',sans-serif;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);background:none;border:1px solid var(--goldbor);border-radius:10px;padding:12px 32px;cursor:pointer;transition:all .2s;margin-top:8px;}
+.wr-btn:active{background:var(--gold-05);transform:scale(.96);}
+.wr-dots{display:flex;justify-content:center;gap:8px;padding:12px 0 20px;}
+.wr-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .3s,transform .3s;}
+.wr-dot.active{background:var(--gold);transform:scale(1.3);}
+.wr-hint{font-size:9px;color:var(--ctdd);letter-spacing:1px;margin-top:8px;opacity:0;animation:wrHintFade 3s ease forwards .5s;}
+@keyframes wrHintFade{0%{opacity:0}20%{opacity:1}80%{opacity:1}100%{opacity:0}}
+@keyframes wrBarRise{from{height:4px}to{height:var(--target-h)}}
+@media(prefers-reduced-motion:reduce){.wr-overlay,.wr-modal{transition:none!important;}.wr-bar{transition:none!important;}.wr-panels{transition:none!important;}.wr-hint{animation:none!important;opacity:1;}}
