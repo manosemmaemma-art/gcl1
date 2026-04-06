@@ -2306,7 +2306,7 @@ function renderHabits(){
     const hStreak=isPlaceholder?0:calcHabitStreak(hb.id);
     const tierClass=hStreak>=30?'tier-fire':hStreak>=14?'tier-gold':hStreak>=7?'tier-bronze':'';
     const streakBadge=hStreak>=2?`<span class="hcard-streak ${tierClass}">${hStreak}d</span>`:'';
-    h+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${esc(hb.name)}</div><div class="hcard-cat">${esc(getCatName(hb.cat))}${isPlaceholder?' · Sample':''}</div>${streakBadge}</div><div class="hcard-btns"><button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
+    h+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" ${dis}><div class="hcard-meta"><div class="hcard-name">${esc(hb.name)}</div><div class="hcard-cat">${esc(getCatName(hb.cat))}${isPlaceholder?' · Sample':''}</div>${streakBadge}</div><div class="hcard-btns"><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button></div></div>`;
   });
   h+='</div>';w.innerHTML=h;
 }
@@ -2314,8 +2314,8 @@ function patchHabitCard(id,status){
   const card=document.querySelector(`.hcard[data-id="${id}"]`);if(!card)return;
   card.className=`hcard card ${status||''}`;
   const btns=card.querySelectorAll('.hbtn');
-  if(btns[0]){btns[0].className='hbtn'+(status==='done'?' don':'');btns[0].querySelector('svg').setAttribute('stroke',status==='done'?'var(--gold)':'var(--ctd)');}
-  if(btns[1]){btns[1].className='hbtn'+(status==='failed'?' fai':'');btns[1].querySelector('svg').setAttribute('stroke',status==='failed'?'var(--blood)':'var(--ctd)');}
+  if(btns[0]){btns[0].className='hbtn'+(status==='failed'?' fai':'');btns[0].querySelector('svg').setAttribute('stroke',status==='failed'?'var(--blood)':'var(--ctd)');}
+  if(btns[1]){btns[1].className='hbtn'+(status==='done'?' don':'');btns[1].querySelector('svg').setAttribute('stroke',status==='done'?'var(--gold)':'var(--ctd)');}
   if(status==='failed'){card.classList.add('crack-anim');card.addEventListener('animationend',()=>card.classList.remove('crack-anim'),{once:true});}
   if(status==='done'){card.classList.add('done-anim');card.addEventListener('animationend',()=>card.classList.remove('done-anim'),{once:true});}
 }
@@ -2434,7 +2434,7 @@ function renderToday(){
       const hStreak=isPlaceholder?0:calcHabitStreak(hb.id);
       const tierClass=hStreak>=30?'tier-fire':hStreak>=14?'tier-gold':hStreak>=7?'tier-bronze':'';
       const streakBadge=hStreak>=2?`<span class="hcard-streak ${tierClass}">${hStreak}d</span>`:'';
-      hhtml+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" style="animation-delay:${i*40}ms" ${dis}><div class="hcard-meta"><div class="hcard-name">${esc(hb.name)}</div><div class="hcard-cat">${esc(getCatName(hb.cat))}${isPlaceholder?' · Sample':''}</div>${streakBadge}</div><div class="hcard-btns"><button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div>`;
+      hhtml+=`<div class="hcard card ${s||''} af s${Math.min(i+1,6)}" data-id="${hb.id}" style="animation-delay:${i*40}ms" ${dis}><div class="hcard-meta"><div class="hcard-name">${esc(hb.name)}</div><div class="hcard-cat">${esc(getCatName(hb.cat))}${isPlaceholder?' · Sample':''}</div>${streakBadge}</div><div class="hcard-btns"><button class="hbtn ${s==='failed'?'fai':''}" onclick="markH('${hb.id}','failed',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='failed'?'var(--blood)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><button class="hbtn ${s==='done'?'don':''}" onclick="markH('${hb.id}','done',this,event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s==='done'?'var(--gold)':'var(--ctd)'}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button></div></div>`;
     });
     hhtml+='</div></div>';
     if(isPlaceholder)hhtml+=`<button class="sample-banner btn-reset" onclick="swTo('forge')"><span class="sample-banner-icon">⚒</span><div><div class="sample-banner-tag">Sample Data</div><div class="sample-banner-sub">Tap to forge your own →</div></div></button>`;
@@ -3239,11 +3239,11 @@ function openFabSheet(){
           <div class="sheet-item-name">${h.name}</div>
           <div class="sheet-item-cat">${getCatName(h.cat)}</div>
         </div>
-        <button class="sheet-tick" onclick="sheetTick('${h.id}',this,event)">
-          ${done?'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--heat)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}
-        </button>
         <button class="sheet-fail" onclick="sheetFail('${h.id}',this,event)">
           ${failed?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(220,80,80,0.9)" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>':''}
+        </button>
+        <button class="sheet-tick" onclick="sheetTick('${h.id}',this,event)">
+          ${done?'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--heat)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}
         </button>
       </div>`;
     }).join('');
